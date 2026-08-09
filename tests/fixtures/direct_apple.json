@@ -1,0 +1,809 @@
+{
+ "res": {
+  "searchResults": [
+   {
+    "id": "200519686-0836",
+    "jobSummary": "As a member of a multi-functional design team at Apple, you will help to create the next generation of the world's finest mobile devices. You will conceive, design, and bring into production products that will redefine the mobile experience. You will work closely with many different cross functional teams including Industrial Design, Hardware Engineering, Antenna, Reliability, Packaging, Safety and Marketing. You should have significant prior experience in Siemens NX and/or Pro-E, be extremely well organized and able to balance numerous program needs simultaneously. Your excellent communication and social skills will help you to quickly grasp issues, understand the details, and drive the appropriate resolution. We work in a highly dynamic environment which will require you to respond quickly to changes, manage competing demands, and find creative, dynamic solutions. The people who work here have reinvented entire industries with the Mac, iPhone, iPad, Apple Watch, and AppleTV. We have done the same with services, including the App Store, Apple Music, and Apple Pay. The same passion for innovation that goes into our products also applies to our practices — strengthening our commitment to leave the world better than we found it. Join us to help deliver the next groundbreaking Apple product.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-CUP",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "Cupertino",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200519686",
+    "postingDate": "Jul 30, 2026",
+    "postingTitle": "Product Design Engineer - Core Systems",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-30T19:14:41.011Z",
+    "transformedPostingTitle": "product-design-engineer-core-systems",
+    "reqId": "200519686-0836",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200519686",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200675035-3401",
+    "jobSummary": "Do you like to work on groundbreaking technology? Have a passion for creating amazing products? Our team is looking for a curious, detail-oriented IC Packaging Engineer, with a strong technical foundation and a love for excellence and precision, to help deliver extraordinary results. In this role, you will contribute to package concept exploration, support package selection and configuration studies, and grow into ownership of package integration across SoC and advanced packaging projects.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SFMETRO",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "San Francisco Bay Area",
+      "countryID": "iso-country-USA",
+      "level": 4
+     }
+    ],
+    "positionId": "200675035",
+    "postingDate": "Jul 30, 2026",
+    "postingTitle": "IC Packaging Engineer - WLP",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-30T17:03:50.564Z",
+    "transformedPostingTitle": "ic-packaging-engineer-wlp",
+    "reqId": "200675035-3401",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200675035",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200674739-3950",
+    "jobSummary": "As part of our Mac/Input Devices Engineering team, you will help craft creative input devices solutions that facilitate people communicating with multiple devices. You will work across disciplines to transform improved hardware elements into a single, integrated design. You will help us innovate new technologies that continuously outperform the previous iterations. By collaborating with other product development groups across Apple, you will push the industry boundaries of what a Mac/input device can do and improve the product experience for our customers across the world.\n\nThe Mac/Input Devices Engineering team at Apple produces innovative and highly reliable systems for Apple product lines. Tightly integrated with Product Development, Operations, Industrial Design and Reliability Testing groups, you will help coordinate and execute the overall product designs from beginning to end.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-TAI",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "Taiwan",
+      "metro": "",
+      "region": "",
+      "name": "Taipei",
+      "countryID": "iso-country-TWN",
+      "level": 5
+     }
+    ],
+    "positionId": "200674739",
+    "postingDate": "Jul 30, 2026",
+    "postingTitle": "Product Design Engineering Intern",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-30T05:31:21.240Z",
+    "transformedPostingTitle": "product-design-engineering-intern",
+    "reqId": "200674739-3950",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200674739",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200674904-3956",
+    "jobSummary": "We are looking for an Engineering Program Manager to join the Video Engineering EPM team to work on cutting edge Apple Neural Engine (ANE), Machine Learning, and AI technology to deliver world-class Apple experiences. The ideal candidate will have internship or academic project experience in product development or program/project management, strong communication skills, and a desire to grow with an amazing team while learning to develop new technologies.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SVL",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "Sunnyvale",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200674904",
+    "postingDate": "Jul 29, 2026",
+    "postingTitle": "Engineering Program Manager (ANE/ML/AI), Video Engineering",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-29T21:59:01.265Z",
+    "transformedPostingTitle": "engineering-program-manager-ane-ml-ai-video-engineering",
+    "reqId": "200674904-3956",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200674904",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200674883-0836",
+    "jobSummary": "Join the team building the evaluation systems that enable Apple’s next generation of AI experiences. As a Machine Learning Engineer, you will develop scalable infrastructure, intelligent evaluators, and data-driven methodologies that measure and improve the quality of large language models and multimodal AI systems used across Apple products.\n\nYou’ll partner closely with ML researchers, software engineers, and product teams to design novel evaluation techniques, analyze model behavior, and translate research into production-ready systems. This role requires strong engineering fundamentals, a passion for machine learning, and the curiosity to solve challenging problems at the intersection of AI, data, and software engineering.\n\nIf you’re excited about building the tools that help define the future of AI quality at Apple, we’d love to hear from you.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-CUP",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "Cupertino",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200674883",
+    "postingDate": "Jul 29, 2026",
+    "postingTitle": "Machine Learning Engineer - AI Evaluation & LLM Systems",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-29T19:42:27.144Z",
+    "transformedPostingTitle": "machine-learning-engineer-ai-evaluation-llm-systems",
+    "reqId": "200674883-0836",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Machine Learning and AI",
+     "teamID": "teamsAndSubTeams-MLAI",
+     "teamCode": "MLAI"
+    },
+    "type": "REQ",
+    "homeOffice": false,
+    "jobPositionId": "REQ-200674883",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200674390-3543",
+    "jobSummary": "The Hardware Technologies Group is looking for a Camera/Depth Engineering Program Manager (EPM) that will be responsible for driving design, development, and integration of next-generation camera and depth modules into iPhone, iPad, and Mac products. In this highly multi-functional role, you will coordinate efforts of the hardware, optics, software, mechanical engineering, and operations teams to design, manufacture, and integrate high-quality cameras for Apple's entire product line.  Are you ready to help us create inspiring products? Apply to join our team.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SDO",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "San Diego",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200674390",
+    "postingDate": "Jul 28, 2026",
+    "postingTitle": "Engineering Program Manager - Camera & Depth",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-28T17:38:13.301Z",
+    "transformedPostingTitle": "engineering-program-manager-camera-depth",
+    "reqId": "200674390-3543",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200674390",
+    "isMultiLocation": true,
+    "postExternal": true
+   },
+   {
+    "id": "200674390-0836",
+    "jobSummary": "The Hardware Technologies Group is looking for a Camera/Depth Engineering Program Manager (EPM) that will be responsible for driving design, development, and integration of next-generation camera and depth modules into iPhone, iPad, and Mac products. In this highly multi-functional role, you will coordinate efforts of the hardware, optics, software, mechanical engineering, and operations teams to design, manufacture, and integrate high-quality cameras for Apple's entire product line.  Are you ready to help us create inspiring products? Apply to join our team.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-CUP",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "Cupertino",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200674390",
+    "postingDate": "Jul 28, 2026",
+    "postingTitle": "Engineering Program Manager - Camera & Depth",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-28T17:38:13.301Z",
+    "transformedPostingTitle": "engineering-program-manager-camera-depth",
+    "reqId": "200674390-0836",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200674390",
+    "isMultiLocation": true,
+    "postExternal": true
+   },
+   {
+    "id": "200673876-3956",
+    "jobSummary": "Join the engineering team that fuses multimodal input to enable seamless interactions on human-computer interfaces like  Vision Pro. Human Interface Devices (HID) is looking for an Interaction Algorithm Engineer to help build the next generation of computing.\n\nHID operates at the intersection of hardware, software, and design. The problems you solve will be multidisciplinary and require strong collaboration and communication skills. You’ll prototype ideas at the early stages of development and develop robust solutions through production.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SVL",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "Sunnyvale",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200673876",
+    "postingDate": "Jul 24, 2026",
+    "postingTitle": "HID Interaction Algorithm Engineer",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-24T01:52:59.486Z",
+    "transformedPostingTitle": "hid-interaction-algorithm-engineer",
+    "reqId": "200673876-3956",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200673876",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200671525-2114",
+    "jobSummary": "IS&T EMEIA brings together all IS&T functions across Europe, the Middle East, India, and Africa — including Business Intelligence, Corporate and Customer Systems, Employee Experience and Productivity, Infrastructure Services, and Retail. The team partners with global leadership to deliver key programs at a regional level, navigating the unique complexity and scale of one of Apple's most diverse operating regions. IS&T EMEIA also leads Apple's IS&T Accessibility Center of Excellence, helping teams across Apple ensure that websites, internal systems, and services work for everyone.\nThe IS&T Accessibility Center of Excellence (CoE) is looking for an enthusiastic and driven early career professional to join our Program Management Office. This is a fantastic opportunity to grow your project management skills within a global, mission-driven team dedicated to making technology accessible to everyone. ",
+    "locations": [
+     {
+      "postLocationId": "postLocation-LND",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United Kingdom",
+      "metro": "",
+      "region": "",
+      "name": "London",
+      "countryID": "iso-country-GBR",
+      "level": 5
+     }
+    ],
+    "positionId": "200671525",
+    "postingDate": "Jul 23, 2026",
+    "postingTitle": "Accessibility Project Manager (Early Career)",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-23T17:39:08.596Z",
+    "transformedPostingTitle": "accessibility-project-manager-early-career",
+    "reqId": "200671525-2114",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 35,
+    "team": {
+     "teamName": "Software and Services",
+     "teamID": "teamsAndSubTeams-SFTWR",
+     "teamCode": "SFTWR"
+    },
+    "type": "REQ",
+    "homeOffice": false,
+    "jobPositionId": "REQ-200671525",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200598147-3715",
+    "jobSummary": "Apple is a place where extraordinary people gather to do their best work. Just be ready to dream big.\n\nThe people here at Apple don’t just build products — they build the kind of wonder that’s revolutionized entire industries. It’s the diversity of those people and their ideas that encourages the innovation that runs through everything we do, from amazing technology to industry-leading environmental efforts. Join Apple, and help us leave the world better than we found it.\n\nImaging what you could do here. At Apple, creative ideas have a way of becoming wonderful products, services, and customer experiences very quickly. Bring passion and dedication to your job and there’s no telling what you could accomplish.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SGI",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "China",
+      "metro": "",
+      "region": "",
+      "name": "Shanghai",
+      "countryID": "iso-country-CHN",
+      "level": 5
+     }
+    ],
+    "positionId": "200598147",
+    "postingDate": "Jul 21, 2026",
+    "postingTitle": "Intern Opportunities at Apple (General) - October 2026 to September 2027",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-21T07:14:56.012Z",
+    "transformedPostingTitle": "intern-opportunities-at-apple-general-october-2026-to-september-2027",
+    "reqId": "200598147-3715",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Students",
+     "teamID": "teamsAndSubTeams-STDNT",
+     "teamCode": "STDNT"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200598147",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200494610-3916",
+    "jobSummary": "The people here at Apple don't just build products - they build the kind of wonder that's revolutionized entire industries. It's the diversity of those people and their ideas that encourages the innovation that runs through everything we do, from amazing technology to industry-leading environmental efforts. Join Apple, and help us leave the world better than we found it.\n\nThe System EE team is seeking an enthusiastic and diligent EE/HW intern to continually work without constraints of technology implemented in iPad products together with the excellent System EE team. \n\nCandidate with EE major with good EE basic knowledge, some level of SW development expertise, or Computer Science major with basic HW knowledge, and development programming expertise, or any other majors with these knowledges, will be the excellent fit.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SUZ",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "China",
+      "metro": "",
+      "region": "",
+      "name": "Suzhou",
+      "countryID": "iso-country-CHN",
+      "level": 5
+     }
+    ],
+    "positionId": "200494610",
+    "postingDate": "Jul 21, 2026",
+    "postingTitle": "System EE - EE/HW Intern (Suzhou)",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-21T07:10:04.740Z",
+    "transformedPostingTitle": "system-ee-ee-hw-intern-suzhou",
+    "reqId": "200494610-3916",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200494610",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200494621-3435",
+    "jobSummary": "We are looking for a highly-motivated product design engineer to join a new product design team at Apple. Do you love applying your creativity, spatial reasoning & attention to detail to collaboratively solve design challenges? Bring passion and dedication to your job and there's no telling what you could accomplish. Come join our cohesive and diverse family of Product Design Engineers to do the most impactful work of your life.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SHZ",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "China",
+      "metro": "",
+      "region": "",
+      "name": "Shenzhen",
+      "countryID": "iso-country-CHN",
+      "level": 5
+     }
+    ],
+    "positionId": "200494621",
+    "postingDate": "Jul 21, 2026",
+    "postingTitle": "Product Design Engineer Intern (Mechanical) - Shenzhen",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-21T07:08:55.534Z",
+    "transformedPostingTitle": "product-design-engineer-intern-mechanical-shenzhen",
+    "reqId": "200494621-3435",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200494621",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200494601-3715",
+    "jobSummary": "The people here at Apple don't just build products - they build the kind of wonder that's revolutionized entire industries. It's the diversity of those people and their ideas that encourages the innovation that runs through everything we do, from amazing technology to industry-leading environmental efforts. Join Apple, and help us leave the world better than we found it.\n\nThe System EE team is seeking an enthusiastic and diligent EE/HW intern to continually work without constraints of technology implemented in iPad products together with the excellent System EE team. \n\nCandidate with EE major with good EE basic knowledge, some level of SW development expertise, or Computer Science major with basic HW knowledge, and development programming expertise, or any other majors with these knowledges, will be the excellent fit.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SGI",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "China",
+      "metro": "",
+      "region": "",
+      "name": "Shanghai",
+      "countryID": "iso-country-CHN",
+      "level": 5
+     }
+    ],
+    "positionId": "200494601",
+    "postingDate": "Jul 21, 2026",
+    "postingTitle": "System EE-EE/HW Intern (Shanghai)",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-21T07:07:47.696Z",
+    "transformedPostingTitle": "system-ee-ee-hw-intern-shanghai",
+    "reqId": "200494601-3715",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200494601",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200494600-3435",
+    "jobSummary": "The people here at Apple don't just build products - they build the kind of wonder that's revolutionized entire industries. It's the diversity of those people and their ideas that encourages the innovation that runs through everything we do, from amazing technology to industry-leading environmental efforts. Join Apple, and help us leave the world better than we found it.\n\nThe System EE team is seeking an enthusiastic and diligent EE/HW intern to continually work without constraints of technology implemented in iPad products together with the excellent System EE team. \n\nCandidate with EE major with good EE basic knowledge, some level of SW development expertise, or Computer Science major with basic HW knowledge, and development programming expertise, or any other majors with these knowledges, will be the excellent fit.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SHZ",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "China",
+      "metro": "",
+      "region": "",
+      "name": "Shenzhen",
+      "countryID": "iso-country-CHN",
+      "level": 5
+     }
+    ],
+    "positionId": "200494600",
+    "postingDate": "Jul 21, 2026",
+    "postingTitle": "System EE-EE/HW Intern (Shenzhen)",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-21T07:07:14.403Z",
+    "transformedPostingTitle": "system-ee-ee-hw-intern-shenzhen",
+    "reqId": "200494600-3435",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200494600",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200494844-3715",
+    "jobSummary": "The people here at Apple don't just build products - they build the kind of wonder that's revolutionized entire industries. It's the diversity of those people and their ideas that encourages the innovation that runs through everything we do, from amazing technology to industry-leading environmental efforts. Join Apple, and help us leave the world better than we found it.\n\nPassion works here. Apple is a place where extraordinary people gather to do their best work. Our community is made up of every kind of individual: artists and designers, engineers and scientists, problem solvers and doers. To- gather we create things and experiences people once couldn’t have imagined — and now can’t imagine living without. So if you’re excited by the idea of making a real impact, a career with Apple might be your dream job. Just be ready to dream big.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SGI",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "China",
+      "metro": "",
+      "region": "",
+      "name": "Shanghai",
+      "countryID": "iso-country-CHN",
+      "level": 5
+     }
+    ],
+    "positionId": "200494844",
+    "postingDate": "Jul 21, 2026",
+    "postingTitle": "Software Engineer Intern(Core OS)-Shanghai",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-21T06:52:19.075Z",
+    "transformedPostingTitle": "software-engineer-intern-core-os-shanghai",
+    "reqId": "200494844-3715",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Software and Services",
+     "teamID": "teamsAndSubTeams-SFTWR",
+     "teamCode": "SFTWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200494844",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200494614-3715",
+    "jobSummary": "We are looking for a highly-motivated product design engineer to join a new product design team at Apple. Do you love applying your creativity, spatial reasoning & attention to detail to collaboratively solve design challenges? Bring passion and dedication to your job and there's no telling what you could accomplish. Come join our cohesive and diverse family of Product Design Engineers to do the most impactful work of your life.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SGI",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "China",
+      "metro": "",
+      "region": "",
+      "name": "Shanghai",
+      "countryID": "iso-country-CHN",
+      "level": 5
+     }
+    ],
+    "positionId": "200494614",
+    "postingDate": "Jul 21, 2026",
+    "postingTitle": "Product Design Engineer Intern (Mechanical) - Shanghai",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-21T06:50:54.340Z",
+    "transformedPostingTitle": "product-design-engineer-intern-mechanical-shanghai",
+    "reqId": "200494614-3715",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200494614",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200672948-0157",
+    "jobSummary": "Do you love creating elegant solutions to sophisticated challenges? As part of our Silicon Engineering group, you’ll help design and manufacture our next-generation, high-performance, power-efficient processors! You’ll ensure Apple products and services can seamlessly and efficiently handle the tasks that make them beloved by millions. In this job, you will be responsible for timing closure of highly complex GPU designs that go in every Apple product and will have amazing opportunities to set new standards for the next generation GPU designs. You will gain exposure to different aspects of product development, from concept to post silicon validation! You will collaborate with a variety of fields including Architecture, RTL, Synthesis, Clocking, DFT, Physical design and Post silicon engineering to ensure the best design practices are followed for a smooth timing convergence.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-AST",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "Austin",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200672948",
+    "postingDate": "Jul 17, 2026",
+    "postingTitle": "GPU Physical Design Engineer, STA/Timing",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-17T20:53:20.567Z",
+    "transformedPostingTitle": "gpu-physical-design-engineer-sta-timing",
+    "reqId": "200672948-0157",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200672948",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200669152-0836",
+    "jobSummary": "Imagine what you could do here. At Apple, new insights have a way of becoming extraordinary products, services, and customer experiences very quickly. Bring passion and dedication to your job, and there's no telling what you could accomplish. Dynamic, intelligent people and encouraging innovative technologies are the norm here. The people who work here have reinvented entire industries with all Apple Hardware products. The same drive for innovation that goes into our products also applies to our practices strengthening our dedication to leave the world better than we found it. Do you want join us in these pursuits? Join us to help deliver the next groundbreaking Apple product! Come to Apple and work within a team to deliver a broad range of silicon technologies. \n\nThis is an extraordinary opportunity to engage with the latest technologies and deliver groundbreaking Apple products year after year. You will go beyond the industry norm and demonstrate creativity in problem solving, ability to think dynamically and outside of standard convention, and adapt quickly to new technical areas.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-CUP",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "Cupertino",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200669152",
+    "postingDate": "Jul 15, 2026",
+    "postingTitle": "Silicon Validation Engineering Program Manager",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-15T18:52:12.437Z",
+    "transformedPostingTitle": "silicon-validation-engineering-program-manager",
+    "reqId": "200669152-0836",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200669152",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200671631-0836",
+    "jobSummary": "Apple Cloud AI Platform powers the machine learning, AI, and data systems behind intelligent experiences across Apple's consumer products. We are looking for a Software Engineer who is eager to build the tools, interfaces, and workflows that ML developers and researchers use every day from intuitive front-end experiences to backend services and ML integrations at Apple scale. This is a great opportunity for an early-career engineer who wants to grow across the full stack from building intuitive UIs for internal platforms to integrating ML services and workflows into production systems working at Apple scale.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-CUP",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "Cupertino",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200671631",
+    "postingDate": "Jul 13, 2026",
+    "postingTitle": "AI Software Engineer, Apple Cloud AI Platform",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-13T18:20:01.169Z",
+    "transformedPostingTitle": "ai-software-engineer-apple-cloud-ai-platform",
+    "reqId": "200671631-0836",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Software and Services",
+     "teamID": "teamsAndSubTeams-SFTWR",
+     "teamCode": "SFTWR"
+    },
+    "type": "REQ",
+    "homeOffice": false,
+    "jobPositionId": "REQ-200671631",
+    "isMultiLocation": false,
+    "postExternal": true
+   },
+   {
+    "id": "200660259-3956",
+    "jobSummary": "Join the engineering team that fuses multimodal input to enable seamless interactions on human-computer interfaces like  Vision Pro. Human Interface Devices (HID) is looking for an Interaction Algorithm Engineer to help build the next generation of computing.\n\nHID operates at the intersection of hardware, software, and design. The problems you solve will be multidisciplinary and require strong collaboration and communication skills. You’ll prototype ideas at the early stages of development and develop robust solutions through production.",
+    "locations": [
+     {
+      "postLocationId": "postLocation-SVL",
+      "city": "",
+      "stateProvince": "",
+      "countryName": "United States of America",
+      "metro": "",
+      "region": "",
+      "name": "Sunnyvale",
+      "countryID": "iso-country-USA",
+      "level": 5
+     }
+    ],
+    "positionId": "200660259",
+    "postingDate": "Jul 10, 2026",
+    "postingTitle": "HID Interaction Algorithm Engineer",
+    "localeInfo": {
+     "languageCode": "en_US",
+     "dateFormat": "MMM D, YYYY",
+     "defaultLocaleCode": "en-us"
+    },
+    "postDateInGMT": "2026-07-10T20:57:33.680Z",
+    "transformedPostingTitle": "hid-interaction-algorithm-engineer",
+    "reqId": "200660259-3956",
+    "managedPipelineRole": false,
+    "standardWeeklyHours": 40,
+    "team": {
+     "teamName": "Hardware",
+     "teamID": "teamsAndSubTeams-HRDWR",
+     "teamCode": "HRDWR"
+    },
+    "type": "PIPE",
+    "homeOffice": false,
+    "jobPositionId": "PIPE-200660259",
+    "isMultiLocation": false,
+    "postExternal": true
+   }
+  ],
+  "totalRecords": 100,
+  "talentLimitDetails": {},
+  "talentRolesInfoById": {}
+ }
+}

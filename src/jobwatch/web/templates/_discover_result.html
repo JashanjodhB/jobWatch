@@ -1,0 +1,44 @@
+<div style="margin-top:0.75rem;border-top:1px solid var(--rule);padding-top:0.7rem">
+{% if result.page_error %}
+<div class="muted" style="font-size:0.8rem;margin-bottom:0.5rem">Careers page: {{ result.page_error }}</div>
+{% endif %}
+
+{% for candidate in result.candidates %}
+<div style="border-bottom:1px solid var(--rule-soft);padding:0.6rem 0">
+  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0.5rem">
+    <strong>{{ candidate.adapter }}</strong>
+    <span class="pill {{ 'confirmed' if candidate.verified else 'signal' if candidate.confidence == 'high' else '' }}">
+      {{ 'verified' if candidate.verified else candidate.confidence }}
+    </span>
+    {% if candidate.posting_count is not none %}
+    <span class="muted mono" style="font-size:0.75rem">{{ candidate.posting_count }} postings</span>
+    {% endif %}
+  </div>
+
+  <div class="mono" style="font-size:0.75rem;margin-top:0.3rem;overflow-wrap:anywhere">{{ candidate.config }}</div>
+  <div class="muted" style="font-size:0.78rem;margin-top:0.2rem">{{ candidate.evidence }}</div>
+  {% if candidate.sample_title %}
+  <div class="muted" style="font-size:0.78rem">e.g. “{{ candidate.sample_title }}”</div>
+  {% endif %}
+  {% if candidate.error %}
+  <div style="color:var(--alarm);font-size:0.78rem;margin-top:0.2rem">{{ candidate.error }}</div>
+  {% endif %}
+
+  {% if candidate.verified %}
+  <form class="toolbar" hx-post="/companies" hx-target="body" hx-swap="outerHTML" style="padding:0.5rem 0 0">
+    <input type="text" name="slug" placeholder="slug" required aria-label="Slug" style="width:9rem">
+    <input type="text" name="display_name" placeholder="Display name" required aria-label="Display name" style="width:11rem">
+    <select name="tier" aria-label="Tier">
+      <option value="warm">warm</option><option value="hot">hot</option><option value="cold">cold</option>
+    </select>
+    <input type="hidden" name="adapter" value="{{ candidate.adapter }}">
+    <input type="hidden" name="config" value="{{ candidate.config | tojson }}">
+    <input type="hidden" name="careers_url" value="{{ url }}">
+    <button class="btn primary" type="submit">Add to registry</button>
+  </form>
+  {% endif %}
+</div>
+{% else %}
+<div class="muted">Nothing recognised at that URL.</div>
+{% endfor %}
+</div>

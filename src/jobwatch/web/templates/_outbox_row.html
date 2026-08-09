@@ -1,0 +1,25 @@
+{% if row %}
+<tr id="outbox-{{ row.id }}">
+  <td>
+    <span class="pill {{ 'alarm' if row.status == 'failed' else 'confirmed' if row.status == 'sent' else 'signal' }}">{{ row.status }}</span>
+  </td>
+  <td>
+    {% if row.parsed.url %}
+    <a href="{{ row.parsed.url }}" target="_blank" rel="noopener noreferrer">{{ row.parsed.title or row.parsed.get('title') or '(alarm)' }}</a>
+    {% else %}
+    {{ row.parsed.title or '(no title)' }}
+    {% endif %}
+    <div class="muted mono" style="font-size:0.72rem">{{ row.parsed.company or row.merge_key[:16] }}</div>
+  </td>
+  <td class="muted">
+    {{ row.kind }}
+    {% if row.delivered_to %}<div class="mono" style="font-size:0.68rem">→ {{ row.delivered_to | join(', ') }}</div>{% endif %}
+  </td>
+  <td class="mono">{{ row.attempts }}</td>
+  <td class="mono" style="font-size:0.72rem"><span data-ts="{{ row.created_at }}">{{ row.created_at | age }}</span> ago</td>
+  <td class="muted" style="font-size:0.75rem;max-width:22rem;overflow-wrap:anywhere">{{ row.last_error or '' }}</td>
+  <td>
+    <button class="btn small" hx-post="/outbox/{{ row.id }}/replay" hx-target="#outbox-{{ row.id }}" hx-swap="outerHTML">Replay</button>
+  </td>
+</tr>
+{% endif %}

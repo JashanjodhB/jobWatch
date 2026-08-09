@@ -1,0 +1,48 @@
+# jobwatch — seed classification rules (§8)
+#
+# Seeded into the `filter_rules` table on first run. After that the table is
+# owned by the filter workbench in the UI; edit there and use
+# `jobwatch export-config` (or the UI export button) to write back here.
+#
+# Patterns are Python regex, matched case-insensitively against the ORIGINAL
+# posting title — not the normalized one — so patterns like '\b20\d\d\s+summer\b'
+# still work. `location_exclude` is matched against each location string.
+#
+# Evaluation order:
+#   any exclude_any hit                  -> reject
+#   no require_any hit                   -> reject
+#   require_any hit AND role_any hit     -> match
+#   require_any hit, no role_any hit     -> review
+
+require_any:
+  - '\bintern(ship)?\b'
+  - '\bco-?op\b'
+  - '\bsummer analyst\b'
+  - '\bindustrial placement\b'
+  - '\bapprentice\b'
+  - '\b20\d\d\s+summer\b'
+
+role_any:
+  - '\bsoftware\b'
+  - '\bengineer(ing)?\b'
+  - '\b(swe|sde|mle)\b'
+  - '\bmachine learning\b'
+  - '\b(ai|ml)\b'
+  - '\bdata\b'
+  - '\b(backend|frontend|full[- ]?stack)\b'
+  - '\b(infrastructure|platform|systems)\b'
+  - '\bquantitative (developer|technologist)\b'
+  - '\bresearch engineer\b'
+
+exclude_any:
+  - '\bph\.?d\b'
+  - '\breturning intern\b'
+  - '\bmba\b'
+  - '\b(sales|marketing|recruit(ing|er))\b'
+  - '\bnew ?grad\b'
+  - '\bmanager\b'
+
+location_exclude:
+  - 'India'
+  - 'Poland'
+  - 'Ireland'

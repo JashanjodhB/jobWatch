@@ -1,0 +1,72 @@
+{% if not row %}
+<div class="empty">
+  <strong>Nothing to review — rules are handling everything</strong>
+  New ambiguous titles land here automatically. They are alerted anyway in the meantime.
+</div>
+{% if undo_title %}
+<form hx-post="/review/undo" hx-target="#review-card" hx-swap="innerHTML" style="text-align:center;margin-top:1rem">
+  <input type="hidden" name="normalized_title" value="{{ undo_title }}">
+  <input type="hidden" name="offset" value="{{ offset }}">
+  <button class="btn" type="submit" data-act="undo">Undo last verdict <kbd>U</kbd></button>
+</form>
+{% endif %}
+
+{% else %}
+<div class="card review-card">
+  <div class="muted mono" style="font-size:0.72rem;letter-spacing:0.05em;text-transform:uppercase">
+    {{ offset + 1 }} of {{ total }} · {{ row.display_name }} · {{ row.tier }}
+  </div>
+
+  <div class="review-title">{{ row.title }}</div>
+
+  <div class="review-meta">
+    {% if row.locations | places %}{{ row.locations | places }} · {% endif %}
+    seen {{ row.first_seen_at | age }} ago
+    {% if row.occurrences > 1 %} · {{ row.occurrences }} postings share this title{% endif %}
+    {% if row.req_id %} · <span class="mono">{{ row.req_id }}</span>{% endif %}
+  </div>
+
+  {% if explanation %}
+  <div class="review-why">
+    Why it is here: {{ explanation.reason }}<br>
+    Normalized to <code>{{ row.normalized_title }}</code>
+  </div>
+  {% endif %}
+
+  <form hx-post="/review/{{ row.dedup_key }}/verdict" hx-target="#review-card" hx-swap="innerHTML">
+    <input type="hidden" name="category" value="">
+    <input type="hidden" name="offset" value="{{ offset }}">
+
+    <div class="review-actions">
+      <button class="btn primary" type="submit" name="verdict" value="match" data-act="match">Match <kbd>M</kbd></button>
+      <button class="btn danger"  type="submit" name="verdict" value="reject" data-act="reject">Reject <kbd>R</kbd></button>
+      <a class="btn" href="{{ row.url }}" target="_blank" rel="noopener noreferrer" data-act="open">Open posting <kbd>O</kbd></a>
+    </div>
+
+    <div class="cat-row">
+      {% for cat in categories %}
+      <button class="btn small" type="button" data-category="{{ cat }}" aria-pressed="false">
+        <span class="mono">{{ loop.index }}</span> {{ cat }}
+      </button>
+      {% endfor %}
+    </div>
+  </form>
+
+  <div class="review-actions" style="margin-top:1rem">
+    <button class="btn small" type="button" data-act="prev"
+            hx-get="/review/card?offset={{ offset - 1 if offset > 0 else 0 }}"
+            hx-target="#review-card" hx-swap="innerHTML">← <kbd>K</kbd></button>
+    <button class="btn small" type="button" data-act="next"
+            hx-get="/review/card?offset={{ offset + 1 }}"
+            hx-target="#review-card" hx-swap="innerHTML">Skip <kbd>J</kbd> →</button>
+
+    {% if undo_title %}
+    <form hx-post="/review/undo" hx-target="#review-card" hx-swap="innerHTML" style="display:inline">
+      <input type="hidden" name="normalized_title" value="{{ undo_title }}">
+      <input type="hidden" name="offset" value="{{ offset }}">
+      <button class="btn small warn" type="submit" data-act="undo">Undo <kbd>U</kbd></button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endif %}

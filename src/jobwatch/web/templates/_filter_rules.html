@@ -1,0 +1,20 @@
+{% for kind in kinds %}
+<div class="card" style="margin-bottom:0.75rem">
+  <div class="mono muted" style="font-size:0.72rem;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.4rem">
+    {{ kind }} <span style="color:var(--rule)">·</span> {{ grouped[kind] | length }}
+  </div>
+  {% for rule in grouped[kind] %}
+  <div class="rule-line {% if not rule.enabled %}disabled{% endif %}">
+    <span class="pattern" style="flex:1">{{ rule.pattern }}</span>
+    {% if rule.note %}<span class="muted" style="font-size:0.75rem">{{ rule.note }}</span>{% endif %}
+    <button class="btn small" hx-post="/filters/{{ rule.id }}/toggle" hx-target="#rule-list" hx-swap="innerHTML">
+      {{ 'Disable' if rule.enabled else 'Enable' }}
+    </button>
+    <button class="btn small danger" hx-post="/filters/{{ rule.id }}/delete" hx-target="#rule-list" hx-swap="innerHTML"
+            hx-confirm="Delete /{{ rule.pattern }}/ permanently?">Delete</button>
+  </div>
+  {% else %}
+  <div class="muted" style="font-size:0.82rem">No {{ kind }} rules.</div>
+  {% endfor %}
+</div>
+{% endfor %}

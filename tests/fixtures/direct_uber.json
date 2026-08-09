@@ -1,0 +1,148 @@
+{
+ "status": "success",
+ "data": {
+  "results": [
+   {
+    "id": 159601,
+    "title": "Business Development Intern, Amsterdam",
+    "description": "",
+    "department": "University - Business &amp; Sales",
+    "type": "",
+    "programAndPlatform": "",
+    "location": {
+     "country": "NLD",
+     "region": null,
+     "city": "Amsterdam",
+     "countryName": "Netherlands"
+    },
+    "featured": false,
+    "level": "0.1",
+    "creationDate": "2026-06-19T15:12:22.000Z",
+    "otherLevels": null,
+    "team": "University - Business &amp; Sales",
+    "portalID": "EXTERNAL",
+    "isPipeline": false,
+    "statusID": "27",
+    "statusName": "Posted",
+    "updatedDate": "2026-07-30T15:38:47.000Z",
+    "uniqueSkills": "",
+    "timeType": "",
+    "allLocations": [
+     {
+      "country": "NLD",
+      "region": null,
+      "city": "Amsterdam",
+      "countryName": "Netherlands"
+     }
+    ]
+   },
+   {
+    "id": 159595,
+    "title": "Business Development Intern, Paris",
+    "description": "",
+    "department": "University - Business &amp; Sales",
+    "type": "",
+    "programAndPlatform": "",
+    "location": {
+     "country": "FRA",
+     "region": null,
+     "city": "Paris",
+     "countryName": "France"
+    },
+    "featured": false,
+    "level": "0.1",
+    "creationDate": "2026-06-19T15:12:41.000Z",
+    "otherLevels": null,
+    "team": "University - Business &amp; Sales",
+    "portalID": "EXTERNAL",
+    "isPipeline": false,
+    "statusID": "27",
+    "statusName": "Posted",
+    "updatedDate": "2026-07-29T14:47:39.000Z",
+    "uniqueSkills": "",
+    "timeType": "",
+    "allLocations": [
+     {
+      "country": "FRA",
+      "region": null,
+      "city": "Paris",
+      "countryName": "France"
+     }
+    ]
+   },
+   {
+    "id": 302977,
+    "title": "2026 Operations & Logistics Intern - Chile",
+    "description": "",
+    "department": "University - Operations",
+    "type": "",
+    "programAndPlatform": "",
+    "location": {
+     "country": "CHL",
+     "region": null,
+     "city": "Santiago",
+     "countryName": "Chile"
+    },
+    "featured": false,
+    "level": "0.1",
+    "creationDate": "2026-07-28T18:41:52.000Z",
+    "otherLevels": null,
+    "team": "University - Operations",
+    "portalID": "EXTERNAL",
+    "isPipeline": false,
+    "statusID": "27",
+    "statusName": "Posted",
+    "updatedDate": "2026-07-30T00:04:46.000Z",
+    "uniqueSkills": "",
+    "timeType": "",
+    "allLocations": [
+     {
+      "country": "CHL",
+      "region": null,
+      "city": "Santiago",
+      "countryName": "Chile"
+     }
+    ]
+   },
+   {
+    "id": 160438,
+    "title": "2026 Account Management Intern, Stockholm",
+    "description": "",
+    "department": "University - Business &amp; Sales",
+    "type": "",
+    "programAndPlatform": "",
+    "location": {
+     "country": "SWE",
+     "region": null,
+     "city": "Stockholm",
+     "countryName": "Sweden"
+    },
+    "featured": false,
+    "level": "0.1",
+    "creationDate": "2026-06-27T09:45:17.000Z",
+    "otherLevels": null,
+    "team": "University - Business &amp; Sales",
+    "portalID": "EXTERNAL",
+    "isPipeline": false,
+    "statusID": "27",
+    "statusName": "Posted",
+    "updatedDate": "2026-07-30T12:59:02.000Z",
+    "uniqueSkills": "",
+    "timeType": "",
+    "allLocations": [
+     {
+      "country": "SWE",
+      "region": null,
+      "city": "Stockholm",
+      "countryName": "Sweden"
+     }
+    ]
+   }
+  ],
+  "totalResults": {
+   "low": 11,
+   "high": 0,
+   "unsigned": false
+  }
+ }
+}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Feed · jobwatch{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Arrivals</h1>
+  <span class="sub">{{ totals.alerts_today }} today · {{ totals.alerts_week }} this week · {{ totals.tracked }} postings tracked across {{ totals.sources }} sources</span>
+</div>
+
+<form class="toolbar" method="get" action="/">
+  <input type="search" name="q" value="{{ params.q }}" placeholder="Search titles and companies" aria-label="Search">
+
+  <select name="show" aria-label="Which postings">
+    {% for value, label in [('alerts','Alerted'), ('review','Needs review'), ('all','Everything'), ('rejected','Rejected'), ('backlog','Cold-start backlog')] %}
+    <option value="{{ value }}" {% if params.show == value %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="company" aria-label="Company">
+    <option value="">All companies</option>
+    {% for c in companies %}
+    <option value="{{ c.slug }}" {% if params.company == c.slug %}selected{% endif %}>{{ c.display_name }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="tier" aria-label="Tier">
+    <option value="">Any tier</option>
+    {% for t in ['hot','warm','cold'] %}
+    <option value="{{ t }}" {% if params.tier == t %}selected{% endif %}>{{ t }}</option>
+    {% endfor %}
+  </select>
+
+  {% if categories %}
+  <select name="category" aria-label="Category">
+    <option value="">Any category</option>
+    {% for cat in categories %}
+    <option value="{{ cat }}" {% if params.category == cat %}selected{% endif %}>{{ cat }}</option>
+    {% endfor %}
+  </select>
+  {% endif %}
+
+  <select name="app_status" aria-label="Application status">
+    <option value="">Any status</option>
+    {% for s in app_statuses %}
+    <option value="{{ s }}" {% if params.app_status == s %}selected{% endif %}>{{ s }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="days" aria-label="Detected within">
+    <option value="">Any time</option>
+    {% for d, label in [('1','Last 24h'), ('7','Last 7 days'), ('30','Last 30 days')] %}
+    <option value="{{ d }}" {% if params.days == d %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+
+  <button class="btn" type="submit">Apply filters</button>
+  <a class="btn" href="/">Reset</a>
+</form>
+
+<div class="board" id="feed-board">
+  {% include "_feed_rows.html" %}
+</div>
+{% endblock %}

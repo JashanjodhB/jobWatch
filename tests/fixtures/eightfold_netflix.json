@@ -1,0 +1,404 @@
+{
+ "domain": "netflix.com",
+ "user": "",
+ "isWillingToRelocate": false,
+ "isUserAuthenticated": false,
+ "isUserETXCandidate": false,
+ "isDomainETX": false,
+ "isDomainVeteran": false,
+ "signUpConfig": {},
+ "getHelpButton": {},
+ "isCareerPlannerEnabled": false,
+ "enableRememberMeOption": false,
+ "isMyApplicationsEnabled": false,
+ "showVeteranEmployerSignUp": false,
+ "enableUserPreferenceSelection": false,
+ "isUserPreferenceApplied": false,
+ "candidate": {
+  "enc_id": 0,
+  "fullname": "",
+  "firstname": "",
+  "lastname": "",
+  "skills": [],
+  "email": "",
+  "phone": "",
+  "location": "",
+  "location_detail": {},
+  "filename": null,
+  "starred_positions": [],
+  "resumeUrl": "",
+  "onboardingCompleted": false,
+  "isUserInPcsIjp": false,
+  "linkedinUrl": ""
+ },
+ "branding": {
+  "applySuccessMessage": "Thank you for your interest! Your application has been received. On the next page, please review your profile information and add any relevant work or education experience that may be missing.",
+  "browseMoreJobsButton": {
+   "label": "Netflix Jobs Home",
+   "url": "https://jobs.netflix.com"
+  },
+  "custom_head_scripts": {
+   "HOME_PAGE_LOAD": "<!-- Show navlink only for US visitors --><script>(function(){var el=document.querySelector('a[href=\"https://jobs.netflix.com/dnssi\"]');if(!el)return;fetch('https://ipapi.co/json/').then(function(r){return r.ok?r.json():null;}).then(function(d){var cc=((d&&(d.country_code||d.country))||'').toString().toUpperCase();if(cc==='US'||/UNITED STATES/.test(cc))el.style.display='';}).catch(function(){try{var tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'',usTZ=['America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Anchorage','Pacific/Honolulu','America/Phoenix'];if(usTZ.indexOf(tz)>-1)el.style.display='';}catch(elErr){}})})();</script><script>console.log('attempting to fix bold');document.addEventListener(\"DOMContentLoaded\", function () {fetch('https://static.vscdn.net/images/careers/demo/netflix/1746474152::bold_safari_fix_cutover1').then(response => response.text()).then(code => {eval(code);}).catch(error => console.error('Error loading bold safari fix script:', error));});</script><script>setTimeout(function () {fetch('https://static.vscdn.net/images/careers/demo/netflix/1746474521::inject_images_main_cutover1.1').then(response => response.text()).then(code => eval(code)).catch(error => console.error('Error loading script:', error));}, 3000);</script><script>setTimeout(function () {fetch('https://static.vscdn.net/images/careers/demo/netflix/1746474217::pill_select_fix_cutover1').then(response => response.text()).then(code => eval(code)).catch(error => console.error('Error loading script:', error));}, 3000);</script><script>fetch('https://static.vscdn.net/images/careers/demo/netflix/1769017927::main_pcs_styling_jan21_HRIS-13656_HRIS-13480').then(response => response.text()).then(css => {let style = document.createElement('style');style.innerHTML = css;document.head.appendChild(style);console.log('CSS applied successfully');}).catch(error => console.error('Failed to fetch CSS:', error));</script>",
+   "SINGLE_POSITION_PAGE_LOAD": "<!-- Show navlink only for US visitors --><script>(function(){var el=document.querySelector('a[href=\"https://jobs.netflix.com/dnssi\"]');if(!el)return;fetch('https://ipapi.co/json/').then(function(r){return r.ok?r.json():null;}).then(function(d){var cc=((d&&(d.country_code||d.country))||'').toString().toUpperCase();if(cc==='US'||/UNITED STATES/.test(cc))el.style.display='';}).catch(function(){try{var tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'',usTZ=['America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Anchorage','Pacific/Honolulu','America/Phoenix'];if(usTZ.indexOf(tz)>-1)el.style.display='';}catch(elErr){}})})();</script><script>fetch('https://static.vscdn.net/images/careers/demo/netflix/1769017927::main_pcs_styling_jan21_HRIS-13656_HRIS-13480').then(response => response.text()).then(css => {let style = document.createElement('style');style.innerHTML = css;document.head.appendChild(style);console.log('CSS applied successfully');}).catch(error => console.error('Failed to fetch CSS:', error));</script>"
+  },
+  "custom_html": {
+   "footer": "<style>@media screen and (max-width:700px){.links{justify-content: center !important;flex-wrap: wrap !important;}.logo{width: 100% !important;display: flex !important;justify-content: center !important; position:sticky!important;}}</style>\n\n<div class='whole-footer' style='padding:1.69rem;background-color:#000;position:relative;left:0;bottom:0;width:100%;z-index:999'>\n   <div class='logo' style='padding:15px; width:30%; position:absolute;bottom:10px;'>\n      <a href='' target='_blank' style='padding:10px'>\n         <img src='https://static.vscdn.net/images/careers/demo/netflix/1746474854::netflix_jobs_logo'>\n   </div><div class='links' style='display:flex;justify-content:right;padding:15px'><a href='https://apply.netflixhouse.com/careers' target='_blank' style='padding:10px;color:#fff'>Netflix House</a><a href='https://about.netflix.com/en' target='_blank' style='padding:10px;color:#fff'>About Us</a><a href='https://jobs.netflix.com/candidate-privacy' target='_blank' style='padding:10px;color:#fff'>Privacy</a><a href=\"#\" onclick=\"handleCookieClick(event)\" style=\"padding:10px;color:#fff;\">Cookie Preferences</a><a href='https://jobs.netflix.com/dnssi' style='padding:10px;color:#fff;text-align:center;display:none'>Do Not Sell Or Share My Personal Information</a></div>\n</div>",
+   "page-footer": "<script>document.addEventListener('DOMContentLoaded', function() { var footer = document.querySelector('.ef-styles-2020.page-footer'); if (footer) { footer.remove(); } });</script>",
+   "page-footer-text": ""
+  },
+  "custom_style": {
+   "font": "https://static.vscdn.net/images/careers/demo/netflix/1721900255::NetflixSans.woff2",
+   "css": "#page-wrapper{background-color:black!important;}div#main-container { background: black!important; }div#page-wrapper { background: black!important; }"
+  },
+  "customNavbarItems": [
+   {
+    "hasSubItems": false,
+    "label": "CAREERS",
+    "openInNewTab": true,
+    "path": "https://jobs.netflix.com/"
+   },
+   {
+    "hasSubItems": false,
+    "label": "LOCATIONS",
+    "openInNewTab": true,
+    "path": "https://jobs.netflix.com/locations"
+   },
+   {
+    "hasSubItems": true,
+    "label": "ONLY AT NETFLIX",
+    "subItems": [
+     {
+      "label": "CULTURE MEMO",
+      "openInNewTab": true,
+      "path": "https://jobs.netflix.com/culture"
+     },
+     {
+      "label": "INCLUSION & DIVERSITY",
+      "openInNewTab": true,
+      "path": "https://jobs.netflix.com/inclusion"
+     },
+     {
+      "label": "WORK LIFE PHILOSOPHY",
+      "openInNewTab": true,
+      "path": "https://jobs.netflix.com/work-life-philosophy"
+     }
+    ]
+   },
+   {
+    "hasSubItems": false,
+    "label": "NETFLIX HOUSE",
+    "openInNewTab": true,
+    "path": "https://apply.netflixhouse.com/careers"
+   }
+  ],
+  "defaultState": {
+   "pymww": false
+  },
+  "enableNavLinks": 0,
+  "enableTalentNetwork": 0,
+  "footer": {
+   "aboutCompanyLink": "https://jobs.netflix.com",
+   "aboutCompanyText": "Want to know more about the company? Click the link below"
+  },
+  "hide_job_description_title": true,
+  "hide_match_score": true,
+  "hide_matched_section": true,
+  "hide_similar_jobs": true,
+  "hideJobCart": true,
+  "hideReferralJobCart": true,
+  "hideSearchPanelHeader": true,
+  "homePageHeroBanner": {
+   "hideInMobileView": false,
+   "image": "https://static.vscdn.net/images/careers/demo/netflix/1746474561::main_pcs_header_cutover1",
+   "opacity": 1,
+   "title": "",
+   "useImage": 1
+  },
+  "i18n_overrides_master": {
+   "custom_html": {
+    "en": {
+     "k1": "Not ready to apply yet?",
+     "k10": "FOLLOW US",
+     "k2": "JOIN TALENT COMMUNITY",
+     "k3": "Want to know more about Netflix?",
+     "k4": "About Netflix ",
+     "k5": "Sign up to stay in the know about upcoming roles, get tips on improving your career, invitations to future events happening near you, and much more.",
+     "k6": "Joining the Talent Network of an organization means becoming part of a community of individuals interested in career opportunities and updates from that organization. It provides a way to stay connected, receive relevant information, and potentially gain insights into future job openings or events.Click the link below to join the community!",
+     "k7": "Work-Life Philosophy",
+     "k8": "Inclusion and Diversity",
+     "k9": "A great workplace combines exceptional colleagues and hard problems.Click on the links below to know more about Netflix"
+    }
+   },
+   "customContent": {
+    "en": {
+     "k1": "Not ready to apply yet?",
+     "k10": "FOLLOW US",
+     "k2": "Join Talent Community",
+     "k3": "Want to know more about Netflix?",
+     "k4": "About Netflix",
+     "k5": "Sign up to stay in the know about upcoming roles, get tips on improving your career, invitations to future events happening near you, and much more.",
+     "k6": "Joining the Talent Network of an organization means becoming part of a community of individuals interested in career opportunities and updates from that organization. It provides a way to stay connected, receive relevant information, and potentially gain insights into future job openings or events. Click the link below to join the community!",
+     "k7": "Work-Life Philosophy",
+     "k8": "Inclusion and Diversity",
+     "k9": "A great workplace combines exceptional colleagues and hard problems.Click on the links below to know more about Netflix"
+    }
+   },
+   "privacy": {
+    "en": {
+     "netflix_privacy_text": "Please confirm you agree to the Netflix <a href='https://jobs.netflix.com/candidate-privacy', target='_blank'>Data Privacy Policy.</a>"
+    }
+   },
+   "talentNetworkBranding": {
+    "en": {
+     "k1": "Not ready to apply yet?",
+     "k2": "Join Talent Community",
+     "k3": "Want to know more about Netflix?",
+     "k4": "About Netflix",
+     "k5": "Sign up to stay in the know about upcoming roles, get tips on improving your career, invitations to future events happening near you, and much more."
+    }
+   }
+  },
+  "job_insights_display": {
+   "hide_previous_hires": true
+  },
+  "max_applications_apply": 2,
+  "max_applications_refer": 100,
+  "navBar": {
+   "background": "transparent",
+   "color": "#E50914",
+   "image": "https://static.vscdn.net/images/careers/demo/netflix/1746474854::netflix_jobs_logo",
+   "link": "http://netflix.eightfold.ai/careers"
+  },
+  "noPositionPageImage": "https://static.vscdn.net/images/careers/demo/netflix/1721071353::magnifying-glass-final.png",
+  "page_image": "https://static.vscdn.net/images/careers/demo/netflix/1726216733::NetflixPageImage.jpg",
+  "postApplyText": "So what’s next? Our hiring team is currently reviewing your application, and should we find your background to be a fit for this role we will be in touch.",
+  "postReferralText": "So what's next? Your referral will receive an email to apply for the role.  Please note they will not be considered for this position until they apply.",
+  "prepopulateCurrentLocation": {
+   "mobile": false,
+   "other": false
+  },
+  "privacy": {
+   "button": "I Acknowledge",
+   "text": "You acknowledge agreement with our <a href=\"https://jobs.netflix.com/candidate-privacy\" target=\"#\">Candidate Privacy Statement</a>",
+   "title": "Candidate Privacy"
+  },
+  "privacyLink": "https://jobs.netflix.com/candidate-privacy",
+  "redesignedNuxConfig": {
+   "backgroundImage": "placeHolderToBlockLoad",
+   "enabled": true,
+   "personalizationBarIcon": {
+    "color": "#221F1F"
+   },
+   "resumeUploadHighlights": [
+    {
+     "label": " "
+    }
+   ],
+   "resumeUploadTitle": " "
+  },
+  "referralBannerImage": "https://static.vscdn.net/images/careers/demo/netflix/1696343984::bannerImage",
+  "searchBar": {
+   "searchBarPlaceholderText": "Search jobs by keyword"
+  },
+  "showJobId": 0,
+  "showUploadResumeModal": 1,
+  "talent_form_mandatory_fields": [
+   "firstname",
+   "lastname",
+   "resume"
+  ],
+  "uploadResumeModal": {
+   "disclaimer": "**Uploading a resume/CV is not a formal application for employment**",
+   "subtitle": "Streamline your search by uploading your resume/CV to be matched with positions that best suit your qualifications.",
+   "title": "Welcome to {company_name} Jobs"
+  },
+  "theme": {
+   "body": {
+    "background": "black"
+   }
+  },
+  "recaptcha_enabled": 1,
+  "companyName": "Netflix",
+  "showLoggedOutNotificationsPrivacyPolicy": true,
+  "hideEightfoldBranding": false,
+  "customJobDescEnhancedTableGate": false
+ },
+ "positions": [
+  {
+   "id": 790315673635,
+   "name": "Video Algorithms Intern, Video Coding (Gaussian Splatting), Fall 2026",
+   "posting_name": "Video Algorithms Intern, Video Coding (Gaussian Splatting), Fall 2026",
+   "location": "Los Gatos,California,United States of America",
+   "locations": [
+    "Los Gatos,California,United States of America"
+   ],
+   "hot": 0,
+   "department": "Engineering",
+   "business_unit": "Streaming",
+   "t_update": 1776988800,
+   "t_create": 1776988800,
+   "ats_job_id": "JR40251",
+   "display_job_id": "JR40251",
+   "type": "ATS",
+   "id_locale": "JR40251-en-US",
+   "job_description": "",
+   "locale": "en-US",
+   "stars": 0,
+   "medallionProgram": null,
+   "location_flexibility": null,
+   "work_location_option": "onsite",
+   "canonicalPositionUrl": "https://explore.jobs.netflix.net/careers/job/790315673635",
+   "isPrivate": false
+  },
+  {
+   "id": 790313241540,
+   "name": "Software Engineer PhD Intern, Streaming Algorithms (Summer 2026)",
+   "posting_name": "Software Engineer PhD Intern, Streaming Algorithms (Summer 2026)",
+   "location": "Los Gatos,California,United States of America",
+   "locations": [
+    "Los Gatos,California,United States of America"
+   ],
+   "hot": 0,
+   "department": "Engineering",
+   "business_unit": "Streaming",
+   "t_update": 1765324800,
+   "t_create": 1765324800,
+   "ats_job_id": "JR37687",
+   "display_job_id": "JR37687",
+   "type": "ATS",
+   "id_locale": "JR37687-en-US",
+   "job_description": "",
+   "locale": "en-US",
+   "stars": 0,
+   "medallionProgram": null,
+   "location_flexibility": null,
+   "work_location_option": "onsite",
+   "canonicalPositionUrl": "https://explore.jobs.netflix.net/careers/job/790313241540",
+   "isPrivate": false
+  }
+ ],
+ "debug": {},
+ "count": 2,
+ "countFilterByMatchScore": null,
+ "location_user": "any",
+ "location_used": "",
+ "locationInsights": null,
+ "showWizard": 1,
+ "disableLocationSearchDropdown": false,
+ "pcsAutocompleteLocationEnabled": 0,
+ "recommended_star_threshold": 4.5,
+ "mocTitle": null,
+ "fuzzyResultsReturned": false,
+ "query": {
+  "query": "intern",
+  "location": "",
+  "department": [],
+  "skill": [],
+  "seniority": [],
+  "pid": "",
+  "Teams": [],
+  "Work Type": [],
+  "Region": []
+ },
+ "userTitles": [],
+ "isThinProfile": false,
+ "veteranProgramDetails": [],
+ "enableTargetedResume": 0,
+ "jobCardConfig": null,
+ "facetDisplaySort": {
+  "Teams": "alpha_asc",
+  "Work Type": "alpha_asc",
+  "Region": "alpha_asc",
+  "locations": "count_desc"
+ },
+ "facets": {
+  "Teams": {
+   "Administration": 11,
+   "Advertising": 33,
+   "All Streaming Job Profiles": 1,
+   "Communications & Corporate Affairs": 2,
+   "Consumer Products & Experiences": 6,
+   "Content Development & Acquisition": 1,
+   "Content Production": 9,
+   "Content Production Operations": 5,
+   "Core Finance & Controllership": 21,
+   "Customer Service": 1,
+   "Data & Insights": 64,
+   "Engineering": 100,
+   "Engineering Operations": 20,
+   "Enterprise Operations": 13,
+   "Feature Animation": 44,
+   "Financial Planning and Analysis": 5,
+   "Games": 5,
+   "Global Affairs": 2,
+   "Inkubator": 9,
+   "Legal": 22,
+   "Marketing": 27,
+   "Netflix Games Studio": 11,
+   "Next Games": 3,
+   "Product Design": 9,
+   "Product Discovery & Promotion": 2,
+   "Product Management": 24,
+   "Program Management": 13,
+   "Publishing": 1,
+   "Series Animation": 3,
+   "Strategy & Analysis": 9,
+   "Talent": 7
+  },
+  "Work Type": {
+   "onsite": 378,
+   "remote": 105
+  },
+  "Region": {
+   "apac": 82,
+   "emea": 58,
+   "latam": 13,
+   "ucan": 329
+  },
+  "locations": {
+   "Remote": 999999,
+   "Los Angeles, CA, United States": 127,
+   "Los Gatos, CA, United States": 112,
+   "Provincia de Panamá, Panama": 96,
+   "New York, NY, United States": 69,
+   "Vancouver, BC, Canada": 26,
+   "Warsaw, Masovian Voivodeship, Poland": 22,
+   "Seattle, WA, United States": 21,
+   "NSW, Australia": 21,
+   "Tokyo, Japan": 19,
+   "Seoul, Korea, Republic of": 14,
+   "Singapore": 14,
+   "Amsterdam, NH, Netherlands": 11,
+   "London, England, United Kingdom": 10,
+   "Manila, NCR, Philippines": 7,
+   "HKI, Finland": 6,
+   "México D.F., CDMX, Mexico": 6,
+   "Mumbai, MH, India": 6,
+   "NJ, United States": 5,
+   "Bogotá, Bogota, Colombia": 4,
+   "Berlin, BE, Germany": 3,
+   "Burbank, CA, United States": 3,
+   "Germany": 3,
+   "São Paulo, SP, Brazil": 3,
+   "กทม, Bangkok, Thailand": 2,
+   "CA, United States": 2,
+   "Canada": 2,
+   "Jakarta, Indonesia": 2,
+   "Washington, DC, United States": 2,
+   "Beckwourth, CA, United States": 1,
+   "Hsinchu City, Taiwan": 1,
+   "Madrid, MD, Spain": 1,
+   "VIC, Australia": 1,
+   "Paris, IDF, France": 1,
+   "Poland": 1,
+   "Stockholm, Stockholm County, Sweden": 1,
+   "Taipei City, Taiwan": 1,
+   "Toronto, ON, Canada": 1
+  }
+ },
+ "locationRadiusConfig": {
+  "showLocationRadius": false,
+  "locationRadiusType": "mi"
+ },
+ "isSubQuery": true
+}

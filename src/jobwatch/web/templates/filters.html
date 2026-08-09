@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Filters · jobwatch{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Filter workbench</h1>
+  <span class="sub">Previewed against {{ sample_size }} distinct titles from the last {{ sample_days }} days.</span>
+  <a class="btn" href="/filters/export" style="margin-left:auto">Export filters.yaml</a>
+</div>
+
+{% if broken %}
+<div class="card" style="border-color:var(--alarm);margin-bottom:1.25rem">
+  <strong style="color:var(--alarm)">{{ broken | length }} rule{{ 's' if broken | length != 1 }} will not compile</strong>
+  <div class="muted" style="font-size:0.85rem;margin-top:0.4rem">They are skipped during classification until fixed.</div>
+  {% for rule in broken %}
+  <div class="rule-line"><span class="pattern">{{ rule.pattern }}</span><span class="muted">{{ rule.error }}</span></div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="split">
+  <section>
+    <h2 style="font-size:1rem;margin-bottom:0.6rem">Add a rule</h2>
+    <form class="card" hx-post="/filters" hx-target="#rule-list" hx-swap="innerHTML">
+      <div class="toolbar" style="padding-bottom:0.6rem">
+        <select name="kind" aria-label="Rule kind"
+                hx-post="/filters/preview" hx-target="#preview" hx-include="closest form" hx-trigger="change">
+          {% for k in kinds %}<option value="{{ k }}">{{ k }}</option>{% endfor %}
+        </select>
+      </div>
+      <input class="mono" type="text" name="pattern" placeholder="\bmachine learning\b" style="width:100%"
+             aria-label="Regex pattern"
+             hx-post="/filters/preview" hx-target="#preview" hx-include="closest form"
+             hx-trigger="keyup changed delay:350ms, change">
+      <div class="toolbar" style="padding:0.6rem 0 0">
+        <input type="text" name="note" placeholder="Why (optional)" style="flex:1" aria-label="Note">
+        <button class="btn primary" type="submit">Save rule</button>
+      </div>
+      <div class="muted" style="font-size:0.78rem;margin-top:0.5rem">
+        Matched case-insensitively against the original posting title. Saving purges cached rule verdicts so the change takes effect everywhere.
+      </div>
+    </form>
+
+    <h2 style="font-size:1rem;margin:1.5rem 0 0.6rem">Current rules</h2>
+    <div id="rule-list">
+      {% include "_filter_rules.html" %}
+    </div>
+  </section>
+
+  <section>
+    <h2 style="font-size:1rem;margin-bottom:0.6rem">Live preview</h2>
+    <div id="preview">
+      <div class="card muted">Type a pattern to see exactly which postings would flip, in both directions.</div>
+    </div>
+  </section>
+</div>
+{% endblock %}

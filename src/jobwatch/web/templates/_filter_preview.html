@@ -1,0 +1,45 @@
+{% if error %}
+<div class="card" style="border-color:var(--alarm)">
+  <strong style="color:var(--alarm)">{{ error }}</strong>
+  <div class="muted" style="font-size:0.82rem;margin-top:0.4rem">The rule will not be saved until it compiles.</div>
+</div>
+
+{% elif not pattern %}
+<div class="card muted">Type a pattern to see exactly which postings would flip, in both directions.</div>
+
+{% else %}
+<div class="card">
+  <div class="stat-row">
+    <div class="stat"><span class="n mono">{{ direct_hits }}</span><span class="k">titles hit</span></div>
+    <div class="stat"><span class="n mono diff-add">+{{ to_match | length + more_match }}</span><span class="k">become matched</span></div>
+    <div class="stat"><span class="n mono diff-remove">−{{ to_reject | length + more_reject }}</span><span class="k">become rejected</span></div>
+    <div class="stat"><span class="n mono muted">{{ sample_size }}</span><span class="k">in sample</span></div>
+  </div>
+
+  {% if not to_match and not to_reject %}
+  <div class="muted" style="font-size:0.85rem">
+    No classification changes across the last {{ sample_days }} days. The rule is either redundant with an existing one, or nothing has matched it yet.
+  </div>
+  {% endif %}
+
+  {% if to_reject %}
+  <h3 style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;margin:0.9rem 0 0.4rem" class="diff-remove">
+    Would stop alerting
+  </h3>
+  {% for title, company, before, after in to_reject %}
+  <div class="rule-line"><span style="flex:1">{{ title }}</span><span class="muted mono" style="font-size:0.72rem">{{ company }} · {{ before }}→{{ after }}</span></div>
+  {% endfor %}
+  {% if more_reject %}<div class="muted" style="font-size:0.8rem;margin-top:0.3rem">…and {{ more_reject }} more</div>{% endif %}
+  {% endif %}
+
+  {% if to_match %}
+  <h3 style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;margin:0.9rem 0 0.4rem" class="diff-add">
+    Would start alerting
+  </h3>
+  {% for title, company, before, after in to_match %}
+  <div class="rule-line"><span style="flex:1">{{ title }}</span><span class="muted mono" style="font-size:0.72rem">{{ company }} · {{ before }}→{{ after }}</span></div>
+  {% endfor %}
+  {% if more_match %}<div class="muted" style="font-size:0.8rem;margin-top:0.3rem">…and {{ more_match }} more</div>{% endif %}
+  {% endif %}
+</div>
+{% endif %}

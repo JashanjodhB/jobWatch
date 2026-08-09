@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Review · jobwatch{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Review queue</h1>
+  <span class="sub">Each verdict is permanent and global — every future posting with that title classifies instantly, forever.</span>
+</div>
+
+<div id="review-card">
+  {% include "_review_card.html" %}
+</div>
+
+<div class="keyhints">
+  <span><kbd>M</kbd> match</span>
+  <span><kbd>R</kbd> reject</span>
+  <span><kbd>1</kbd>–<kbd>4</kbd> tag category</span>
+  <span><kbd>J</kbd> skip</span>
+  <span><kbd>K</kbd> back</span>
+  <span><kbd>U</kbd> undo</span>
+  <span><kbd>O</kbd> open posting</span>
+</div>
+{% endblock %}

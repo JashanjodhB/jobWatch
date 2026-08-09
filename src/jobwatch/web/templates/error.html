@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Error · jobwatch</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<main>
+  <div class="card" style="border-color:var(--alarm);margin-top:3rem">
+    <h1 style="color:var(--alarm);font-size:1.2rem">That screen broke</h1>
+    <p class="muted" style="font-size:0.9rem">
+      The poller is unaffected — it runs as a separate task and keeps going regardless of what the UI does.
+    </p>
+    <div class="mono" style="font-size:0.8rem;overflow-wrap:anywhere;margin-top:0.75rem">{{ error }}</div>
+    <p style="margin-top:1rem"><a class="btn" href="/">Back to the feed</a></p>
+  </div>
+</main>
+</body>
+</html>

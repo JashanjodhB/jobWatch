@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Health · jobwatch{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Source health</h1>
+  <span class="sub">A source returning zero postings without erroring is the silent-breakage signature. That is what the baseline column watches for.</span>
+  <button class="btn" style="margin-left:auto" hx-post="/health/recheck" hx-target="#recheck-toast" hx-swap="innerHTML">Re-run drift check</button>
+</div>
+<div id="recheck-toast"></div>
+
+<div class="stat-row">
+  <div class="stat"><span class="n mono">{{ stats.sources }}</span><span class="k">sources</span></div>
+  <div class="stat"><span class="n mono {{ 'diff-remove' if stats.failing }}">{{ stats.failing }}</span><span class="k">failing</span></div>
+  <div class="stat"><span class="n mono">{{ stats.on_fallback }}</span><span class="k">on fallback</span></div>
+  <div class="stat"><span class="n mono">{{ stats.unseeded }}</span><span class="k">awaiting seed</span></div>
+  <div class="stat"><span class="n mono">{{ stats.polls_24h }}</span><span class="k">polls / 24h</span></div>
+  <div class="stat"><span class="n mono {{ 'diff-remove' if stats.errors_24h }}">{{ stats.errors_24h }}</span><span class="k">errors / 24h</span></div>
+</div>
+
+{% if alarms %}
+<div class="card" style="border-color:var(--alarm);margin-bottom:1.25rem">
+  <strong style="color:var(--alarm)">{{ alarms | length }} alarm{{ 's' if alarms | length != 1 }}</strong>
+  {% for alarm in alarms %}
+  <div style="padding:0.45rem 0;border-bottom:1px solid var(--rule-soft)">
+    <span class="pill {{ 'alarm' if alarm.severity == 'alarm' else 'signal' }}">{{ alarm.severity }}</span>
+    {{ alarm.message }}
+    {% if alarm.detail %}<div class="muted" style="font-size:0.8rem;margin-top:0.15rem">{{ alarm.detail }}</div>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="scroll-x">
+<table class="grid">
+  <thead>
+    <tr>
+      <th>Source</th><th>Adapter</th><th>Last success</th><th>Fails</th>
+      <th>Latest</th><th>7d baseline</th><th>Jobs</th><th>State</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for source in sources %}
+  {% set source_alarms = alarm_by_source.get(source.id, []) %}
+  <tr class="{% if source_alarms | selectattr('severity','equalto','alarm') | list %}is-alarm{% elif source_alarms %}is-warn{% endif %}">
+    <td>
+      <strong>{{ source.display_name }}</strong>
+      <div class="muted mono" style="font-size:0.72rem">{{ source.company_slug }} · {{ source.tier }}</div>
+    </td>
+    <td>
+      {{ source.adapter }}
+      {% if source.using_fallback %}<div class="muted" style="font-size:0.72rem">→ {{ source.fallback_adapter }}</div>{% endif %}
+    </td>
+    <td class="mono" style="font-size:0.75rem">
+      {% if source.last_success_at %}<span data-ts="{{ source.last_success_at }}">{{ source.last_success_at | age }}</span> ago{% else %}never{% endif %}
+    </td>
+    <td class="mono">{{ source.consecutive_failures }}</td>
+    <td class="mono">{{ source.latest_count if source.latest_count is not none else '—' }}</td>
+    <td class="mono muted">{{ source.baseline | round | int if source.baseline else '—' }}</td>
+    <td class="mono muted">{{ source.job_count }}</td>
+    <td>
+      {% if not source.enabled or not source.company_enabled %}<span class="pill">off</span>
+      {% elif source_alarms %}<span class="pill alarm">{{ source_alarms[0].code }}</span>
+      {% elif not source.seeded %}<span class="pill">awaiting seed</span>
+      {% elif source.using_fallback %}<span class="pill signal">fallback</span>
+      {% else %}<span class="pill confirmed">ok</span>{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2 style="font-size:1rem;margin:1.75rem 0 0.5rem">Poll log</h2>
+<div class="scroll-x">
+<table class="grid">
+  <thead><tr><th>At</th><th>Source</th><th>Outcome</th><th>Postings</th><th>New</th><th>ms</th><th>Error</th></tr></thead>
+  <tbody>
+  {% for entry in poll_log %}
+  <tr>
+    <td class="mono" style="font-size:0.72rem">{{ entry.at }}</td>
+    <td>{{ entry.company_slug }}/{{ entry.adapter }}</td>
+    <td>
+      <span class="dot {{ 'alarm' if entry.outcome == 'error' else 'confirmed' if entry.outcome == 'ok' else '' }}"></span>
+      {{ entry.outcome }}
+    </td>
+    <td class="mono">{{ entry.posting_count if entry.posting_count is not none else '—' }}</td>
+    <td class="mono">{{ entry.new_count if entry.new_count is not none else '—' }}</td>
+    <td class="mono muted">{{ entry.duration_ms }}</td>
+    <td class="muted" style="font-size:0.75rem;max-width:24rem;overflow-wrap:anywhere">{{ entry.error or '' }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="muted">No polls recorded yet.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

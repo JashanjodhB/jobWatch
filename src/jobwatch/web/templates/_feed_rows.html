@@ -1,0 +1,45 @@
+{% if not rows %}
+<div class="empty">
+  {% if params.q or params.company or params.tier or params.category or params.app_status or params.days %}
+  <strong>Nothing matches those filters</strong>
+  Widen the search, or reset it.
+  {% elif params.show == 'alerts' %}
+  <strong>No arrivals yet</strong>
+  Sources seed silently on their first poll, so the first alert is the first genuinely new posting.
+  {% else %}
+  <strong>Nothing here</strong>
+  {% endif %}
+</div>
+{% else %}
+
+{% for row in rows %}
+<article class="row {% if row.classification == 'review' %}is-review{% endif %}">
+  <div class="age mono" data-ts="{{ row.detected_at }}" title="First seen {{ row.detected_at }}">{{ row.detected_at | age }}</div>
+
+  <div class="row-main">
+    <a class="row-title" href="{{ row.url }}" target="_blank" rel="noopener noreferrer">{{ row.title }}</a>
+    <div class="row-meta">
+      <span class="company">{{ row.display_name }}</span>
+      {% if row.locations | places %}<span class="sep">·</span><span>{{ row.locations | places }}</span>{% endif %}
+      {% if row.req_id %}<span class="sep">·</span><span class="req">{{ row.req_id }}</span>{% endif %}
+      <span class="sep">·</span><span>{{ row.adapter }}{% if row.source_count > 1 %} +{{ row.source_count - 1 }}{% endif %}</span>
+      {% if row.class_source == 'seed' %}<span class="sep">·</span><span>backlog</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="row-actions">
+    {% if row.classification == 'review' %}<span class="pill signal">review</span>{% endif %}
+    {% if row.category %}<span class="pill">{{ row.category }}</span>{% endif %}
+    {% include "_app_status.html" %}
+  </div>
+</article>
+{% endfor %}
+
+{% if page > 0 or has_more %}
+<div class="toolbar" style="padding-top:1rem">
+  {% if page > 0 %}<a class="btn" href="?{{ page_query }}page={{ page - 1 }}">← Newer</a>{% endif %}
+  {% if has_more %}<a class="btn" href="?{{ page_query }}page={{ page + 1 }}">Older →</a>{% endif %}
+</div>
+{% endif %}
+
+{% endif %}

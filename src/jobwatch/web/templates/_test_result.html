@@ -1,0 +1,31 @@
+<div style="margin-top:0.75rem;border-top:1px solid var(--rule);padding-top:0.6rem">
+{% if error %}
+  <strong style="color:var(--alarm)">{{ adapter or 'source' }} failed</strong>
+  <div class="mono" style="font-size:0.78rem;margin-top:0.35rem;overflow-wrap:anywhere">{{ error }}</div>
+{% elif not_modified %}
+  <span class="muted">Source replied 304 Not Modified — nothing has changed since the last poll.</span>
+{% else %}
+  <div class="muted" style="font-size:0.82rem;margin-bottom:0.4rem">
+    {{ adapter }} returned <b class="mono">{{ total }}</b> postings. Nothing was persisted.
+  </div>
+  <div class="scroll-x">
+  <table class="grid">
+    <thead><tr><th></th><th>Title</th><th>Locations</th><th>Normalized</th><th>Would classify</th></tr></thead>
+    <tbody>
+    {% for p in postings %}
+      <tr>
+        <td><span class="dot {{ 'confirmed' if p.known else 'signal' }}" title="{{ 'already tracked' if p.known else 'new to jobwatch' }}"></span></td>
+        <td><a href="{{ p.url }}" target="_blank" rel="noopener noreferrer">{{ p.title }}</a></td>
+        <td class="muted">{{ p.locations | places }}</td>
+        <td class="mono" style="font-size:0.72rem">{{ p.normalized }}</td>
+        <td><span class="pill {{ classification_class(p.classification) }}">{{ p.classification }}</span></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% if total > postings | length %}
+  <div class="muted" style="font-size:0.8rem;margin-top:0.4rem">Showing the first {{ postings | length }} of {{ total }}.</div>
+  {% endif %}
+{% endif %}
+</div>

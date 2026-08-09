@@ -1,0 +1,59 @@
+# /etc/systemd/system/jobwatch.service
+#
+#   sudo cp deploy/jobwatch.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now jobwatch
+#   journalctl -u jobwatch -f
+#
+# Logs are JSON to stdout, which journald captures. `journalctl -u jobwatch -f`
+# is the ops surface (§3).
+
+[Unit]
+Description=jobwatch — internship posting monitor
+Documentation=file:///opt/jobwatch/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jobwatch
+Group=jobwatch
+WorkingDirectory=/opt/jobwatch
+
+EnvironmentFile=/etc/jobwatch.env
+ExecStart=/opt/jobwatch/.venv/bin/jobwatch run --json-logs
+
+Restart=always
+RestartSec=10
+# Give a full Workday scan time to finish before SIGKILL.
+TimeoutStopSec=60
+
+# The service writes to exactly one directory.
+StateDirectory=jobwatch
+ReadWritePaths=/var/lib/jobwatch
+
+# Hardening. It makes outbound HTTPS requests and writes one SQLite file;
+# it needs nothing else.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+CapabilityBoundingSet=
+
+# Idle target is under 400MB RSS and 5% of one core, UI included (§1).
+MemoryMax=768M
+CPUQuota=50%
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,465 @@
+# jobwatch — hot-tier seed registry
+#
+# Verified against live endpoints. Every entry below was actually called; the
+# posting counts in the comments are what it returned at the time of writing.
+#
+# Re-verify with:
+#     uv run python verify_sources.py config/companies.yaml
+#
+# Sources are polled in full and unioned. `priority: 1` is the canonical apply
+# path — it decides which URL the Discord alert links to, not which sources get
+# polled. Where a company has both its own careers endpoint and an ATS board,
+# both are listed: they do not always carry the same postings.
+#
+# `min_interval_seconds` inside a source's config puts a floor on its poll
+# interval regardless of tier. Use it for endpoints that cost many requests per
+# poll — a full Workday scan of a large tenant is ~46 requests, and running that
+# every 60 seconds from a residential IP is how you get blocked (§13.5).
+
+# ═════════════════════════════════════════════════════════════════════════
+# GREENHOUSE — verified working
+# Public, unauthenticated, stable integer IDs, real `updated_at`.
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: stripe
+  display_name: Stripe
+  tier: hot
+  careers_url: https://stripe.com/jobs/search
+  sources:
+    - adapter: greenhouse             # verified: 548 postings
+      priority: 1
+      config: {board_token: stripe}
+      fallback_adapter: html
+      fallback_config:
+        url: https://stripe.com/jobs/search
+        job_selector: "a[href*='/jobs/listing/']"
+
+- slug: databricks
+  display_name: Databricks
+  tier: hot
+  careers_url: https://www.databricks.com/company/careers/open-positions
+  sources:
+    - adapter: greenhouse             # verified: 803 postings
+      priority: 1
+      config: {board_token: databricks}
+
+- slug: anthropic
+  display_name: Anthropic
+  tier: hot
+  careers_url: https://www.anthropic.com/careers
+  sources:
+    - adapter: greenhouse             # verified: 400 postings
+      priority: 1
+      config: {board_token: anthropic}
+
+- slug: figma
+  display_name: Figma
+  tier: hot
+  careers_url: https://www.figma.com/careers/
+  sources:
+    - adapter: greenhouse             # verified: 176 postings
+      priority: 1
+      config: {board_token: figma}
+
+- slug: coinbase
+  display_name: Coinbase
+  tier: hot
+  careers_url: https://www.coinbase.com/careers/positions
+  sources:
+    - adapter: greenhouse             # verified: 161 postings
+      priority: 1
+      config: {board_token: coinbase}
+
+- slug: doordash
+  display_name: DoorDash
+  tier: hot
+  careers_url: https://careers.doordash.com/
+  sources:
+    - adapter: greenhouse             # verified: 472 postings — token is 'doordashusa', not 'doordash'
+      priority: 1
+      config: {board_token: doordashusa}
+
+- slug: roblox
+  display_name: Roblox
+  tier: hot
+  careers_url: https://careers.roblox.com/jobs
+  sources:
+    - adapter: greenhouse             # verified: 223 postings
+      priority: 1
+      config: {board_token: roblox}
+
+- slug: cloudflare
+  display_name: Cloudflare
+  tier: hot
+  careers_url: https://www.cloudflare.com/careers/jobs/
+  sources:
+    - adapter: greenhouse             # verified: 284 postings
+      priority: 1
+      config: {board_token: cloudflare}
+
+- slug: datadog
+  display_name: Datadog
+  tier: hot
+  careers_url: https://careers.datadoghq.com/all-jobs/
+  sources:
+    - adapter: greenhouse             # verified: 429 postings
+      priority: 1
+      config: {board_token: datadog}
+
+- slug: airbnb
+  display_name: Airbnb
+  tier: hot
+  careers_url: https://careers.airbnb.com/
+  sources:
+    - adapter: greenhouse             # verified: 180 postings
+      priority: 1
+      config: {board_token: airbnb}
+      fallback_adapter: html
+      fallback_config:
+        url: https://careers.airbnb.com/positions/
+        job_selector: "a[href*='/positions/']"
+
+- slug: scale-ai
+  display_name: Scale AI
+  tier: hot
+  careers_url: https://scale.com/careers
+  sources:
+    - adapter: greenhouse             # verified: 215 postings
+      priority: 1
+      config: {board_token: scaleai}
+
+# ═════════════════════════════════════════════════════════════════════════
+# LEVER / ASHBY — verified working
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: palantir
+  display_name: Palantir
+  tier: hot
+  careers_url: https://www.palantir.com/careers/
+  sources:
+    - adapter: lever                  # verified: 302 postings
+      priority: 1
+      config: {company: palantir}
+
+- slug: openai
+  display_name: OpenAI
+  tier: hot
+  careers_url: https://openai.com/careers/search/
+  sources:
+    - adapter: ashby                  # verified: 752 postings
+      priority: 1
+      config: {board_name: openai}
+
+- slug: perplexity
+  display_name: Perplexity
+  tier: hot
+  careers_url: https://www.perplexity.ai/careers
+  sources:
+    - adapter: ashby                  # verified: 87 postings — board is 'perplexity'
+      priority: 1
+      config: {board_name: perplexity}
+
+# ═════════════════════════════════════════════════════════════════════════
+# EIGHTFOLD — a platform, not a bespoke site, so one adapter covers all tenants
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: netflix
+  display_name: Netflix
+  tier: hot
+  careers_url: https://explore.jobs.netflix.net/careers
+  # Netflix is NOT on Lever. It runs Eightfold behind explore.jobs.netflix.net.
+  sources:
+    - adapter: eightfold              # verified
+      priority: 1
+      config:
+        base: https://explore.jobs.netflix.net
+        domain: netflix.com
+        query: intern
+
+# ═════════════════════════════════════════════════════════════════════════
+# WORKDAY — verified working
+#
+# Every tenant has its own host number (wd1/wd5/wd12…) and site name; read both
+# off the real careers URL: https://TENANT.wdN.myworkdayjobs.com/en-US/SITE
+#
+# These are the most expensive sources in the registry. A full scan costs
+# total/20 requests, so they carry an explicit interval floor.
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: nvidia
+  display_name: NVIDIA
+  tier: hot
+  careers_url: https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite
+  sources:
+    - adapter: workday                # verified: 901 postings (~46 requests per scan)
+      priority: 1
+      config:
+        host: https://nvidia.wd5.myworkdayjobs.com
+        tenant: nvidia
+        site: NVIDIAExternalCareerSite
+        search_text: intern
+        min_interval_seconds: 300
+      fallback_adapter: browser
+
+- slug: salesforce
+  display_name: Salesforce
+  tier: hot
+  careers_url: https://salesforce.wd12.myworkdayjobs.com/External_Career_Site
+  sources:
+    - adapter: workday                # verified: 736 postings
+      priority: 1
+      config:
+        host: https://salesforce.wd12.myworkdayjobs.com
+        tenant: salesforce
+        site: External_Career_Site
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: adobe
+  display_name: Adobe
+  tier: hot
+  careers_url: https://adobe.wd5.myworkdayjobs.com/external_experienced
+  sources:
+    - adapter: workday                # verified: 301 postings
+      priority: 1
+      config:
+        host: https://adobe.wd5.myworkdayjobs.com
+        tenant: adobe
+        site: external_experienced
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: capital-one
+  display_name: Capital One
+  tier: hot
+  careers_url: https://capitalone.wd12.myworkdayjobs.com/Capital_One
+  sources:
+    - adapter: workday                # verified: 1062 postings (~54 requests per scan)
+      priority: 1
+      config:
+        host: https://capitalone.wd12.myworkdayjobs.com
+        tenant: capitalone
+        site: Capital_One
+        search_text: intern
+        min_interval_seconds: 600
+
+# ═════════════════════════════════════════════════════════════════════════
+# DIRECT — company-owned careers endpoints, built from the §5 DevTools recipe
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: amazon
+  display_name: Amazon
+  tier: hot
+  careers_url: https://www.amazon.jobs/en/search?base_query=intern
+  sources:
+    - adapter: direct.amazon          # verified: www.amazon.jobs/en/search.json
+      priority: 1
+      config:
+        base: https://www.amazon.jobs
+        query: "intern"
+      fallback_adapter: html
+      fallback_config:
+        url: https://www.amazon.jobs/en/search?base_query=intern
+        job_selector: "div.job-tile a"
+
+- slug: apple
+  display_name: Apple
+  tier: hot
+  careers_url: https://jobs.apple.com/en-us/search
+  sources:
+    - adapter: direct.apple           # verified: POST jobs.apple.com/api/v1/search
+      priority: 1
+      config:
+        base: https://jobs.apple.com
+        # "intern" matches ~1825 roles (Apple's search is fuzzy enough to hit
+        # "IN-Business Expert"); "internship" returns ~100.
+        query: "internship"
+      fallback_adapter: browser
+
+- slug: uber
+  display_name: Uber
+  tier: hot
+  careers_url: https://www.uber.com/us/en/careers/list/
+  sources:
+    - adapter: direct.uber            # verified: POST /api/loadSearchJobsResults
+      priority: 1
+      config:
+        base: https://www.uber.com
+        query: "intern"
+      fallback_adapter: browser
+
+# ═════════════════════════════════════════════════════════════════════════
+# QUANT & TRADING
+# Smallest cohorts, fastest closes, often capped by applicant count within
+# hours. If any group here justifies a 60-second poll, it is this one.
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: jane-street
+  display_name: Jane Street
+  tier: hot
+  # Jane Street is on Greenhouse — no bespoke adapter needed.
+  careers_url: https://www.janestreet.com/join-jane-street/open-roles/
+  sources:
+    - adapter: greenhouse             # verified: 219 postings
+      priority: 1
+      config: {board_token: janestreet}
+      fallback_adapter: html
+      fallback_config:
+        url: https://www.janestreet.com/join-jane-street/open-roles/
+        job_selector: "a[href*='/open-roles/']"
+
+- slug: hudson-river-trading
+  display_name: Hudson River Trading
+  tier: hot
+  careers_url: https://www.hudsonrivertrading.com/careers/
+  # 'wearehrt' does not exist. The public board token is 'hrttalentcommunity',
+  # but it carries only a handful of reqs — most of HRT's board is rendered
+  # client-side. The html fallback covers the rest.
+  sources:
+    - adapter: greenhouse             # verified: 3 postings
+      priority: 1
+      config: {board_token: hrttalentcommunity}
+      fallback_adapter: html
+      fallback_config:
+        url: https://www.hudsonrivertrading.com/careers/
+        job_selector: "a[href*='greenhouse.io']"
+
+# ═════════════════════════════════════════════════════════════════════════
+# NEEDS THE BROWSER FALLBACK — disabled until Playwright is installed
+#
+#     uv sync --extra browser && uv run playwright install chromium
+#     then enable them on the Companies screen.
+#
+# Each of these was probed and has no usable unauthenticated JSON endpoint:
+# the page is rendered client-side, sits behind a bot check, or serves its API
+# from a host whose TLS certificate does not match. `xhr_contains` is the
+# request substring to intercept once a browser has run the page (§11).
+#
+# They are disabled rather than deleted so the config records what was tried.
+# Enabling one without Playwright installed is harmless — the source is skipped
+# with a log line, not an error (§3).
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: google
+  display_name: Google
+  tier: hot
+  enabled: false
+  careers_url: https://www.google.com/about/careers/applications/jobs/results
+  notes: "Client-side rendered. Intercept the results XHR."
+  sources:
+    - adapter: browser
+      priority: 1
+      config:
+        url: https://www.google.com/about/careers/applications/jobs/results?q=intern
+        xhr_contains: "/api/"
+        job_selector: "a[href*='/jobs/results/']"
+
+- slug: meta
+  display_name: Meta
+  tier: hot
+  enabled: false
+  careers_url: https://www.metacareers.com/jobs
+  notes: "GraphQL with a rotating doc_id — only the browser fallback is durable."
+  sources:
+    - adapter: browser
+      priority: 1
+      config:
+        url: https://www.metacareers.com/jobs?q=intern
+        xhr_contains: "graphql"
+        job_selector: "a[href*='/jobs/']"
+
+- slug: microsoft
+  display_name: Microsoft
+  tier: hot
+  enabled: false
+  careers_url: https://jobs.careers.microsoft.com/global/en/search
+  notes: >-
+    gcsservices.careers.microsoft.com serves a certificate that does not match
+    its hostname, so a direct call fails TLS verification. Intercept the same
+    request from inside a browser instead.
+  sources:
+    - adapter: browser
+      priority: 1
+      config:
+        url: https://jobs.careers.microsoft.com/global/en/search?q=intern&l=en_us
+        xhr_contains: "search/api/v1/search"
+        items_path: "operationResult.result.jobs"
+        field_map: {title: title, url: jobId, req_id: jobId}
+        base_url: https://jobs.careers.microsoft.com/global/en/job/
+
+- slug: tesla
+  display_name: Tesla
+  tier: hot
+  enabled: false
+  careers_url: https://www.tesla.com/careers/search/?type=3
+  notes: "cua-api returns 403 to non-browser clients (edge bot check)."
+  sources:
+    - adapter: browser
+      priority: 1
+      config:
+        url: https://www.tesla.com/careers/search/?query=intern
+        xhr_contains: "cua-api/apps/careers"
+        job_selector: "a[href*='/careers/search/job/']"
+
+- slug: citadel
+  display_name: Citadel
+  tier: hot
+  enabled: false
+  careers_url: https://www.citadel.com/careers/open-opportunities/
+  notes: "Behind a Cloudflare interstitial; a plain GET never reaches the page."
+  sources:
+    - adapter: browser
+      priority: 1
+      config:
+        url: https://www.citadel.com/careers/open-opportunities/
+        job_selector: "a[href*='/careers/details/']"
+
+- slug: two-sigma
+  display_name: Two Sigma
+  tier: hot
+  enabled: false
+  careers_url: https://careers.twosigma.com/careers/OpenRoles
+  notes: >-
+    Not on Greenhouse, Lever, Ashby, SmartRecruiters or Workday — the page
+    markup carries no ATS fingerprint at all. Open DevTools → Network →
+    Fetch/XHR on the careers page and put the real request substring in
+    xhr_contains.
+  sources:
+    - adapter: browser
+      priority: 1
+      config:
+        url: https://careers.twosigma.com/careers/OpenRoles
+        xhr_contains: "api"
+        job_selector: "a[href*='/careers/']"
+
+- slug: qualcomm
+  display_name: Qualcomm
+  tier: warm
+  enabled: false
+  careers_url: https://careers.qualcomm.com/
+  notes: >-
+    The qualcomm.wd5 tenant returns HTTP 422 for every site name tried
+    (External, ExternalCareers, Careers, External_Career_Site, QualcommCareers).
+    Read the real tenant and site off the careers URL before enabling.
+  sources:
+    - adapter: workday
+      priority: 1
+      config:
+        host: https://qualcomm.wd5.myworkdayjobs.com
+        tenant: qualcomm
+        site: External
+        search_text: intern
+        min_interval_seconds: 300
+
+# ═════════════════════════════════════════════════════════════════════════
+# NOTES ON EXPANSION
+#
+# Warm tier (10-minute polls) is where the next ~200 companies go. Add them
+# with `jobwatch discover <careers_url>`, which identifies the platform and
+# verifies the guess against the live endpoint before you commit it.
+#
+# Do not promote a company to hot tier because it is prestigious. Promote it
+# because its postings close fast. A company that leaves reqs open for three
+# weeks gains nothing from a 60-second poll and costs 1,440 requests a day.
+# The hot tier should stay near 30.
+# ═════════════════════════════════════════════════════════════════════════

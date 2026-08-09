@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>{% block title %}jobwatch{% endblock %}</title>
+<link rel="stylesheet" href="/static/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230F1626'/><rect x='3' y='7' width='10' height='2' fill='%23F5A524'/></svg>">
+<script src="/static/vendor/htmx.min.js" defer></script>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="/">job<span>watch</span></a>
+    <div class="masthead-stats mono">
+      <span><b>{{ nav.review }}</b> to review</span>
+      <span><b>{{ nav.alarms }}</b> failing</span>
+      <span><b>{{ nav.outbox_failed }}</b> undelivered</span>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Sections">
+    <a href="/"          {% if path == '/' %}aria-current="page"{% endif %}>Feed</a>
+    <a href="/review"    {% if path.startswith('/review') %}aria-current="page"{% endif %}>Review{% if nav.review %}<span class="badge">{{ nav.review }}</span>{% endif %}</a>
+    <a href="/filters"   {% if path.startswith('/filters') %}aria-current="page"{% endif %}>Filters</a>
+    <a href="/companies" {% if path.startswith('/companies') %}aria-current="page"{% endif %}>Companies</a>
+    <a href="/health"    {% if path.startswith('/health') %}aria-current="page"{% endif %}>Health{% if nav.alarms %}<span class="badge alarm">{{ nav.alarms }}</span>{% endif %}</a>
+    <a href="/outbox"    {% if path.startswith('/outbox') %}aria-current="page"{% endif %}>Outbox{% if nav.outbox_failed %}<span class="badge alarm">{{ nav.outbox_failed }}</span>{% endif %}</a>
+  </nav>
+</header>
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+<script src="/static/app.js" defer></script>
+</body>
+</html>

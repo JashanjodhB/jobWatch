@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Outbox · jobwatch{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Outbox</h1>
+  <span class="sub">Every alert is a committed row before it is a message, which is what makes delivery survive a restart mid-send.</span>
+</div>
+
+{% if not any_channel_configured %}
+<div class="card" style="border-color:var(--signal);margin-bottom:1.25rem">
+  <strong style="color:var(--signal)">No notification channel configured</strong>
+  <div class="muted" style="font-size:0.85rem;margin-top:0.3rem">
+    Set <span class="mono">DISCORD_WEBHOOK_URL</span>, or <span class="mono">SMTP_HOST</span> and <span class="mono">EMAIL_TO</span>,
+    in <span class="mono">.env</span> (or <span class="mono">/etc/jobwatch.env</span>) and restart.
+    Alerts queue here in the meantime — nothing is lost.
+  </div>
+</div>
+{% endif %}
+
+<div class="muted" style="font-size:0.85rem;margin-bottom:1rem">
+  Channels:
+  {%- for channel in channels %}
+  <span class="mono" style="color:{{ 'var(--confirmed)' if channel.configured else 'var(--muted)' }}">
+    {{ '●' if channel.configured else '○' }} {{ channel.name }}</span>{{ '' if loop.last else ' ·' }}
+  {%- endfor %}
+  <span style="margin-left:0.5rem">— an alert is delivered to every configured channel, and is only marked sent once all of them have taken it.</span>
+</div>
+
+<div class="toolbar">
+  <a class="btn" href="/outbox" {% if not status %}aria-pressed="true"{% endif %}>All</a>
+  <a class="btn" href="/outbox?status=queued" {% if status == 'queued' %}aria-pressed="true"{% endif %}>Queued {{ counts.queued }}</a>
+  <a class="btn" href="/outbox?status=sent" {% if status == 'sent' %}aria-pressed="true"{% endif %}>Sent {{ counts.sent }}</a>
+  <a class="btn" href="/outbox?status=failed" {% if status == 'failed' %}aria-pressed="true"{% endif %}>Failed {{ counts.failed }}</a>
+</div>
+
+<div class="scroll-x">
+<table class="grid">
+  <thead><tr><th>Status</th><th>Posting</th><th>Kind</th><th>Attempts</th><th>Created</th><th>Error</th><th></th></tr></thead>
+  <tbody>
+  {% for row in rows %}
+    {% include "_outbox_row.html" %}
+  {% else %}
+    <tr><td colspan="7" class="muted">Nothing queued — every alert has been delivered.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

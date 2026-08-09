@@ -1,0 +1,59 @@
+# jobwatch — runtime settings (§16)
+#
+# These are read at startup. Companies and filter rules seed into SQLite and
+# are owned by the UI afterwards; this file is not.
+
+tiers:
+  hot:  {interval_seconds: 60,   batch_notifications: false}
+  warm: {interval_seconds: 600,  batch_notifications: true}
+  cold: {interval_seconds: 3600, batch_notifications: true}
+
+# Poll intervals are multiplied by this, keyed on calendar month. Internship
+# hiring is seasonal; there is no reason to hit a board every 60s in April.
+seasonal_multipliers:
+  8: 1.0
+  9: 1.0
+  10: 1.0
+  11: 1.0
+  1: 1.0
+  default: 3.0
+
+http:
+  # Per-request timeout.
+  timeout_seconds: 20
+  # Whole-fetch deadline. A paginating adapter makes many requests: a full
+  # Workday scan of a large tenant is around fifty, so this is not the same
+  # number as timeout_seconds and must not be derived from it.
+  fetch_deadline_seconds: 300
+  max_concurrency: 12
+  user_agent: "jobwatch/2.0 (personal internship monitor)"
+  backoff_base_seconds: 30
+  backoff_max_seconds: 3600
+  fallback_after_failures: 5
+
+classification:
+  on_review: alert          # alert | queue_only
+
+notifications:
+  discord_webhook_env: DISCORD_WEBHOOK_URL
+  max_per_second: 2
+  digest_interval_minutes: 30
+  email:
+    # Server, addresses, and password are deliberately absent: they are secrets,
+    # or useless without secrets, so they live in .env (SMTP_*, EMAIL_*). What
+    # is here is presentation and the off switch — set enabled: false to stop
+    # sending without deleting working credentials.
+    enabled: true
+    subject_prefix: "[jobwatch]"
+    timeout_seconds: 30
+
+web:
+  # Bind to the Tailscale interface address in production (§10). 127.0.0.1 is
+  # the safe default: it is never reachable from the LAN.
+  bind_host: "127.0.0.1"
+  bind_port: 8080
+  # Shown in Discord alerts so a notification links back to the local UI.
+  public_base_url: "http://127.0.0.1:8080"
+
+retention:
+  poll_log_days: 30

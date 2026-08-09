@@ -1,0 +1,10 @@
+{% set current = (row.app_status if row else 'none') %}
+{% set key = (row.dedup_key if row else '') %}
+<form hx-post="/jobs/{{ key }}/status" hx-swap="outerHTML" hx-trigger="change from:find select">
+  <select name="status" aria-label="Application status"
+          class="btn small {% if current not in ('none','rejected') %}primary{% endif %}">
+    {% for s in (app_statuses or ['none','saved','applied','interview','offer','rejected']) %}
+    <option value="{{ s }}" {% if current == s %}selected{% endif %}>{{ 'Mark applied' if s == 'applied' and current == 'none' else s }}</option>
+    {% endfor %}
+  </select>
+</form>
