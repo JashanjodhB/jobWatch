@@ -6,11 +6,17 @@ break patterns like `\\b20\\d\\d\\s+summer\\b` and `\\bsummer analyst\\b`. The
 normalized title is only ever used as the verdict-cache key.
 
 Order (binding):
+    every location excluded             -> reject   (location-dependent)
+    no location satisfies the allow list-> reject   (location-dependent)
     any exclude_any hit                 -> reject
-    every location excluded             -> reject
     no require_any hit                  -> reject
     require_any hit AND role_any hit    -> match
     require_any hit, no role_any hit    -> review
+
+Location gating runs FIRST and its outcomes are marked location-dependent,
+which makes them uncacheable. The verdict cache is keyed by normalized title
+alone, so caching "rejected because it is in London" would reject that same
+title in San Francisco forever after. See `Classifier.classify`.
 """
 
 from __future__ import annotations
@@ -22,7 +28,16 @@ from ..db import Database
 
 __all__ = ["KINDS", "CompiledRule", "RuleOutcome", "RuleSet"]
 
-KINDS = ("require_any", "role_any", "exclude_any", "location_exclude")
+KINDS = (
+    "require_any",
+    "role_any",
+    "exclude_any",
+    "location_exclude",
+    "location_require",
+)
+
+#: Kinds matched against the posting's locations rather than its title.
+LOCATION_KINDS = ("location_exclude", "location_require")
 
 
 @dataclass(slots=True)
@@ -57,11 +72,17 @@ class RuleOutcome:
     role_hits: list[str] = field(default_factory=list)
     exclude_hits: list[str] = field(default_factory=list)
     location_hits: list[str] = field(default_factory=list)
+    #: Decided by where the job is, not what it is called.
+    location_dependent: bool = False
 
     @property
     def is_decisive(self) -> bool:
-        """True when the outcome is safe to cache. `review` never is."""
-        return self.classification in ("match", "reject")
+        """True when the outcome is safe to cache. `review` never is.
+
+        Neither is anything decided by location: the cache key is the
+        normalized title, which says nothing about where the job is.
+        """
+        return self.classification in ("match", "reject") and not self.location_dependent
 
 
 class RuleSet:
@@ -106,8 +127,44 @@ class RuleSet:
     # -- evaluation --------------------------------------------------------
 
     def evaluate(self, title: str, locations: list[str] | None = None) -> RuleOutcome:
+        rejected = self.evaluate_locations(locations)
+        if rejected is not None:
+            return rejected
+        return self.evaluate_title(title)
+
+    def evaluate_locations(self, locations: list[str] | None = None) -> RuleOutcome | None:
+        """Screen on where the job is. Returns a reject, or None to continue.
+
+        A posting with no locations at all is never rejected here: an adapter
+        that failed to parse a location must not silently cost you a posting
+        that might well have been in range.
+        """
+        locs = [loc for loc in (locations or []) if loc and loc.strip()]
+        if not locs:
+            return None
+
+        excluded = self._excluded_locations(locs)
+        if len(excluded) == len(locs):
+            return RuleOutcome(
+                "reject",
+                f"every location excluded by {_fmt(sorted(set(excluded)))}",
+                location_hits=excluded,
+                location_dependent=True,
+            )
+
+        allow = self.by_kind["location_require"]
+        if allow and not any(rule.search(loc) for loc in locs for rule in allow):
+            return RuleOutcome(
+                "reject",
+                f"no location satisfies {_fmt([r.pattern for r in allow])} — "
+                f"{_fmt(locs)} is out of range",
+                location_hits=locs,
+                location_dependent=True,
+            )
+        return None
+
+    def evaluate_title(self, title: str) -> RuleOutcome:
         text = title or ""
-        locs = locations or []
 
         excludes = [r.pattern for r in self.by_kind["exclude_any"] if r.search(text)]
         if excludes:
@@ -115,14 +172,6 @@ class RuleSet:
                 "reject",
                 f"excluded by {_fmt(excludes)}",
                 exclude_hits=excludes,
-            )
-
-        location_hits = self._excluded_locations(locs)
-        if locs and len(location_hits) == len(locs):
-            return RuleOutcome(
-                "reject",
-                f"every location excluded by {_fmt(sorted(set(location_hits)))}",
-                location_hits=location_hits,
             )
 
         requires = [r.pattern for r in self.by_kind["require_any"] if r.search(text)]

@@ -1,0 +1,515 @@
+{
+ "jobs": [
+  {
+   "data": {
+    "slug": "76895",
+    "language": "en-us",
+    "languages": [
+     "en-us"
+    ],
+    "req_id": "76895",
+    "title": "Automation of PDM processes Intern",
+    "description": "LOCATION: Singapore CRITERIA: Current students studying in Universities which are based in Singapore INTERNSHIP DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. Intern- Automation of PDM processes WHAT YOU CAN EXPECT TO LEARN: As a Co-op/Intern you can get hands-on experience and make an immediate contribution to AMD's next generation of technology innovations. You will have unique opportunities to develop your career, connect with AMD leaders, receive one-on-one mentorship, attend amazing networking events, and much more. The Product Data Management (PDM) team is responsible for processing manufacturing Bill of Materials (BOM), enabling systems to support disruptive technology products, establishing Master Data principles and guidelines, and driving business process improvements through automation. PDM has a high level of exposure interfacing with Business Units, Supply Chain, Finance, Sales, Logistics, Product Engineering, Procurement, Packaging, Design Team, Test Team, Agile IT, Product Management, Fab Technology Operations, OSATs, and other teams. Your contributions will span multiple PDM areas, and as a key team member, you will have significant deliverables to help us achieve our overall product goals. PROJECT OVERVIEW: Create a model to enhance the BOM processes KEY RESPONSIBILITIES: Manage Bill of Material (BOM) records throughout the full product lifecycle for microprocessors and graphics processors. Drive data quality and automation efforts by leveraging RPA and AI technologies. Collaborate with product data owners and cross-functional teams to ensure high-quality data in PLM systems for complex semiconductor products. Contribute to process-improvement initiatives aimed at enhancing data quality, reducing costs, and improving cycle times. WHO ARE WE LOOKING FOR: A self-motivated individual with an eye for details and able to cope with the steep learning curve, and be resourceful and inquisitive about new technologies. Data Analytics/Visualization Business Process Optimization Successful candidate should be comfortable working in a fast-paced environment. Strong problem-solving and communication skills Willingness to learn about the manufacturing process. Ability to manage your time effectively and ability to multitask RELEVANT SKILLSETS: Training will be provided on Product Data Management (PDM) processes and PLM. Programming/Query Languages: SQL. Software & Tools: Atlassian Suite (Confluence, Jira), Microsoft Suite (Visio, Office, Power BI), PLM/PDM systems (Agile PLM, Teamcenter, Windchill, Arena, Enovia). ACADEMIC CREDENTIALS: Degree in Computer Science; Business Analytics and Data Science. Note: Please ensure that you can provide a placement/support letter from your school covering the entire internship period. #LI-SP",
+    "location_name": "SG,Singapore-Design Ctr",
+    "street_address": "508 Chai Chee Lane",
+    "city": "Singapore",
+    "country": "Singapore",
+    "country_code": "SG",
+    "postal_code": "469032",
+    "location_type": "LAT_LNG",
+    "latitude": 1.330146,
+    "longitude": 103.9162921,
+    "categories": [
+     {
+      "name": "Student / Intern / Temp"
+     }
+    ],
+    "tags1": [
+     "No"
+    ],
+    "tags4": [
+     "Campus Global"
+    ],
+    "promotion_value": 0,
+    "hiring_organization": "Advanced Micro Devices, Inc",
+    "hiring_organization_logo": "https://www.amd.com/content/dam/code/images/header/amd-header-logo.svg",
+    "responsibilities": "LOCATION: Singapore CRITERIA: Current students studying in Universities which are based in Singapore INTERNSHIP DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. Intern- Automation of PDM processes WHAT YOU CAN EXPECT TO LEARN: As a Co-op/Intern you can get hands-on experience and make an immediate contribution to AMD's next generation of technology innovations. You will have unique opportunities to develop your career, connect with AMD leaders, receive one-on-one mentorship, attend amazing networking events, and much more. The Product Data Management (PDM) team is responsible for processing manufacturing Bill of Materials (BOM), enabling systems to support disruptive technology products, establishing Master Data principles and guidelines, and driving business process improvements through automation. PDM has a high level of exposure interfacing with Business Units, Supply Chain, Finance, Sales, Logistics, Product Engineering, Procurement, Packaging, Design Team, Test Team, Agile IT, Product Management, Fab Technology Operations, OSATs, and other teams. Your contributions will span multiple PDM areas, and as a key team member, you will have significant deliverables to help us achieve our overall product goals. PROJECT OVERVIEW: Create a model to enhance the BOM processes KEY RESPONSIBILITIES: Manage Bill of Material (BOM) records throughout the full product lifecycle for microprocessors and graphics processors. Drive data quality and automation efforts by leveraging RPA and AI technologies. Collaborate with product data owners and cross-functional teams to ensure high-quality data in PLM systems for complex semiconductor products. Contribute to process-improvement initiatives aimed at enhancing data quality, reducing costs, and improving cycle times. WHO ARE WE LOOKING FOR: A self-motivated individual with an eye for details and able to cope with the steep learning curve, and be resourceful and inquisitive about new technologies. Data Analytics/Visualization Business Process Optimization Successful candidate should be comfortable working in a fast-paced environment. Strong problem-solving and communication skills Willingness to learn about the manufacturing process. Ability to manage your time effectively and ability to multitask RELEVANT SKILLSETS: Training will be provided on Product Data Management (PDM) processes and PLM. Programming/Query Languages: SQL. Software & Tools: Atlassian Suite (Confluence, Jira), Microsoft Suite (Visio, Office, Power BI), PLM/PDM systems (Agile PLM, Teamcenter, Windchill, Arena, Enovia). ACADEMIC CREDENTIALS: Degree in Computer Science; Business Analytics and Data Science. Note: Please ensure that you can provide a placement/support letter from your school covering the entire internship period. #LI-SP",
+    "posted_date": "2026-07-31T08:39:00+0000",
+    "posting_expiry_date": "2026-12-30T16:00:00+0000",
+    "apply_url": "https://globalcampus-amd.icims.com/jobs/76895/login",
+    "internal": false,
+    "external": false,
+    "searchable": true,
+    "applyable": true,
+    "li_easy_applyable": true,
+    "ats_code": "icims",
+    "isFrontLineAIJob": false,
+    "meta_data": {
+     "client_code": "amd",
+     "googlejobs": {
+      "jobName": "projects/helpful-passage-853/jobs/99619184136069830",
+      "companyName": "projects/helpful-passage-853/companies/8822ff4e-3d3a-4660-ae04-6ef3c02ac1f3",
+      "jobHash": "264f919d0839daacc59890867e305338",
+      "derivedInfo": {
+       "jobCategories": [
+        "SCIENCE_AND_ENGINEERING",
+        "MANUFACTURING_AND_WAREHOUSE"
+       ],
+       "locations": [
+        {
+         "latLng": {
+          "latitude": 1.330146,
+          "longitude": 103.9162921
+         },
+         "locationType": "STREET_ADDRESS",
+         "postalAddress": {
+          "addressLines": [
+           "508 Chai Chee Ln, Singapore 469032"
+          ],
+          "administrativeArea": "",
+          "languageCode": "",
+          "locality": "Singapore",
+          "organization": "",
+          "postalCode": "469032",
+          "recipients": [],
+          "regionCode": "SG",
+          "revision": 0,
+          "sortingCode": "",
+          "sublocality": ""
+         },
+         "radiusInMiles": 8.194399608929251e-05
+        }
+       ]
+      },
+      "jobSummary": "LOCATION: Singapore CRITERIA: Current students studying in Universities which are based in Singapore INTERNSHIP DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. Intern- Automation of PDM processes WHAT YOU CAN EXPECT TO LEARN: As a Co-op/Intern you can get hands-on experience and make an immediate contribution to AMD's next generation of technology innovations. You will have unique opportunities to develop your career, connect with AMD leaders, receive one-on-one mentorship, attend amazing networking events, and much more. The Product Data Management (PDM) team is responsible for processing manufacturing Bill of Materials (BOM), enabling systems to support disruptive technology products, establishing Master Data principles and guidelines, and driving business process improvements through automation. PDM has a high level of exposure interfacing with Business Units, Supply Chain, Finance, Sales, Logistics, Product Engineering, Procurement, Packaging, Design Team, Test Team, Agile IT, Product Management, Fab Technology Operations, OSATs, and other teams. Your contributions will span multiple PDM areas, and as a key team member, you will have significant deliverables to help us achieve our overall product goals. PROJECT OVERVIEW: Create a model to enhance the BOM processes KEY RESPONSIBILITIES: Manage Bill of Material (BOM) records throughout the full product lifecycle for microprocessors and graphics processors. Drive data quality and automation efforts by leveraging RPA and AI technologies. Collaborate with product data owners and cross-functional teams to ensure high-quality data in PLM systems for complex semiconductor products. Contribute to process-improvement initiatives aimed at enhancing data quality, reducing costs, and improving cycle times. WHO ARE WE LOOKING FOR: A self-motivated individual with an eye for details and able to cope with the steep learning curve, and be resourceful and inquisitive about new technologies. Data Analytics/Visualization Business Process Optimization Successful candidate should be comfortable working in a fast-paced environment. Strong problem-solving and communication skills Willingness to learn about the manufacturing process. Ability to manage your time effectively and ability to multitask RELEVANT SKILLSETS: Training will be provided on Product Data Management (PDM) processes and PLM. Programming/Query Languages: SQL. Software & Tools: Atlassian Suite (Confluence, Jira), Microsoft Suite (Visio, Office, Power BI), PLM/PDM systems (Agile PLM, Teamcenter, Windchill, Arena, Enovia). ACADEMIC CREDENTIALS: Degree in Computer Science; Business Analytics and Data Science. Note: Please ensure that you can provide a placement/support letter from your school covering the entire internship period. #LI-SP",
+      "jobTitleSnippet": "Automation of PDM processes <b>Intern</b>.",
+      "searchTextSnippet": "... <b>INTERNSHIP</b> DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. <b>Intern</b>- Automation of PDM processes WHAT YOU CAN EXPECT TO LEARN: As a Co-op/<b>Intern</b>&nbsp;..."
+     },
+     "icims": {
+      "config_keys": {
+       "ccc.attract.portal.url": "https://careers.amd.com",
+       "icims.config.web.indeed.easy.apply": "0",
+       "icims.external.xml.feeds": "icims.adzuna.xml.enabled,icims.aeroemploiformation.xml.enabled,icims.apec.xml.enabled,icims.careerbuilder.xml.enabled,icims.careerarc.xml.enabled,icims.careerlink.xml.enabled,icims.clearbold.xml.enabled,icims.constructionjobs.xml.enabled,icims.craigslist.xml.enabled,icims.cv-library.xml.enabled,icims.cvaden.xml.enabled,icims.direct-employers.xml.enabled,icims.hireheroesusa.xml.enabled,icims.hireahero.xml.enabled,icims.hirepurpose.xml.enabled,icims.hospitalcareers.xml.enabled,icims.iberempleos.xml.enabled,icims.indeed.xml.enabled,icims.inhersight.xml.enabled,icims.irishjobs.xml.enabled,icims.itjobscafe.xml.enabled,icims.jobbio.xml.enabled,icims.jobcase.xml.enabled,icims.jobsite.xml.enabled,icims.linkedin.xml.enabled,icims.monster.xml.enabled,icims.msep.xml.enabled,icims.nijobs.xml.enabled,icims.oneten.xml.enabled,icims.pallet-labs.xml.enabled,icims.paradox.xml.enabled,icims.practicematch.xml.enabled,icims.prideatwork.xml.enabled,icims.professionaldiversitynetwork.xml.enabled,icims.propellum.xml.enabled,icims.qkly.xml.enabled,icims.radancy.xml.enabled,icims.recruitnet.xml.enabled,icims.recruitmilitary.xml.enabled,icims.regionsjob.xml.enabled,icims.resume-library.xml.enabled,icims.snagajob.xml.enabled,icims.upward.xml.enabled,icims.vonq.xml.enabled,icims.webengineering.xml.enabled,icims.webscribble.xml.enabled,icims.ziprecruiter.xml.enabled,icims.zippia.xml.enabled,icims.nexxt.xml.enabled",
+       "jobposting.external.company.name": "Advanced Micro Devices, Inc",
+       "jobposting.external.company.url": "https://www.amd.com",
+       "jobposting.external.indeed.screenerquestions": "1",
+       "jobposting.external.parent.organization.name": "Advanced Micro Devices, Inc",
+       "portal.id": "34788"
+      },
+      "date_updated": "2026-08-07T12:56:33Z",
+      "jps_is_public": true,
+      "primary_posted_site_object": {
+       "datePosted": "2026-07-31T08:39:00+0000",
+       "site": "globalcampus-amd",
+       "siteId": "4a717812-3f44-4870-a6b5-5321c00de42e",
+       "siteType": "ATTRACT",
+       "tenantId": "12834",
+       "validThrough": "2026-12-30T16:00:00+0000"
+      },
+      "revision_int": 7,
+      "uuid": "fa6af3cf-61ce-490f-b4c1-1fdc9e852da8"
+     },
+     "import_id": "bf08458c-d62a-4475-87d5-c15d6cb79910",
+     "import_source": "ImporterService",
+     "redirectOnApply": true,
+     "canonical_url": "https://careers.amd.com/jobs/76895?lang=en-us",
+     "last_mod": "2026-08-08T11:02:39+0000",
+     "gdpr": false
+    },
+    "update_date": "2026-08-08T11:02:39+0000",
+    "create_date": "2026-07-28T08:39:11+0000",
+    "category": [
+     " Student / Intern / Temp"
+    ],
+    "full_location": "Singapore, Singapore",
+    "short_location": "Singapore, Singapore",
+    "multipleLocations": false
+   }
+  },
+  {
+   "data": {
+    "slug": "77690",
+    "language": "en-us",
+    "languages": [
+     "en-us"
+    ],
+    "req_id": "77690",
+    "title": "System-On-Chip Failure Diagnostic and Debug Intern",
+    "description": "As an AMD [intern/co-op], you’ll be placed at the epicenter of the AI ecosystem, working alongside experts and industry pioneers. You’ll do important work, learn new skills, expand your network, and gain real-world experience on projects that impact millions of end-users worldwide. Whether you’re an undergrad or a PhD student, your contributions matter—and your experience here will be a launchpad for what comes next. LOCATION: Singapore CRITERIA: Current students studying in Universities which are based in Singapore INTERNSHIP DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. Intern- System-On-Chip Failure Diagnostic and Debug WHAT YOU CAN EXPECT TO LEARN: This internship offers a unique platform for learning and growth. You will gain hands-on experience in failure analysis and root cause identification using advanced diagnostic tools and technologies, enhancing your critical thinking and problem-solving skills. You will also learn from experienced engineers and participate in cross-functional projects, broadening your understanding of the electronics industry. PROJECT OVERVIEW: As an intern in our Returns Debug team, you will have the unique opportunity to initiate and lead a comprehensive study on the electrical failures of system-on-chip. This hands-on role will provide you with invaluable experience in the electronics field, focusing on understanding failure conditions, identifying root causes, and developing preventative measures. KEY RESPONSIBILITIES: Conduct detailed analysis of duplicated electrical failures in system-on-chip. Utilize diagnostic tools and methodologies to understand the conditions under which failures occur. Identify root causes of failures through systematic investigation. Develop and propose prevention strategies to mitigate future failures. Collaborate with senior engineers and cross-functional teams to gather insights and validate findings. Document findings and present recommendations to stakeholders. WHO ARE WE LOOKING FOR: We are looking for passionate and driven interns to join our team in investigating the critical issue of electrical failure in system-on-chip. The ideal candidate is self-driven, motivated to achieve goals independently, and eager to learn new skills. They are resourceful, finding creative solutions to challenges, and passionate about leveraging technology. With a positive attitude, they remain optimistic and hardworking, dedicated to success. They enjoy teamwork, contribute to a positive environment, and are adaptable to change. Strong communication skills are essential, along with a proactive approach to problem-solving. RELEVANT SKILLSETS: Strong analytical and problem-solving abilities. Excellent communication and teamwork skills. A proactive and inquisitive mindset with a passion for learning. ACADEMIC CREDENTIALS: Currently, pursuing a degree in Electrical or Electronic Engineering, Computer Engineering, Science Computing, or related engineering study in the semiconductor field. #LI-SP",
+    "location_name": "SG,Singapore-Design Ctr",
+    "street_address": "508 Chai Chee Lane",
+    "city": "Singapore",
+    "country": "Singapore",
+    "country_code": "SG",
+    "postal_code": "469032",
+    "location_type": "LAT_LNG",
+    "latitude": 1.330146,
+    "longitude": 103.9162921,
+    "categories": [
+     {
+      "name": "Student / Intern / Temp"
+     }
+    ],
+    "tags1": [
+     "No"
+    ],
+    "tags4": [
+     "Campus Global"
+    ],
+    "promotion_value": 0,
+    "hiring_organization": "Advanced Micro Devices, Inc",
+    "hiring_organization_logo": "https://www.amd.com/content/dam/code/images/header/amd-header-logo.svg",
+    "responsibilities": "As an AMD [intern/co-op], you’ll be placed at the epicenter of the AI ecosystem, working alongside experts and industry pioneers. You’ll do important work, learn new skills, expand your network, and gain real-world experience on projects that impact millions of end-users worldwide. Whether you’re an undergrad or a PhD student, your contributions matter—and your experience here will be a launchpad for what comes next. LOCATION: Singapore CRITERIA: Current students studying in Universities which are based in Singapore INTERNSHIP DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. Intern- System-On-Chip Failure Diagnostic and Debug WHAT YOU CAN EXPECT TO LEARN: This internship offers a unique platform for learning and growth. You will gain hands-on experience in failure analysis and root cause identification using advanced diagnostic tools and technologies, enhancing your critical thinking and problem-solving skills. You will also learn from experienced engineers and participate in cross-functional projects, broadening your understanding of the electronics industry. PROJECT OVERVIEW: As an intern in our Returns Debug team, you will have the unique opportunity to initiate and lead a comprehensive study on the electrical failures of system-on-chip. This hands-on role will provide you with invaluable experience in the electronics field, focusing on understanding failure conditions, identifying root causes, and developing preventative measures. KEY RESPONSIBILITIES: Conduct detailed analysis of duplicated electrical failures in system-on-chip. Utilize diagnostic tools and methodologies to understand the conditions under which failures occur. Identify root causes of failures through systematic investigation. Develop and propose prevention strategies to mitigate future failures. Collaborate with senior engineers and cross-functional teams to gather insights and validate findings. Document findings and present recommendations to stakeholders. WHO ARE WE LOOKING FOR: We are looking for passionate and driven interns to join our team in investigating the critical issue of electrical failure in system-on-chip. The ideal candidate is self-driven, motivated to achieve goals independently, and eager to learn new skills. They are resourceful, finding creative solutions to challenges, and passionate about leveraging technology. With a positive attitude, they remain optimistic and hardworking, dedicated to success. They enjoy teamwork, contribute to a positive environment, and are adaptable to change. Strong communication skills are essential, along with a proactive approach to problem-solving. RELEVANT SKILLSETS: Strong analytical and problem-solving abilities. Excellent communication and teamwork skills. A proactive and inquisitive mindset with a passion for learning. ACADEMIC CREDENTIALS: Currently, pursuing a degree in Electrical or Electronic Engineering, Computer Engineering, Science Computing, or related engineering study in the semiconductor field. #LI-SP",
+    "posted_date": "2026-07-31T09:03:00+0000",
+    "posting_expiry_date": "2026-12-30T16:00:00+0000",
+    "apply_url": "https://globalcampus-amd.icims.com/jobs/77690/login",
+    "internal": false,
+    "external": false,
+    "searchable": true,
+    "applyable": true,
+    "li_easy_applyable": true,
+    "ats_code": "icims",
+    "isFrontLineAIJob": false,
+    "meta_data": {
+     "client_code": "amd",
+     "googlejobs": {
+      "jobName": "projects/helpful-passage-853/jobs/107922695949034182",
+      "companyName": "projects/helpful-passage-853/companies/8822ff4e-3d3a-4660-ae04-6ef3c02ac1f3",
+      "jobHash": "29feb478618cd1d9bbad22ca88947979",
+      "derivedInfo": {
+       "jobCategories": [
+        "COMPUTER_AND_IT"
+       ],
+       "locations": [
+        {
+         "latLng": {
+          "latitude": 1.330146,
+          "longitude": 103.9162921
+         },
+         "locationType": "STREET_ADDRESS",
+         "postalAddress": {
+          "addressLines": [
+           "508 Chai Chee Ln, Singapore 469032"
+          ],
+          "administrativeArea": "",
+          "languageCode": "",
+          "locality": "Singapore",
+          "organization": "",
+          "postalCode": "469032",
+          "recipients": [],
+          "regionCode": "SG",
+          "revision": 0,
+          "sortingCode": "",
+          "sublocality": ""
+         },
+         "radiusInMiles": 8.194399608929251e-05
+        }
+       ]
+      },
+      "jobSummary": "As an AMD [intern/co-op], you’ll be placed at the epicenter of the AI ecosystem, working alongside experts and industry pioneers. You’ll do important work, learn new skills, expand your network, and gain real-world experience on projects that impact millions of end-users worldwide. Whether you’re an undergrad or a PhD student, your contributions matter—and your experience here will be a launchpad for what comes next. LOCATION: Singapore CRITERIA: Current students studying in Universities which are based in Singapore INTERNSHIP DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. Intern- System-On-Chip Failure Diagnostic and Debug WHAT YOU CAN EXPECT TO LEARN: This internship offers a unique platform for learning and growth. You will gain hands-on experience in failure analysis and root cause identification using advanced diagnostic tools and technologies, enhancing your critical thinking and problem-solving skills. You will also learn from experienced engineers and participate in cross-functional projects, broadening your understanding of the electronics industry. PROJECT OVERVIEW: As an intern in our Returns Debug team, you will have the unique opportunity to initiate and lead a comprehensive study on the electrical failures of system-on-chip. This hands-on role will provide you with invaluable experience in the electronics field, focusing on understanding failure conditions, identifying root causes, and developing preventative measures. KEY RESPONSIBILITIES: Conduct detailed analysis of duplicated electrical failures in system-on-chip. Utilize diagnostic tools and methodologies to understand the conditions under which failures occur. Identify root causes of failures through systematic investigation. Develop and propose prevention strategies to mitigate future failures. Collaborate with senior engineers and cross-functional teams to gather insights and validate findings. Document findings and present recommendations to stakeholders. WHO ARE WE LOOKING FOR: We are looking for passionate and driven interns to join our team in investigating the critical issue of electrical failure in system-on-chip. The ideal candidate is self-driven, motivated to achieve goals independently, and eager to learn new skills. They are resourceful, finding creative solutions to challenges, and passionate about leveraging technology. With a positive attitude, they remain optimistic and hardworking, dedicated to success. They enjoy teamwork, contribute to a positive environment, and are adaptable to change. Strong communication skills are essential, along with a proactive approach to problem-solving. RELEVANT SKILLSETS: Strong analytical and problem-solving abilities. Excellent communication and teamwork skills. A proactive and inquisitive mindset with a passion for learning. ACADEMIC CREDENTIALS: Currently, pursuing a degree in Electrical or Electronic Engineering, Computer Engineering, Science Computing, or related engineering study in the semiconductor field. #LI-SP",
+      "jobTitleSnippet": "System-On-Chip Failure Diagnostic and Debug <b>Intern</b>.",
+      "searchTextSnippet": "... <b>INTERNSHIP</b> DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. <b>Intern</b>- System-On-Chip Failure Diagnostic and Debug WHAT YOU CAN EXPECT TO LEARN&nbsp;..."
+     },
+     "icims": {
+      "config_keys": {
+       "ccc.attract.portal.url": "https://careers.amd.com",
+       "icims.config.web.indeed.easy.apply": "0",
+       "icims.external.xml.feeds": "icims.adzuna.xml.enabled,icims.aeroemploiformation.xml.enabled,icims.apec.xml.enabled,icims.careerbuilder.xml.enabled,icims.careerarc.xml.enabled,icims.careerlink.xml.enabled,icims.clearbold.xml.enabled,icims.constructionjobs.xml.enabled,icims.craigslist.xml.enabled,icims.cv-library.xml.enabled,icims.cvaden.xml.enabled,icims.direct-employers.xml.enabled,icims.hireheroesusa.xml.enabled,icims.hireahero.xml.enabled,icims.hirepurpose.xml.enabled,icims.hospitalcareers.xml.enabled,icims.iberempleos.xml.enabled,icims.indeed.xml.enabled,icims.inhersight.xml.enabled,icims.irishjobs.xml.enabled,icims.itjobscafe.xml.enabled,icims.jobbio.xml.enabled,icims.jobcase.xml.enabled,icims.jobsite.xml.enabled,icims.linkedin.xml.enabled,icims.monster.xml.enabled,icims.msep.xml.enabled,icims.nijobs.xml.enabled,icims.oneten.xml.enabled,icims.pallet-labs.xml.enabled,icims.paradox.xml.enabled,icims.practicematch.xml.enabled,icims.prideatwork.xml.enabled,icims.professionaldiversitynetwork.xml.enabled,icims.propellum.xml.enabled,icims.qkly.xml.enabled,icims.radancy.xml.enabled,icims.recruitnet.xml.enabled,icims.recruitmilitary.xml.enabled,icims.regionsjob.xml.enabled,icims.resume-library.xml.enabled,icims.snagajob.xml.enabled,icims.upward.xml.enabled,icims.vonq.xml.enabled,icims.webengineering.xml.enabled,icims.webscribble.xml.enabled,icims.ziprecruiter.xml.enabled,icims.zippia.xml.enabled,icims.nexxt.xml.enabled",
+       "jobposting.external.company.name": "Advanced Micro Devices, Inc",
+       "jobposting.external.company.url": "https://www.amd.com",
+       "jobposting.external.indeed.screenerquestions": "1",
+       "jobposting.external.parent.organization.name": "Advanced Micro Devices, Inc",
+       "portal.id": "34788"
+      },
+      "date_updated": "2026-07-31T09:34:05Z",
+      "jps_is_public": true,
+      "primary_posted_site_object": {
+       "datePosted": "2026-07-31T09:03:00+0000",
+       "site": "globalcampus-amd",
+       "siteId": "4a717812-3f44-4870-a6b5-5321c00de42e",
+       "siteType": "ATTRACT",
+       "tenantId": "12834",
+       "validThrough": "2026-12-30T16:00:00+0000"
+      },
+      "revision_int": 4,
+      "uuid": "78760450-1e77-40db-a832-89958a2ae705"
+     },
+     "import_id": "6f13b5f2-a4a4-42df-bb85-ea448c953eb0",
+     "import_source": "ImporterService",
+     "redirectOnApply": true,
+     "canonical_url": "https://careers.amd.com/jobs/77690?lang=en-us",
+     "last_mod": "2026-07-31T10:57:51+0000",
+     "gdpr": false
+    },
+    "update_date": "2026-07-31T10:57:51+0000",
+    "create_date": "2026-07-28T09:03:10+0000",
+    "category": [
+     " Student / Intern / Temp"
+    ],
+    "full_location": "Singapore, Singapore",
+    "short_location": "Singapore, Singapore",
+    "multipleLocations": false
+   }
+  },
+  {
+   "data": {
+    "slug": "85660",
+    "language": "en-us",
+    "languages": [
+     "en-us"
+    ],
+    "req_id": "85660",
+    "title": "Mechanical and Thermal Analysis of Advanced Packaged Devices Intern",
+    "description": "As an AMD [intern/co-op], you’ll be placed at the epicenter of the AI ecosystem, working alongside experts and industry pioneers. You’ll do important work, learn new skills, expand your network, and gain real-world experience on projects that impact millions of end-users worldwide. Whether you’re an undergrad or a PhD student, your contributions matter—and your experience here will be a launchpad for what comes next. LOCATION: Singapore CRITERIA: Current students studying in Universities which are based in Singapore INTERNSHIP DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. Intern- Mechanical and Thermal Analysis of Advanced Packaged Devices WHAT YOU CAN EXPECT TO LEARN: Hands-on experience with mechanical and thermal analysis techniques applied to advanced semiconductor packages. Practical skills in designing experiments, collecting and analyzing data using tools like MATLAB and Python. Exposure to cross-functional collaboration in a high-tech R&D environment. Insights into the challenges and innovations in advanced packaging technologies. Professional development through technical presentations and documentation. PROJECT OVERVIEW: This internship focuses on evaluating the mechanical and thermal performance of advanced packaged semiconductor devices. The intern will work closely with engineering teams to design experiments, analyze results, and contribute to the development of robust packaging solutions. The project supports the growth of the Advanced Packaging Lab in Singapore and aims to enhance understanding of package reliability and performance. KEY RESPONSIBILITIES: Design and execute experiments to assess mechanical and thermal characteristics of semiconductor packages. Analyze experimental data using MATLAB, Python, Excel, or other relevant tools. Collaborate with cross-functional teams to optimize experimental setups and ensure data accuracy. Present findings to internal stakeholders and participate in technical discussions. Continuously refine experimental procedures and maintain clear documentation. WHO ARE WE LOOKING FOR: A self-driven individual that is resourceful, passionate about running experiments and analysing data. Able to work independently, has a good work attitude and willing to learn. Should have good communication and presentation skills. RELEVANT SKILLSETS: Pursuing or graduating within a year with an advanced degree (Master’s or PhD) in Materials Science, Mechanical Engineering, Electrical Engineering, or a related field. Strong analytical skills and experience with data analysis tools (e.g., MATLAB, Python, Excel). Familiarity with thermal and mechanical characterization techniques is a plus. Excellent communication and presentation skills. Ability to work independently and in a team-oriented environment. ACADEMIC CREDENTIALS: Electrical Engineering, Materials Science, or Materials Engineering preferred. #LI-SP",
+    "location_name": "SG,Singapore-Design Ctr",
+    "street_address": "508 Chai Chee Lane",
+    "city": "Singapore",
+    "country": "Singapore",
+    "country_code": "SG",
+    "postal_code": "469032",
+    "location_type": "LAT_LNG",
+    "latitude": 1.330146,
+    "longitude": 103.9162921,
+    "categories": [
+     {
+      "name": "Student / Intern / Temp"
+     }
+    ],
+    "tags1": [
+     "No"
+    ],
+    "tags4": [
+     "Campus Global"
+    ],
+    "promotion_value": 0,
+    "hiring_organization": "Advanced Micro Devices, Inc",
+    "hiring_organization_logo": "https://www.amd.com/content/dam/code/images/header/amd-header-logo.svg",
+    "responsibilities": "As an AMD [intern/co-op], you’ll be placed at the epicenter of the AI ecosystem, working alongside experts and industry pioneers. You’ll do important work, learn new skills, expand your network, and gain real-world experience on projects that impact millions of end-users worldwide. Whether you’re an undergrad or a PhD student, your contributions matter—and your experience here will be a launchpad for what comes next. LOCATION: Singapore CRITERIA: Current students studying in Universities which are based in Singapore INTERNSHIP DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. Intern- Mechanical and Thermal Analysis of Advanced Packaged Devices WHAT YOU CAN EXPECT TO LEARN: Hands-on experience with mechanical and thermal analysis techniques applied to advanced semiconductor packages. Practical skills in designing experiments, collecting and analyzing data using tools like MATLAB and Python. Exposure to cross-functional collaboration in a high-tech R&D environment. Insights into the challenges and innovations in advanced packaging technologies. Professional development through technical presentations and documentation. PROJECT OVERVIEW: This internship focuses on evaluating the mechanical and thermal performance of advanced packaged semiconductor devices. The intern will work closely with engineering teams to design experiments, analyze results, and contribute to the development of robust packaging solutions. The project supports the growth of the Advanced Packaging Lab in Singapore and aims to enhance understanding of package reliability and performance. KEY RESPONSIBILITIES: Design and execute experiments to assess mechanical and thermal characteristics of semiconductor packages. Analyze experimental data using MATLAB, Python, Excel, or other relevant tools. Collaborate with cross-functional teams to optimize experimental setups and ensure data accuracy. Present findings to internal stakeholders and participate in technical discussions. Continuously refine experimental procedures and maintain clear documentation. WHO ARE WE LOOKING FOR: A self-driven individual that is resourceful, passionate about running experiments and analysing data. Able to work independently, has a good work attitude and willing to learn. Should have good communication and presentation skills. RELEVANT SKILLSETS: Pursuing or graduating within a year with an advanced degree (Master’s or PhD) in Materials Science, Mechanical Engineering, Electrical Engineering, or a related field. Strong analytical skills and experience with data analysis tools (e.g., MATLAB, Python, Excel). Familiarity with thermal and mechanical characterization techniques is a plus. Excellent communication and presentation skills. Ability to work independently and in a team-oriented environment. ACADEMIC CREDENTIALS: Electrical Engineering, Materials Science, or Materials Engineering preferred. #LI-SP",
+    "posted_date": "2026-07-31T00:56:00+0000",
+    "posting_expiry_date": "2026-12-30T16:00:00+0000",
+    "apply_url": "https://globalcampus-amd.icims.com/jobs/85660/login",
+    "internal": false,
+    "external": false,
+    "searchable": true,
+    "applyable": true,
+    "li_easy_applyable": true,
+    "ats_code": "icims",
+    "isFrontLineAIJob": false,
+    "meta_data": {
+     "client_code": "amd",
+     "googlejobs": {
+      "jobName": "projects/helpful-passage-853/jobs/139098805814338246",
+      "companyName": "projects/helpful-passage-853/companies/8822ff4e-3d3a-4660-ae04-6ef3c02ac1f3",
+      "jobHash": "f39555f709f1a4d0fb0f76a849ad3c5b",
+      "derivedInfo": {
+       "jobCategories": [
+        "SCIENCE_AND_ENGINEERING",
+        "INSTALLATION_MAINTENANCE_AND_REPAIR"
+       ],
+       "locations": [
+        {
+         "latLng": {
+          "latitude": 1.330146,
+          "longitude": 103.9162921
+         },
+         "locationType": "STREET_ADDRESS",
+         "postalAddress": {
+          "addressLines": [
+           "508 Chai Chee Ln, Singapore 469032"
+          ],
+          "administrativeArea": "",
+          "languageCode": "",
+          "locality": "Singapore",
+          "organization": "",
+          "postalCode": "469032",
+          "recipients": [],
+          "regionCode": "SG",
+          "revision": 0,
+          "sortingCode": "",
+          "sublocality": ""
+         },
+         "radiusInMiles": 8.194399608929251e-05
+        }
+       ]
+      },
+      "jobSummary": "As an AMD [intern/co-op], you’ll be placed at the epicenter of the AI ecosystem, working alongside experts and industry pioneers. You’ll do important work, learn new skills, expand your network, and gain real-world experience on projects that impact millions of end-users worldwide. Whether you’re an undergrad or a PhD student, your contributions matter—and your experience here will be a launchpad for what comes next. LOCATION: Singapore CRITERIA: Current students studying in Universities which are based in Singapore INTERNSHIP DURATION: Minimum 20 weeks full time commitment with the option of extending up to a further 12 weeks. Intern- Mechanical and Thermal Analysis of Advanced Packaged Devices WHAT YOU CAN EXPECT TO LEARN: Hands-on experience with mechanical and thermal analysis techniques applied to advanced semiconductor packages. Practical skills in designing experiments, collecting and analyzing data using tools like MATLAB and Python. Exposure to cross-functional collaboration in a high-tech R&D environment. Insights into the challenges and innovations in advanced packaging technologies. Professional development through technical presentations and documentation. PROJECT OVERVIEW: This internship focuses on evaluating the mechanical and thermal performance of advanced packaged semiconductor devices. The intern will work closely with engineering teams to design experiments, analyze results, and contribute to the development of robust packaging solutions. The project supports the growth of the Advanced Packaging Lab in Singapore and aims to enhance understanding of package reliability and performance. KEY RESPONSIBILITIES: Design and execute experiments to assess mechanical and thermal characteristics of semiconductor packages. Analyze experimental data using MATLAB, Python, Excel, or other relevant tools. Collaborate with cross-functional teams to optimize experimental setups and ensure data accuracy. Present findings to internal stakeholders and participate in technical discussions. Continuously refine experimental procedures and maintain clear documentation. WHO ARE WE LOOKING FOR: A self-driven individual that is resourceful, passionate about running experiments and analysing data. Able to work independently, has a good work attitude and willing to learn. Should have good communication and presentation skills. RELEVANT SKILLSETS: Pursuing or graduating within a year with an advanced degree (Master’s or PhD) in Materials Science, Mechanical Engineering, Electrical Engineering, or a related field. Strong analytical skills and experience with data analysis tools (e.g., MATLAB, Python, Excel). Familiarity with thermal and mechanical characterization techniques is a plus. Excellent communication and presentation skills. Ability to work independently and in a team-oriented environment. ACADEMIC CREDENTIALS: Electrical Engineering, Materials Science, or Materials Engineering preferred. #LI-SP",
+      "jobTitleSnippet": "Mechanical and Thermal Analysis of Advanced Packaged Devices <b>Intern</b>.",
+      "searchTextSnippet": "... <b>internship</b> focuses on evaluating the mechanical and thermal performance of advanced packaged semiconductor devices. The <b>intern</b> will work closely with engineering teams to design experiments&nbsp;..."
+     },
+     "icims": {
+      "config_keys": {
+       "ccc.attract.portal.url": "https://careers.amd.com",
+       "icims.config.web.indeed.easy.apply": "0",
+       "icims.external.xml.feeds": "icims.adzuna.xml.enabled,icims.aeroemploiformation.xml.enabled,icims.apec.xml.enabled,icims.careerbuilder.xml.enabled,icims.careerarc.xml.enabled,icims.careerlink.xml.enabled,icims.clearbold.xml.enabled,icims.constructionjobs.xml.enabled,icims.craigslist.xml.enabled,icims.cv-library.xml.enabled,icims.cvaden.xml.enabled,icims.direct-employers.xml.enabled,icims.hireheroesusa.xml.enabled,icims.hireahero.xml.enabled,icims.hirepurpose.xml.enabled,icims.hospitalcareers.xml.enabled,icims.iberempleos.xml.enabled,icims.indeed.xml.enabled,icims.inhersight.xml.enabled,icims.irishjobs.xml.enabled,icims.itjobscafe.xml.enabled,icims.jobbio.xml.enabled,icims.jobcase.xml.enabled,icims.jobsite.xml.enabled,icims.linkedin.xml.enabled,icims.monster.xml.enabled,icims.msep.xml.enabled,icims.nijobs.xml.enabled,icims.oneten.xml.enabled,icims.pallet-labs.xml.enabled,icims.paradox.xml.enabled,icims.practicematch.xml.enabled,icims.prideatwork.xml.enabled,icims.professionaldiversitynetwork.xml.enabled,icims.propellum.xml.enabled,icims.qkly.xml.enabled,icims.radancy.xml.enabled,icims.recruitnet.xml.enabled,icims.recruitmilitary.xml.enabled,icims.regionsjob.xml.enabled,icims.resume-library.xml.enabled,icims.snagajob.xml.enabled,icims.upward.xml.enabled,icims.vonq.xml.enabled,icims.webengineering.xml.enabled,icims.webscribble.xml.enabled,icims.ziprecruiter.xml.enabled,icims.zippia.xml.enabled,icims.nexxt.xml.enabled",
+       "jobposting.external.company.name": "Advanced Micro Devices, Inc",
+       "jobposting.external.company.url": "https://www.amd.com",
+       "jobposting.external.indeed.screenerquestions": "1",
+       "jobposting.external.parent.organization.name": "Advanced Micro Devices, Inc",
+       "portal.id": "34788"
+      },
+      "date_updated": "2026-07-31T09:37:45Z",
+      "jps_is_public": true,
+      "primary_posted_site_object": {
+       "datePosted": "2026-07-31T00:56:00+0000",
+       "site": "globalcampus-amd",
+       "siteId": "4a717812-3f44-4870-a6b5-5321c00de42e",
+       "siteType": "ATTRACT",
+       "tenantId": "12834",
+       "validThrough": "2026-12-30T16:00:00+0000"
+      },
+      "revision_int": 3,
+      "uuid": "f50acca5-e688-4eb9-a1e3-083bbfbe7247"
+     },
+     "import_id": "6f13b5f2-a4a4-42df-bb85-ea448c953eb0",
+     "import_source": "ImporterService",
+     "redirectOnApply": true,
+     "canonical_url": "https://careers.amd.com/jobs/85660?lang=en-us",
+     "last_mod": "2026-07-31T10:57:51+0000",
+     "gdpr": false
+    },
+    "update_date": "2026-07-31T10:57:51+0000",
+    "create_date": "2026-04-27T00:58:12+0000",
+    "category": [
+     " Student / Intern / Temp"
+    ],
+    "full_location": "Singapore, Singapore",
+    "short_location": "Singapore, Singapore",
+    "multipleLocations": false
+   }
+  }
+ ],
+ "locations": [],
+ "totalCount": 10,
+ "request_id": false,
+ "meta_data": {
+  "ResponseMetadata": {
+   "requestId": "e46d17fc-b2d2-4c6e-89af-4603a8959192:APAb7ITjVNAVIv8t4g2GliexVLzzyKUoFw=="
+  }
+ },
+ "count": 10,
+ "languageCounts": {
+  "en-us": {
+   "displayName": "English",
+   "count": 10
+  }
+ },
+ "filter": {
+  "facetList": {
+   "city": [
+    {
+     "term": "Austin",
+     "count": 2
+    },
+    {
+     "term": "Markham",
+     "count": 1
+    },
+    {
+     "term": "Singapore",
+     "count": 7
+    }
+   ],
+   "country": [
+    {
+     "term": "Canada",
+     "count": 1
+    },
+    {
+     "term": "Singapore",
+     "count": 7
+    },
+    {
+     "term": "United States",
+     "count": 2
+    }
+   ],
+   "tags1": [
+    {
+     "term": "No",
+     "count": 10
+    }
+   ]
+  },
+  "displayLimit": 10,
+  "brands": {
+   "all": [],
+   "shortlist": []
+  },
+  "categories": {
+   "all": [
+    {
+     "category": "Engineering",
+     "numJobs": 1
+    },
+    {
+     "category": "General Management/ Administration/ Support",
+     "numJobs": 2
+    },
+    {
+     "category": "Student / Intern / Temp",
+     "numJobs": 7
+    }
+   ],
+   "shortlist": [
+    {
+     "category": "Engineering",
+     "numJobs": 1
+    },
+    {
+     "category": "General Management/ Administration/ Support",
+     "numJobs": 2
+    },
+    {
+     "category": "Student / Intern / Temp",
+     "numJobs": 7
+    }
+   ]
+  },
+  "locations": {
+   "all": [
+    {
+     "city": "Austin",
+     "state": "Texas",
+     "country": "United States",
+     "count": 2
+    },
+    {
+     "city": "Markham",
+     "state": "Ontario",
+     "country": "Canada",
+     "count": 1
+    },
+    {
+     "city": "Singapore",
+     "state": null,
+     "country": "Singapore",
+     "count": 7
+    }
+   ],
+   "shortlist": [
+    {
+     "city": "Austin",
+     "state": "Texas",
+     "country": "United States",
+     "count": 2
+    },
+    {
+     "city": "Markham",
+     "state": "Ontario",
+     "country": "Canada",
+     "count": 1
+    },
+    {
+     "city": "Singapore",
+     "state": null,
+     "country": "Singapore",
+     "count": 7
+    }
+   ]
+  },
+  "experienceLevels": {
+   "all": [],
+   "shortlist": []
+  }
+ }
+}

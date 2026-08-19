@@ -1,0 +1,558 @@
+{
+ "items": [
+  {
+   "SearchId": 1,
+   "Keyword": "intern",
+   "CorrectedKeyword": null,
+   "UseExactKeywordFlag": false,
+   "SuggestedKeyword": null,
+   "ExecuteSpellCheckFlag": true,
+   "Location": null,
+   "LocationId": null,
+   "Radius": 0,
+   "RadiusUnit": "MI",
+   "SelectedTitlesFacet": null,
+   "SelectedCategoriesFacet": null,
+   "SelectedPostingDatesFacet": null,
+   "SelectedLocationsFacet": null,
+   "LastSelectedFacet": null,
+   "Facets": "TITLES;LOCATIONS;LOCATION_LEVEL1;LOCATION_LEVEL2;LOCATION_LEVEL3;CATEGORIES;POSTING_DATES;WORK_LOCATIONS;FLEX_FIELDS;ORGANIZATIONS;WORKPLACE_TYPES",
+   "Offset": 0,
+   "Limit": 4,
+   "SortBy": "POSTING_DATES_DESC",
+   "TotalJobsCount": 247,
+   "Latitude": null,
+   "Longitude": null,
+   "SiteNumber": "CX_1",
+   "JobFamilyId": null,
+   "PostingStartDate": null,
+   "PostingEndDate": null,
+   "SelectedWorkLocationsFacet": null,
+   "RequisitionId": null,
+   "CandidateNumber": null,
+   "WorkLocationZipCode": null,
+   "WorkLocationCountryCode": null,
+   "SelectedFlexFieldsFacets": null,
+   "OrganizationId": null,
+   "SelectedOrganizationsFacet": null,
+   "UserTargetFacetName": null,
+   "UserTargetFacetInputTerm": null,
+   "HotJobFlag": null,
+   "WorkplaceType": null,
+   "SelectedWorkplaceTypesFacet": null,
+   "BotQRShortCode": null,
+   "requisitionList": [
+    {
+     "Id": "26012042",
+     "Title": "Manager, International Learning & Transformation",
+     "PostedDate": "2026-08-18",
+     "PostingEndDate": null,
+     "Language": "US",
+     "PrimaryLocationCountry": "GB",
+     "GeographyId": 300000050635640,
+     "HotJobFlag": false,
+     "WorkplaceTypeCode": "ORA_HYBRID",
+     "JobFamily": null,
+     "JobFunction": null,
+     "WorkerType": null,
+     "ContractType": null,
+     "ManagerLevel": null,
+     "JobSchedule": null,
+     "JobShift": null,
+     "JobType": null,
+     "StudyLevel": null,
+     "DomesticTravelRequired": null,
+     "InternationalTravelRequired": null,
+     "WorkDurationYears": null,
+     "WorkDurationMonths": null,
+     "WorkHours": null,
+     "WorkDays": null,
+     "LegalEmployer": null,
+     "BusinessUnit": null,
+     "Department": null,
+     "Organization": null,
+     "BusinessUnitId": 300000079630096,
+     "LegalEmployerId": 300000007507802,
+     "OrganizationId": 300000079630096,
+     "MediaThumbURL": null,
+     "ShortDescriptionStr": "",
+     "PrimaryLocation": "BRIGHTON, EAST SUSSEX, United Kingdom",
+     "Distance": 1787011200000.0,
+     "TrendingFlag": false,
+     "BeFirstToApplyFlag": false,
+     "Relevancy": 44.62855911254883,
+     "WorkplaceType": "Hybrid",
+     "ExternalQualificationsStr": null,
+     "ExternalResponsibilitiesStr": null,
+     "secondaryLocations": [
+      {
+       "RequisitionLocationId": 300001730395938,
+       "GeographyNodeId": 100018238072152,
+       "GeographyId": 300000050634837,
+       "Name": "LONDON, LONDON, United Kingdom",
+       "CountryCode": "GB",
+       "Latitude": 51.50642,
+       "Longitude": -0.12721
+      }
+     ]
+    },
+    {
+     "Id": "26011015",
+     "Title": "Campus Undergraduate Summer Internship Program - 2027 Software Engineer, Enterprise Technology Services- Sunrise, FL",
+     "PostedDate": "2026-08-18",
+     "PostingEndDate": null,
+     "Language": "US",
+     "PrimaryLocationCountry": "US",
+     "GeographyId": 300000007670739,
+     "HotJobFlag": false,
+     "WorkplaceTypeCode": "ORA_HYBRID",
+     "JobFamily": null,
+     "JobFunction": null,
+     "WorkerType": null,
+     "ContractType": null,
+     "ManagerLevel": null,
+     "JobSchedule": null,
+     "JobShift": null,
+     "JobType": null,
+     "StudyLevel": null,
+     "DomesticTravelRequired": null,
+     "InternationalTravelRequired": null,
+     "WorkDurationYears": null,
+     "WorkDurationMonths": null,
+     "WorkHours": null,
+     "WorkDays": null,
+     "LegalEmployer": null,
+     "BusinessUnit": null,
+     "Department": null,
+     "Organization": null,
+     "BusinessUnitId": 300000079628496,
+     "LegalEmployerId": 300000079647088,
+     "OrganizationId": 300000079628496,
+     "MediaThumbURL": null,
+     "ShortDescriptionStr": "",
+     "PrimaryLocation": "Sunrise, FL, United States",
+     "Distance": 1787011200000.0,
+     "TrendingFlag": true,
+     "BeFirstToApplyFlag": false,
+     "Relevancy": 28.120187759399414,
+     "WorkplaceType": "Hybrid",
+     "ExternalQualificationsStr": null,
+     "ExternalResponsibilitiesStr": null,
+     "secondaryLocations": []
+    },
+    {
+     "Id": "26012627",
+     "Title": "Campus Undergraduate Summer Internship Program - 2027 Data Analytics, Global Servicing- New York, NY",
+     "PostedDate": "2026-08-18",
+     "PostingEndDate": null,
+     "Language": "US",
+     "PrimaryLocationCountry": "US",
+     "GeographyId": 300000007686239,
+     "HotJobFlag": false,
+     "WorkplaceTypeCode": "ORA_HYBRID",
+     "JobFamily": null,
+     "JobFunction": null,
+     "WorkerType": null,
+     "ContractType": null,
+     "ManagerLevel": null,
+     "JobSchedule": null,
+     "JobShift": null,
+     "JobType": null,
+     "StudyLevel": null,
+     "DomesticTravelRequired": null,
+     "InternationalTravelRequired": null,
+     "WorkDurationYears": null,
+     "WorkDurationMonths": null,
+     "WorkHours": null,
+     "WorkDays": null,
+     "LegalEmployer": null,
+     "BusinessUnit": null,
+     "Department": null,
+     "Organization": null,
+     "BusinessUnitId": 300000079628576,
+     "LegalEmployerId": 300000079647088,
+     "OrganizationId": 300000079628576,
+     "MediaThumbURL": null,
+     "ShortDescriptionStr": "",
+     "PrimaryLocation": "New York, NY, United States",
+     "Distance": 1787011200000.0,
+     "TrendingFlag": false,
+     "BeFirstToApplyFlag": false,
+     "Relevancy": 24.854215621948242,
+     "WorkplaceType": "Hybrid",
+     "ExternalQualificationsStr": null,
+     "ExternalResponsibilitiesStr": null,
+     "secondaryLocations": []
+    },
+    {
+     "Id": "26012749",
+     "Title": "Campus Undergraduate Summer Internship Program - 2027 Product Development, Global Servicing- New York, NY",
+     "PostedDate": "2026-08-18",
+     "PostingEndDate": null,
+     "Language": "US",
+     "PrimaryLocationCountry": "US",
+     "GeographyId": 300000007686239,
+     "HotJobFlag": false,
+     "WorkplaceTypeCode": "ORA_HYBRID",
+     "JobFamily": null,
+     "JobFunction": null,
+     "WorkerType": null,
+     "ContractType": null,
+     "ManagerLevel": null,
+     "JobSchedule": null,
+     "JobShift": null,
+     "JobType": null,
+     "StudyLevel": null,
+     "DomesticTravelRequired": null,
+     "InternationalTravelRequired": null,
+     "WorkDurationYears": null,
+     "WorkDurationMonths": null,
+     "WorkHours": null,
+     "WorkDays": null,
+     "LegalEmployer": null,
+     "BusinessUnit": null,
+     "Department": null,
+     "Organization": null,
+     "BusinessUnitId": 300000079628576,
+     "LegalEmployerId": 300000079647088,
+     "OrganizationId": 300000079628576,
+     "MediaThumbURL": null,
+     "ShortDescriptionStr": "",
+     "PrimaryLocation": "New York, NY, United States",
+     "Distance": 1787011200000.0,
+     "TrendingFlag": false,
+     "BeFirstToApplyFlag": false,
+     "Relevancy": 23.67194366455078,
+     "WorkplaceType": "Hybrid",
+     "ExternalQualificationsStr": null,
+     "ExternalResponsibilitiesStr": null,
+     "secondaryLocations": []
+    }
+   ],
+   "categoriesFacet": [
+    {
+     "Id": 300000081299474,
+     "Name": "Technology",
+     "TotalCount": 50
+    },
+    {
+     "Id": 300000081299486,
+     "Name": "Risk",
+     "TotalCount": 37
+    },
+    {
+     "Id": 300000081299414,
+     "Name": "Administration/Management Info",
+     "TotalCount": 26
+    },
+    {
+     "Id": 300000081296038,
+     "Name": "Marketing",
+     "TotalCount": 25
+    },
+    {
+     "Id": 300000380178024,
+     "Name": "Product",
+     "TotalCount": 19
+    },
+    {
+     "Id": 300000081299420,
+     "Name": "Internal Audit",
+     "TotalCount": 17
+    },
+    {
+     "Id": 300000081296044,
+     "Name": "Compliance, Control & Legal",
+     "TotalCount": 13
+    },
+    {
+     "Id": 300000081299411,
+     "Name": "Finance",
+     "TotalCount": 10
+    },
+    {
+     "Id": 300000081299501,
+     "Name": "Operations/Customer Service",
+     "TotalCount": 10
+    },
+    {
+     "Id": 300000081299417,
+     "Name": "Travel Services",
+     "TotalCount": 9
+    }
+   ],
+   "locationsFacet": [
+    {
+     "Id": 300000000229164,
+     "Name": "United States",
+     "TotalCount": 139
+    },
+    {
+     "Id": 300000007649033,
+     "Name": "NY, United States",
+     "TotalCount": 94
+    },
+    {
+     "Id": 300000007686239,
+     "Name": "New York, NY, United States",
+     "TotalCount": 92
+    },
+    {
+     "Id": 300000007649003,
+     "Name": "AZ, United States",
+     "TotalCount": 39
+    },
+    {
+     "Id": 300000007667464,
+     "Name": "Phoenix, AZ, United States",
+     "TotalCount": 39
+    },
+    {
+     "Id": 300000000228786,
+     "Name": "India",
+     "TotalCount": 26
+    },
+    {
+     "Id": 300000032698665,
+     "Name": "HR, India",
+     "TotalCount": 24
+    },
+    {
+     "Id": 300000032710650,
+     "Name": "Gurugram, HR, India",
+     "TotalCount": 24
+    },
+    {
+     "Id": 300000007649010,
+     "Name": "FL, United States",
+     "TotalCount": 17
+    },
+    {
+     "Id": 300000007670739,
+     "Name": "Sunrise, FL, United States",
+     "TotalCount": 17
+    }
+   ],
+   "postingDatesFacet": [
+    {
+     "Id": 7,
+     "Name": "Less than 7 days",
+     "TotalCount": 107
+    },
+    {
+     "Id": 30,
+     "Name": "Less than 30 days",
+     "TotalCount": 231
+    },
+    {
+     "Id": 31,
+     "Name": "Greater than 30 days",
+     "TotalCount": 16
+    }
+   ],
+   "titlesFacet": [
+    {
+     "Id": "UNC",
+     "Name": "Unclass",
+     "TotalCount": 49
+    },
+    {
+     "Id": "ENA",
+     "Name": "Engineering & Architecture",
+     "TotalCount": 30
+    },
+    {
+     "Id": "PRD",
+     "Name": "Product",
+     "TotalCount": 19
+    },
+    {
+     "Id": "RSK",
+     "Name": "Risk Management",
+     "TotalCount": 19
+    },
+    {
+     "Id": "AUD",
+     "Name": "Internal Audit",
+     "TotalCount": 17
+    },
+    {
+     "Id": "OTH",
+     "Name": "Other",
+     "TotalCount": 13
+    },
+    {
+     "Id": "MKT",
+     "Name": "Marketing",
+     "TotalCount": 12
+    },
+    {
+     "Id": "CYS",
+     "Name": "Cybersecurity",
+     "TotalCount": 9
+    },
+    {
+     "Id": "TVL",
+     "Name": "Travel Support  Operations",
+     "TotalCount": 8
+    },
+    {
+     "Id": "CMP",
+     "Name": "Compliance",
+     "TotalCount": 7
+    }
+   ],
+   "workLocationsFacet": [
+    {
+     "Id": 300000080896907,
+     "Name": "New York-Amex Tower WFC-35 Hr",
+     "TotalCount": 85
+    },
+    {
+     "Id": 300000080574221,
+     "Name": "AEDR Desert Ridge OB4 - Canyon",
+     "TotalCount": 38
+    },
+    {
+     "Id": 300000080897003,
+     "Name": "AEDR Desert Ridge OB1-Camelback",
+     "TotalCount": 16
+    },
+    {
+     "Id": 300000080900583,
+     "Name": "Towne Ridge Center III",
+     "TotalCount": 15
+    },
+    {
+     "Id": 300000080557217,
+     "Name": "Amex India Campus, 74 A",
+     "TotalCount": 13
+    },
+    {
+     "Id": 300000080892692,
+     "Name": "Sunrise Campus",
+     "TotalCount": 11
+    },
+    {
+     "Id": 300000080896919,
+     "Name": "AEDR Desert Ridge CSB - Sierra",
+     "TotalCount": 11
+    },
+    {
+     "Id": 300000080903013,
+     "Name": "Cyber City-Bldg 5",
+     "TotalCount": 11
+    },
+    {
+     "Id": 300000282744287,
+     "Name": "Voyager - 35 HRS",
+     "TotalCount": 11
+    },
+    {
+     "Id": 300000080896901,
+     "Name": "AEDR Desert Ridge OB2-McDowell",
+     "TotalCount": 10
+    }
+   ],
+   "flexFieldsFacet": [
+    {
+     "Name": "AttributeChar6",
+     "Label": "Career Area"
+    }
+   ],
+   "organizationsFacet": [
+    {
+     "Id": 300000079628496,
+     "Name": "A0004 - Enterprise Tech Services",
+     "TotalCount": 50
+    },
+    {
+     "Id": 300000079629456,
+     "Name": "A0016 - Global Risk & Compliance",
+     "TotalCount": 25
+    },
+    {
+     "Id": 300000079630496,
+     "Name": "A0029 - Intl Card Services",
+     "TotalCount": 18
+    },
+    {
+     "Id": 300000079628416,
+     "Name": "A0003 - Internal Audit Group",
+     "TotalCount": 17
+    },
+    {
+     "Id": 300000079629536,
+     "Name": "A0017 - Global Merchant & Network Svcs",
+     "TotalCount": 17
+    },
+    {
+     "Id": 300000079628576,
+     "Name": "A0005 - Global Servicing",
+     "TotalCount": 16
+    },
+    {
+     "Id": 300000079630096,
+     "Name": "A0024 - US Consumer Services",
+     "TotalCount": 15
+    },
+    {
+     "Id": 300000745693327,
+     "Name": "A0046 - Enterprise Shared Services",
+     "TotalCount": 11
+    },
+    {
+     "Id": 300000079629936,
+     "Name": "A0022 - Global Commercial Services",
+     "TotalCount": 7
+    },
+    {
+     "Id": 300000079630976,
+     "Name": "A0035 - Amex Digital Labs",
+     "TotalCount": 5
+    }
+   ],
+   "workplaceTypesFacet": [
+    {
+     "Id": "ORA_HYBRID",
+     "Name": "Hybrid",
+     "TotalCount": 220
+    },
+    {
+     "Id": "ORA_ON_SITE",
+     "Name": "On-site",
+     "TotalCount": 24
+    },
+    {
+     "Id": "ORA_REMOTE",
+     "Name": "Remote",
+     "TotalCount": 3
+    }
+   ]
+  }
+ ],
+ "count": 1,
+ "hasMore": false,
+ "limit": 200,
+ "offset": 0,
+ "links": [
+  {
+   "rel": "self",
+   "href": "https://egug.fa.us2.oraclecloud.com:443/hcmRestApi/resources/11.13.18.05/recruitingCEJobRequisitions",
+   "name": "recruitingCEJobRequisitions",
+   "kind": "collection"
+  },
+  {
+   "rel": "action",
+   "href": "https://egug.fa.us2.oraclecloud.com:443/hcmRestApi/resources/11.13.18.05/recruitingCEJobRequisitions/action/getRequisitionsLocationCoordinates",
+   "name": "getRequisitionsLocationCoordinates",
+   "kind": "other"
+  },
+  {
+   "rel": "action",
+   "href": "https://egug.fa.us2.oraclecloud.com:443/hcmRestApi/resources/11.13.18.05/recruitingCEJobRequisitions/action/getRequisitionDetailsForMap",
+   "name": "getRequisitionDetailsForMap",
+   "kind": "other"
+  }
+ ]
+}

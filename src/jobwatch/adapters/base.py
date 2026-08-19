@@ -83,6 +83,13 @@ class FetchContext:
     source_id: int | None = None
     # Set by `jobwatch test` so a manual probe never writes conditional state.
     probe: bool = False
+    # Stop paginating after this many pages and return what was collected, with
+    # no error. Set by bulk discovery, which probes hundreds of unknown tenants
+    # and only needs to know an endpoint answers -- a full scan of every one of
+    # them from a residential IP is exactly the traffic §13.5 exists to avoid.
+    # This is a *bound*, not the runaway guard: each adapter's MAX_PAGES still
+    # raises, because exceeding that means the board is not paginating sanely.
+    max_pages: int | None = None
     extra_headers: dict[str, str] = field(default_factory=dict)
 
     def require(self, key: str) -> Any:

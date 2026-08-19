@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from .classify.rules import KINDS
 from .db import Database, utcnow
 
 if TYPE_CHECKING:
@@ -205,10 +206,11 @@ class FilterSpec(BaseModel):
     role_any: list[str] = Field(default_factory=list)
     exclude_any: list[str] = Field(default_factory=list)
     location_exclude: list[str] = Field(default_factory=list)
+    location_require: list[str] = Field(default_factory=list)
 
     def as_rows(self) -> list[tuple[str, str]]:
         rows: list[tuple[str, str]] = []
-        for kind in ("require_any", "role_any", "exclude_any", "location_exclude"):
+        for kind in KINDS:
             rows.extend((kind, pattern) for pattern in getattr(self, kind))
         return rows
 
@@ -472,9 +474,7 @@ def export_config(db: Database) -> tuple[str, str]:
         block["sources"] = sources
         companies.append(block)
 
-    filters: dict[str, list[str]] = {
-        k: [] for k in ("require_any", "role_any", "exclude_any", "location_exclude")
-    }
+    filters: dict[str, list[str]] = {k: [] for k in KINDS}
     for row in db.query(
         "SELECT kind, pattern FROM filter_rules WHERE enabled = 1 ORDER BY kind, id"
     ):

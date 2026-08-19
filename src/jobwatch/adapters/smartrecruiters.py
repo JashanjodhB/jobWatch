@@ -62,6 +62,8 @@ class SmartRecruitersAdapter:
             offset += len(content)
             if not content or (isinstance(total, int) and offset >= total):
                 break
+            if ctx.max_pages is not None and page + 1 >= ctx.max_pages:
+                break
         else:
             raise AdapterError(
                 f"pagination exceeded {MAX_PAGES} pages -- refusing to keep hammering",

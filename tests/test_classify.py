@@ -60,6 +60,65 @@ def test_location_exclude_rejects_only_when_every_location_is_excluded(classifie
     assert classifier.explain(title, []).classification == "match"
 
 
+# ── location_require: the United States allow list ────────────────────────
+
+
+@pytest.mark.parametrize(
+    "location,expected",
+    [
+        # in range
+        ("San Francisco, CA", "match"),
+        ("US, CA, Santa Clara", "match"),
+        ("San Mateo, CA, United States", "match"),
+        ("New York, New York, USA", "match"),
+        ("Remote - USA", "match"),
+        ("United States - Remote", "match"),
+        ("Mountain View, California", "match"),
+        ("Washington, D.C.", "match"),
+        ("San Francisco", "match"),
+        ("NYC, SF", "match"),
+        ("London, UK; Ontario, CAN; Remote-Friendly, United States", "match"),
+        # out of range
+        ("London, United Kingdom", "reject"),
+        ("Singapore", "reject"),
+        ("Tokyo, Japan", "reject"),
+        ("Toronto, ON", "reject"),
+        ("Sao Paulo, Brazil", "reject"),
+        ("Shanghai, China", "reject"),
+        # Amazon writes country-first, so an unanchored two-letter code would
+        # read these as Delaware and Indiana.
+        ("DE, BY, Munich", "reject"),
+        ("IN, KA, Bengaluru", "reject"),
+        # No geography at all. Unknown is not foreign — never drop these.
+        ("2 Locations", "match"),
+        ("Hybrid", "match"),
+        ("Distributed", "match"),
+    ],
+)
+def test_united_states_only(classifier, location, expected):
+    assert classifier.explain("Software Engineer Intern", [location]).classification == expected
+
+
+def test_one_location_in_range_is_enough(classifier):
+    title = "Software Engineer Intern"
+    assert classifier.explain(title, ["Tokyo, Japan", "Austin, TX"]).classification == "match"
+
+
+def test_a_posting_with_no_location_is_never_location_rejected(classifier):
+    """An adapter that failed to parse a location must not cost you a posting."""
+    title = "Software Engineer Intern"
+    assert classifier.explain(title, []).classification == "match"
+    assert classifier.explain(title, None).classification == "match"
+    assert classifier.explain(title, ["", "  "]).classification == "match"
+
+
+def test_location_require_is_a_no_op_when_no_such_rule_exists():
+    rules = RuleSet.from_patterns(
+        {"require_any": [r"\bintern\b"], "role_any": [r"\bsoftware\b"]}
+    )
+    assert rules.evaluate("Software Intern", ["Tokyo, Japan"]).classification == "match"
+
+
 def test_outcome_explains_itself(classifier):
     outcome = classifier.explain("Sustainability Intern").outcome
     assert outcome is not None
@@ -99,6 +158,32 @@ def test_rules_cache_their_decisive_outcomes(classifier, seeded_db):
 def test_review_outcomes_are_never_cached(classifier, seeded_db):
     classifier.classify("Sustainability Intern")
     assert seeded_db.scalar("SELECT COUNT(*) FROM title_verdicts", default=0) == 0
+
+
+def test_a_location_reject_is_never_cached_under_the_title(classifier, seeded_db):
+    """The cache key is the normalized title, which carries no location.
+
+    Cache a location-driven reject and the first London posting of a title
+    suppresses the San Francisco one for good.
+    """
+    title = "Software Engineer Intern"
+    assert classifier.classify(title, ["London, United Kingdom"]).classification == "reject"
+    assert seeded_db.scalar("SELECT COUNT(*) FROM title_verdicts", default=0) == 0
+    assert classifier.classify(title, ["San Francisco, CA"]).classification == "match"
+
+
+def test_location_screening_precedes_even_a_manual_verdict(classifier):
+    """Where a job is is a property of the posting, not of its title."""
+    classifier.record(normalize_title("Software Engineer Intern"), "match", source="manual")
+    assert classifier.classify("Software Engineer Intern", ["Tokyo, Japan"]).classification == "reject"
+    assert classifier.classify("Software Engineer Intern", ["Austin, TX"]).classification == "match"
+
+
+def test_location_outcomes_are_not_decisive(classifier):
+    outcome = classifier.explain("Software Engineer Intern", ["Tokyo, Japan"]).outcome
+    assert outcome is not None
+    assert outcome.location_dependent
+    assert not outcome.is_decisive
 
 
 def test_the_cache_is_consulted_before_the_rules(classifier):

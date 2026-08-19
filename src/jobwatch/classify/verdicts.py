@@ -1,11 +1,18 @@
 """The three-stage classifier (§8). No network calls, no cost.
 
+    0. location gate   -- is the job even somewhere you would take it?
     1. verdict cache   -- `title_verdicts` keyed by normalized title
     2. rules           -- the regex engine, which caches its decisive outcomes
     3. human review    -- alert anyway, and queue it for a one-key verdict
 
-Stage 1 runs first so a human decision made once is never revisited and always
-overrides the rules.
+Stage 1 runs before the rules so a human decision made once is never revisited
+and always overrides them.
+
+Stage 0 runs before *everything*, and its outcome is never cached. Location is
+a property of the posting; the cache key is the normalized title, which carries
+no location at all. Screening later would mean the first London posting of a
+title caches a reject that then suppresses the San Francisco one — and a manual
+'match' verdict would wave through every foreign posting sharing that title.
 
 The subtlety: rules also write cache entries, which would freeze the filter
 workbench solid — edit a pattern, and every title already cached keeps its old
@@ -65,6 +72,16 @@ class Classifier:
     ) -> Decision:
         normalized = normalize_title(title)
 
+        out_of_range = self._rules.evaluate_locations(locations)
+        if out_of_range is not None:
+            return Decision(
+                classification=out_of_range.classification,
+                class_source="rules",
+                reason=out_of_range.reason,
+                normalized_title=normalized,
+                outcome=out_of_range,
+            )
+
         cached = self.lookup(normalized)
         if cached is not None:
             return Decision(
@@ -80,7 +97,7 @@ class Classifier:
                 normalized_title=normalized,
             )
 
-        outcome = self._rules.evaluate(title, locations)
+        outcome = self._rules.evaluate_title(title)
         decision = Decision(
             classification=outcome.classification,
             class_source="rules",

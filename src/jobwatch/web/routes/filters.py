@@ -17,7 +17,7 @@ from typing import Annotated
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, PlainTextResponse
 
-from ...classify.rules import KINDS, RuleSet
+from ...classify.rules import KINDS, LOCATION_KINDS, RuleSet
 from ...config import export_config
 from ...db import utcnow
 from ..deps import get_db, get_service, parse_locations, partial, render
@@ -112,7 +112,7 @@ async def preview(
 
     for title, locations, company in sample:
         if probe is not None:
-            haystack = title if kind != "location_exclude" else " ".join(locations)
+            haystack = " ".join(locations) if kind in LOCATION_KINDS else title
             if probe.search(haystack):
                 direct_hits += 1
 

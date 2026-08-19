@@ -6,13 +6,20 @@
 #
 # Patterns are Python regex, matched case-insensitively against the ORIGINAL
 # posting title — not the normalized one — so patterns like '\b20\d\d\s+summer\b'
-# still work. `location_exclude` is matched against each location string.
+# still work. The two `location_*` kinds are matched against each location
+# string instead. Use an inline '(?-i:...)' group where case actually matters,
+# as the US abbreviations below do.
 #
 # Evaluation order:
+#   every location excluded              -> reject     (location-dependent)
+#   no location satisfies location_require -> reject   (location-dependent)
 #   any exclude_any hit                  -> reject
 #   no require_any hit                   -> reject
 #   require_any hit AND role_any hit     -> match
 #   require_any hit, no role_any hit     -> review
+#
+# Location screening runs first and is never cached — the verdict cache is keyed
+# on the normalized title, which says nothing about where the job is.
 
 require_any:
   - '\bintern(ship)?\b'
@@ -42,7 +49,34 @@ exclude_any:
   - '\bnew ?grad\b'
   - '\bmanager\b'
 
+# A deny list: a posting is rejected only when EVERY one of its locations is hit.
+# Largely redundant now that location_require is set, but harmless and still the
+# right tool for excluding a specific city inside an otherwise-allowed country.
 location_exclude:
   - 'India'
   - 'Poland'
   - 'Ireland'
+
+# An allow list: United States only. A posting is rejected when it has locations
+# and NOT ONE of them matches anything here. A posting with no location at all is
+# never rejected — an adapter that failed to parse a location must not silently
+# cost you a posting.
+#
+# Tuned against all 1,717 distinct location strings this database has seen.
+# Two-letter state codes require a preceding comma, because Amazon writes
+# 'DE, BY, Munich' (Germany) and 'IN, KA, Bengaluru' (India) — matched
+# unanchored, those read as Delaware and Indiana. '\bUS\b' already covers
+# Amazon's genuine 'US, CA, Santa Clara' form.
+location_require:
+  - '\bUnited States\b'
+  - '(?-i:\b(?:U\.?S\.?A|USA)\b)'
+  - '(?-i:\bUS\b)'
+  - '\b(?:Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming)\b'
+  - '(?-i:,\s*(?:AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b)'
+  - '(?-i:\b(?:NYC|SF|SEA|CHI)\b)'
+  # Bare city names, for the boards that print no state or country at all.
+  - '\b(?:San Francisco|San Jose|San Mateo|San Diego|Santa Clara|Santa Monica|Sunnyvale|Mountain View|Menlo Park|Palo Alto|Cupertino|Berkeley|Oakland|Los Angeles|Irvine|Seattle|Bellevue|Redmond|Kirkland|New York|Brooklyn|Boston|Somerville|Austin|Dallas|Plano|Houston|Chicago|Denver|Boulder|Atlanta|Miami|Philadelphia|Pittsburgh|Phoenix|Tempe|Scottsdale|Portland|Minneapolis|Detroit|Nashville|Raleigh|Durham|Charlotte|Columbus|Ann Arbor|Madison|Salt Lake City|Arlington|McLean|Reston|Herndon|Bentonville|St\. Louis|Kansas City|Indianapolis)\b'
+  # Placeholders that carry no geography at all. These are not "United States",
+  # they are UNKNOWN — and an unknown location must not be silently dropped.
+  # '2 Locations' alone accounts for ~700 postings on Greenhouse boards.
+  - '^\s*(?:\d+\s+Locations?|Hybrid|Remote|Distributed|In-?Office|N/?A|Flexible|Various)\s*$'

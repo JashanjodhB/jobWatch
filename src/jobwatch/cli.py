@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -78,6 +79,31 @@ def build_parser() -> argparse.ArgumentParser:
     disc = sub.add_parser("discover", help="identify the ATS behind a careers URL")
     disc.add_argument("careers_url")
 
+    bulk = sub.add_parser(
+        "discover-bulk",
+        help="find companies you are not watching yet, from community internship feeds",
+    )
+    bulk.add_argument("--feed", action="append", default=[], metavar="URL",
+                      help="feed JSON URL (repeatable); default is the built-in set")
+    bulk.add_argument("--term", action="append", default=[], metavar="TERM",
+                      help="only companies hiring for this term, e.g. 'Summer 2027' (repeatable)")
+    bulk.add_argument("--category", action="append", default=[], metavar="CAT",
+                      help="only this feed category, e.g. Software (repeatable)")
+    bulk.add_argument("--out", type=Path, help="staging YAML to write (default config/companies-discovered.yaml)")
+    bulk.add_argument("--ledger", type=Path, help="probe ledger JSON (default alongside the database)")
+    bulk.add_argument("--limit", type=int, default=40,
+                      help="max companies to probe this run (default 40)")
+    bulk.add_argument("--min-listings", type=int, default=1,
+                      help="skip companies with fewer active listings than this")
+    bulk.add_argument("--tier", default="warm", choices=["hot", "warm", "cold"],
+                      help="tier to write into the generated blocks")
+    bulk.add_argument("--concurrency", type=int,
+                      help="parallel probes (default: http.max_concurrency, halved)")
+    bulk.add_argument("--retry-failed", action="store_true",
+                      help="re-probe companies that failed in an earlier run")
+    bulk.add_argument("--dry-run", action="store_true",
+                      help="list what would be probed, without probing anything")
+
     sub.add_parser("export-config", help="write the database back out to YAML")
     sub.add_parser("adapters", help="list registered adapters")
 
@@ -103,6 +129,7 @@ def main(argv: list[str] | None = None) -> int:
         "classify": cmd_classify,
         "replay": cmd_replay,
         "discover": cmd_discover,
+        "discover-bulk": cmd_discover_bulk,
         "export-config": cmd_export,
         "adapters": cmd_adapters,
         "backup": cmd_backup,
@@ -463,6 +490,181 @@ async def _discover(args, config: AppConfig) -> int:
         print(best.as_yaml_block(slug, slug.title(), args.careers_url))
     print()
     return 0 if (best and best.verified) else 1
+
+
+def cmd_discover_bulk(args, config: AppConfig) -> int:
+    return asyncio.run(_discover_bulk(args, config))
+
+
+_SLUG_LINE = re.compile(r"^- slug:\s*(\S+)", re.M)
+
+
+def _known_slugs(config: AppConfig, out_path: Path) -> set[str]:
+    """Every company already accounted for: seeded, staged, or previously found.
+
+    The staging files count. A company sitting in companies-expansion.yaml is
+    one you have already decided about, and re-probing it every week would spend
+    requests to re-learn something the repo already records.
+    """
+    known: set[str] = set()
+
+    for name in ("companies.yaml", "companies-expansion.yaml"):
+        path = config.config_dir / name
+        if path.exists():
+            known.update(_SLUG_LINE.findall(path.read_text(encoding="utf-8")))
+    if out_path.exists():
+        known.update(_SLUG_LINE.findall(out_path.read_text(encoding="utf-8")))
+
+    # The database is authoritative once the UI has been used to add companies,
+    # so a slug can be live without appearing in any YAML file.
+    if config.db_path.exists():
+        db = Database(config.db_path)
+        try:
+            known.update(r["slug"] for r in db.query("SELECT slug FROM companies"))
+        # A missing or pre-migration database just means nothing extra to add.
+        except Exception as exc:
+            log.debug("could not read companies from the database: %s", exc)
+        finally:
+            db.close()
+    return known
+
+
+async def _discover_bulk(args, config: AppConfig) -> int:
+    from .db import utcnow
+    from .discover_bulk import (
+        DEFAULT_FEEDS,
+        Ledger,
+        bulk_discover,
+        collect_companies,
+        fetch_feed,
+        is_known,
+        render_yaml,
+    )
+    from .http import build_client
+
+    dim, bold, green, red, yellow, reset = _color(sys.stdout.isatty())
+
+    out_path = args.out or (config.config_dir / "companies-discovered.yaml")
+    ledger_path = args.ledger or (config.db_path.parent / "discovery-ledger.json")
+    ledger = Ledger.load(ledger_path)
+    known = _known_slugs(config, out_path)
+    feeds = args.feed or list(DEFAULT_FEEDS)
+
+    client = build_client(config.settings.http)
+    listings = []
+    try:
+        for feed in feeds:
+            try:
+                got = await fetch_feed(feed, client)
+            # A tracker that has moved or gone private must not stop the run.
+            except Exception as exc:
+                print(f"  {yellow}!{reset} {feed}\n    {dim}{type(exc).__name__}: {exc}{reset}")
+                continue
+            print(f"  {green}+{reset} {len(got)} listings from {dim}{feed.split('/')[4]}{reset}")
+            listings.extend(got)
+
+        if not listings:
+            print(f"\n{red}no feed could be read{reset}\n")
+            return 1
+
+        companies = collect_companies(
+            listings, terms=args.term, categories=args.category
+        )
+
+        skipped_known = skipped_ledger = skipped_small = 0
+        queue = []
+        for company in companies.values():
+            if is_known(company.slug, known):
+                skipped_known += 1
+                continue
+            if company.listings < args.min_listings:
+                skipped_small += 1
+                continue
+            status = ledger.status(company.slug)
+            if status == "verified" or (status == "failed" and not args.retry_failed):
+                skipped_ledger += 1
+                continue
+            queue.append(company)
+
+        # Cheap, high-confidence work first: a fingerprintable URL costs no page
+        # fetch, so --limit buys the most coverage by spending it there.
+        queue.sort(key=lambda c: (not c.fingerprintable, -c.listings, c.slug))
+        total_new = len(queue)
+        queue = queue[: max(0, args.limit)]
+
+        print(
+            f"\n{bold}{len(companies)}{reset} companies in feed  "
+            f"{dim}·{reset}  {skipped_known} already known  "
+            f"{dim}·{reset}  {skipped_ledger} probed before  "
+            f"{dim}·{reset}  {skipped_small} below --min-listings"
+        )
+        print(f"{bold}{total_new}{reset} new to probe, taking {bold}{len(queue)}{reset} this run\n")
+
+        if not queue:
+            print(f"{dim}nothing to do{reset}\n")
+            return 0
+
+        if args.dry_run:
+            for company in queue:
+                mark = f"{green}url{reset}" if company.fingerprintable else f"{yellow}page{reset}"
+                print(f"  [{mark}] {bold}{company.display_name}{reset} {dim}({company.listings}){reset}")
+                print(f"        {dim}{company.careers_url or 'no usable URL'}{reset}")
+            print(f"\n{dim}--dry-run: nothing was probed{reset}\n")
+            return 0
+
+        concurrency = args.concurrency or max(1, config.settings.http.max_concurrency // 2)
+        outcomes = await bulk_discover(queue, client, concurrency=concurrency)
+    finally:
+        await client.aclose()
+
+    verified = [o for o in outcomes if o.ok]
+    failed = [o for o in outcomes if not o.ok]
+
+    for outcome in sorted(verified, key=lambda o: -o.company.listings):
+        candidate = outcome.candidate
+        assert candidate is not None
+        count = candidate.posting_count
+        print(
+            f"  {green}+{reset} {bold}{outcome.company.display_name}{reset}  "
+            f"{candidate.adapter}  {dim}>={count} postings{reset}"
+        )
+        ledger.record(
+            outcome.company.slug,
+            "verified",
+            adapter=candidate.adapter,
+            careers_url=outcome.company.careers_url,
+        )
+
+    for outcome in failed:
+        print(
+            f"  {red}x{reset} {outcome.company.display_name}  "
+            f"{dim}{(outcome.error or 'unknown')[:90]}{reset}"
+        )
+        ledger.record(outcome.company.slug, "failed", error=(outcome.error or "")[:200])
+
+    ledger.save()
+
+    if verified:
+        rendered = render_yaml(outcomes, tier=args.tier)
+        if out_path.exists():
+            # Append, never overwrite: earlier runs found companies this one
+            # deliberately skipped, and losing them would make the ledger lie.
+            body = rendered.split("\n\n", 1)[1] if "\n\n" in rendered else rendered
+            with out_path.open("a", encoding="utf-8") as fh:
+                fh.write(f"\n# ── added {utcnow()[:10]} ──\n\n{body}")
+        else:
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(rendered, encoding="utf-8")
+
+    print(
+        f"\n{bold}{len(verified)} verified{reset}, {len(failed)} not resolved  "
+        f"{dim}·{reset}  ledger: {dim}{ledger_path}{reset}"
+    )
+    if verified:
+        print(f"wrote {bold}{out_path}{reset}")
+        print(f"{dim}review it, move what you want into companies.yaml, then `jobwatch seed`{reset}")
+    print()
+    return 0
 
 
 def cmd_export(_args, config: AppConfig) -> int:

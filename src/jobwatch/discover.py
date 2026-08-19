@@ -85,6 +85,12 @@ _WORKDAY_URL = re.compile(
     r"https?://([\w-]+)\.(wd\d+)\.myworkdayjobs\.com/(?:([\w-]{2,5}-[\w-]{2,5})/)?([\w-]+)", re.I
 )
 
+# Oracle Recruiting Cloud puts the site number in the careers path. The pod that
+# actually serves the API is a separate, opaque host and is NOT resolvable from
+# here -- the redirect off the company domain lands on an error page, not the
+# API -- so this reports the platform and leaves the pod to be filled in.
+_ORACLE_SITE = re.compile(r"/sites/(CX_\d+)", re.I)
+
 # Eightfold is identified by its API path rather than its hostname: tenants run
 # it on their own domains (explore.jobs.netflix.net) as often as on eightfold.ai.
 _EIGHTFOLD_API = re.compile(r"/api/apply/v\d/jobs\?domain=([\w.-]+)", re.I)
@@ -107,7 +113,11 @@ _PAGE_RULES: list[tuple[re.Pattern[str], str, str]] = [
 
 
 async def discover(
-    url: str, client: httpx.AsyncClient, *, verify: bool = True
+    url: str,
+    client: httpx.AsyncClient,
+    *,
+    verify: bool = True,
+    max_pages: int | None = None,
 ) -> DiscoveryResult:
     result = DiscoveryResult(url=url)
     seen: set[tuple[str, str]] = set()
@@ -141,7 +151,7 @@ async def discover(
 
     if verify:
         for candidate in result.candidates:
-            await _verify(candidate, client)
+            await _verify(candidate, client, max_pages=max_pages)
 
         # Nothing survived verification, so every candidate above is a guess.
         # A client-rendered page (Eightfold, most SPAs) hides its API until the
@@ -183,6 +193,10 @@ def _from_url(url: str) -> list[Candidate]:
                 evidence="tenant, host and site read directly off the careers URL",
             )
         )
+
+    oracle = _ORACLE_SITE.search(url)
+    if oracle:
+        out.append(_oracle_candidate(url, oracle.group(1)))
 
     for pattern, adapter, key in _URL_RULES:
         match = pattern.search(url)
@@ -230,6 +244,10 @@ def _from_page(html: str, page_url: str) -> list[Candidate]:
             )
         )
 
+    oracle = _ORACLE_SITE.search(html)
+    if oracle:
+        out.append(_oracle_candidate(page_url, oracle.group(1)))
+
     for pattern, adapter, key in _PAGE_RULES:
         match = pattern.search(html)
         if match:
@@ -257,6 +275,34 @@ def _from_page(html: str, page_url: str) -> list[Candidate]:
     return out
 
 
+def _oracle_candidate(url: str, site_number: str) -> Candidate:
+    """An Oracle tenant, minus the one value that cannot be discovered.
+
+    Reported even though it will never verify: naming the platform and the
+    manual step is far more use than the low-confidence guess this would
+    otherwise fall through to.
+    """
+    origin = f"{urlparse(url).scheme}://{urlparse(url).netloc}"
+    return Candidate(
+        adapter="oracle",
+        config={
+            "pod": "<follow https://HOST/hcmRestApi/... and copy the oraclecloud.com host>",
+            "site_number": site_number,
+            "site_url": f"{origin}/en/sites/{site_number}",
+            "keyword": "intern",
+            "limit": 200,
+        },
+        confidence="medium",
+        evidence=(
+            f"Oracle Recruiting Cloud site {site_number} in the careers URL — "
+            "set `pod` by hand: request /hcmRestApi/resources/latest/"
+            "recruitingCEJobRequisitions on this host and read the "
+            "oraclecloud.com host out of the 302"
+        ),
+        error="cannot verify until `pod` is filled in",
+    )
+
+
 async def _fetch_page(url: str, client: httpx.AsyncClient, result: DiscoveryResult) -> str:
     try:
         response = await client.get(
@@ -271,15 +317,35 @@ async def _fetch_page(url: str, client: httpx.AsyncClient, result: DiscoveryResu
         return ""
 
 
-async def _verify(candidate: Candidate, client: httpx.AsyncClient) -> None:
-    """Actually call the candidate endpoint. A guess you have to check is not useful."""
+async def _verify(
+    candidate: Candidate, client: httpx.AsyncClient, *, max_pages: int | None = None
+) -> None:
+    """Actually call the candidate endpoint. A guess you have to check is not useful.
+
+    `max_pages` bounds the call for bulk callers: `posting_count` then means "at
+    least this many", which is all discovery needs. It is deliberately not the
+    default -- a single interactive `jobwatch discover` should report the real
+    board size, because that number is how you sanity-check the handle.
+    """
+    # A candidate can arrive already knowing it is not callable -- Oracle needs a
+    # pod that discovery cannot resolve. Calling it anyway would replace a useful
+    # message with a protocol error.
+    if candidate.error:
+        return
+
     try:
         adapter = get_adapter(candidate.adapter)
     except AdapterError as exc:
         candidate.error = str(exc)
         return
 
-    ctx = FetchContext(client=client, config=candidate.config, adapter_name=candidate.adapter, probe=True)
+    ctx = FetchContext(
+        client=client,
+        config=candidate.config,
+        adapter_name=candidate.adapter,
+        probe=True,
+        max_pages=max_pages,
+    )
     try:
         result = await adapter.fetch(ctx)
     # Verification failing is information to show the user, not an error to raise.

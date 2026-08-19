@@ -40,6 +40,8 @@ _CORE_MODULES = (
     "workday",
     "smartrecruiters",
     "eightfold",
+    "oracle",
+    "jibe",
     "html",
     "browser",
 )

@@ -49,6 +49,32 @@ BOLD = "\033[1m"
 RESET = "\033[0m"
 
 
+def _unicode_marks_ok() -> bool:
+    """Windows consoles default to cp1252, which cannot encode the status marks.
+
+    Ask the stream for UTF-8 first; if it refuses, check whether the marks
+    survive its encoding. Getting this wrong crashes the whole report on its
+    first line — after every endpoint has already been called.
+    """
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
+        return True
+    except (AttributeError, OSError, ValueError):
+        pass
+    try:
+        "✓✗–".encode(sys.stdout.encoding or "ascii")
+    except (UnicodeEncodeError, LookupError):
+        return False
+    return True
+
+
+# Single-character fallbacks, so the columns line up either way.
+if _unicode_marks_ok():
+    MARK_OK, MARK_FAIL, MARK_SKIP = "✓", "✗", "–"
+else:
+    MARK_OK, MARK_FAIL, MARK_SKIP = "+", "x", "-"
+
+
 @dataclass
 class Result:
     company: str
@@ -272,15 +298,15 @@ async def main() -> int:
 
     for r in sorted(results, key=lambda x: (x.status != "FAIL", x.company)):
         if r.status == "OK":
-            mark, colour = "✓", GREEN
+            mark, colour = MARK_OK, GREEN
             note = f"{r.count} postings"
             if args.verbose and r.sample:
                 note += f'  {DIM}"{r.sample[:52]}"{RESET}'
         elif r.status == "FAIL":
-            mark, colour = "✗", RED
+            mark, colour = MARK_FAIL, RED
             note = r.detail
         else:
-            mark, colour = "–", YELLOW
+            mark, colour = MARK_SKIP, YELLOW
             note = r.detail
         print(f"  {colour}{mark}{RESET} {r.company:<24} {DIM}{r.adapter:<16}{RESET} {note}")
 

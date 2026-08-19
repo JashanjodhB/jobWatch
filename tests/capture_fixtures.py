@@ -29,11 +29,21 @@ APPLE_FORMAT = {"longDate": "MMMM D, YYYY", "mediumDate": "MMM D, YYYY"}
 
 
 def trim(payload, key: str | None, n: int = 4):
-    """Keep the envelope, keep only the first n items of the postings array."""
+    """Keep the envelope, keep only the first n items of the postings array.
+
+    `key` may be dotted ("data.positions") for endpoints that wrap their
+    results, which the pcsx flavour of Eightfold does.
+    """
     if key is None:
         return payload[:n] if isinstance(payload, list) else payload
-    if isinstance(payload, dict) and isinstance(payload.get(key), list):
-        payload[key] = payload[key][:n]
+    node = payload
+    *parents, leaf = key.split(".")
+    for step in parents:
+        if not isinstance(node, dict) or not isinstance(node.get(step), dict):
+            return payload
+        node = node[step]
+    if isinstance(node, dict) and isinstance(node.get(leaf), list):
+        node[leaf] = node[leaf][:n]
     return payload
 
 
@@ -48,6 +58,15 @@ async def main(only: set[str]) -> int:
             ("ashby", "get", ("https://api.ashbyhq.com/posting-api/job-board/openai", "jobs")),
             ("smartrecruiters", "get", ("https://api.smartrecruiters.com/v1/companies/Visa/postings?limit=4", "content")),
             ("eightfold_netflix", "get", ("https://explore.jobs.netflix.net/api/apply/v2/jobs?domain=netflix.com&start=0&num=4&query=intern", "positions")),
+            # Microsoft runs the newer "pcsx" flavour of the same platform: the
+            # results are wrapped in `data` and `num` is ignored (always 10).
+            ("eightfold_microsoft", "get", ("https://apply.careers.microsoft.com/api/pcsx/search?domain=microsoft.com&start=0&num=4&query=intern&sort_by=relevance", "data.positions")),
+            # Oracle nests its postings at items[0].requisitionList, which `trim`
+            # cannot reach, so the request itself asks for only four.
+            ("oracle_amex", "get", ("https://egug.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions?onlyData=true&expand=requisitionList.secondaryLocations&finder=findReqs;siteNumber=CX_1,limit=4,offset=0,sortBy=POSTING_DATES_DESC,keyword=intern", None)),
+            # Jibe fronts iCIMS; `limit` caps at 100 and 200 returns an empty
+            # list, so the request asks for a small page rather than trimming.
+            ("jibe_amd", "get", ("https://careers.amd.com/api/jobs?keywords=intern&page=1&limit=3&sortBy=relevance&descending=false&internal=false", "jobs")),
             ("direct_amazon", "get", ("https://www.amazon.jobs/en/search.json?base_query=intern&result_limit=4&offset=0&sort=recent", "jobs")),
             ("direct_uber", "post", ("https://www.uber.com/api/loadSearchJobsResults?localeCode=en",
                                       {"params": {"query": "intern"}, "page": 0, "limit": 4},

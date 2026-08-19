@@ -124,6 +124,10 @@ class WorkdayAdapter:
                     f"(collected {len(items)} of {total}) -- refusing to keep hammering",
                     adapter=self.name,
                 )
+            # A bounded probe stops here with a partial board and no error: the
+            # caller asked "does this tenant answer", not "list every req".
+            if ctx.max_pages is not None and pages >= ctx.max_pages:
+                break
 
             await asyncio.sleep(PAGE_DELAY_SECONDS)
             payload, _response = await page_request(page_size, offset, False)

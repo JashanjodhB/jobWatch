@@ -22,7 +22,7 @@ from typing import Any
 
 __all__ = ["SCHEMA_VERSION", "Database", "default_db_path", "parse_ts", "utcnow"]
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 
 def utcnow() -> str:
@@ -203,7 +203,28 @@ _V2 = """
 ALTER TABLE outbox ADD COLUMN delivered TEXT;   -- JSON array of channel names
 """
 
-MIGRATIONS: list[tuple[int, str]] = [(1, _V1), (2, _V2)]
+# v3: 'location_require' turns location screening into an allow list, so a
+# filter can say "United States only" instead of naming every country to skip.
+# SQLite cannot widen a CHECK constraint in place, hence the table rebuild.
+_V3 = """
+CREATE TABLE filter_rules_v3 (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    kind       TEXT NOT NULL CHECK(kind IN
+                 ('require_any','role_any','exclude_any',
+                  'location_exclude','location_require')),
+    pattern    TEXT NOT NULL,
+    enabled    INTEGER NOT NULL DEFAULT 1,
+    note       TEXT,
+    created_at TEXT NOT NULL,
+    UNIQUE(kind, pattern)
+);
+INSERT INTO filter_rules_v3(id, kind, pattern, enabled, note, created_at)
+    SELECT id, kind, pattern, enabled, note, created_at FROM filter_rules;
+DROP TABLE filter_rules;
+ALTER TABLE filter_rules_v3 RENAME TO filter_rules;
+"""
+
+MIGRATIONS: list[tuple[int, str]] = [(1, _V1), (2, _V2), (3, _V3)]
 
 
 # ── connection ────────────────────────────────────────────────────────────

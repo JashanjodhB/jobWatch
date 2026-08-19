@@ -1,0 +1,1951 @@
+# jobwatch — expansion candidates
+#
+# Every entry below was probed against its live endpoint on 2026-08-14 and
+# returned postings. This file is NOT loaded by anything; it is a staging area.
+# Move the blocks you want into config/companies.yaml, or add them from the
+# Companies screen.
+#
+# Re-verify before committing:
+#     python verify_sources.py config/companies-expansion.yaml
+#
+# TIERING. Everything here is `warm` except the quant desks, which close intern
+# reqs within hours of posting. config/companies.yaml says the hot tier should
+# stay near 30 and it is already at 24 enabled, so promoting more than the quant
+# block means demoting something first — the large Workday tenants (Capital One
+# at ~54 requests a scan, Salesforce, Adobe) are the obvious candidates, since
+# they leave reqs open for weeks and cost the most per poll.
+#
+# WORKDAY COUNTS ARE FUZZY. Workday's searchText matches substrings, so a search
+# for "intern" also returns "International", "Internal Audit" and "Internet".
+# Each Workday note records how many of the first 20 results are genuinely
+# intern reqs — treat that ratio, not the total, as the signal.
+#
+# SEASONALITY. Probed 14 August. Summer-2027 campus reqs mostly open between
+# late August and October, so a board reading 0 interns today is normal and is
+# still worth polling — that is the point of watching it.
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# QUANT & TRADING — fastest closes, recommend hot tier
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: jump-trading
+  display_name: Jump Trading
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/jumptrading
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: jumptrading}          # verified: 106 postings, 44 intern/new-grad
+
+- slug: optiver
+  display_name: Optiver
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/optiverus
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: optiverus}          # verified: 172 postings, 18 intern/new-grad
+
+- slug: imc-trading
+  display_name: IMC Trading
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/imc
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: imc}          # verified: 165 postings, 17 intern/new-grad
+
+- slug: point72
+  display_name: Point72
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/point72
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: point72}          # verified: 229 postings, 15 intern/new-grad
+
+- slug: virtu-financial
+  display_name: Virtu Financial
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/virtu
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: virtu}          # verified: 46 postings, 14 intern/new-grad
+
+- slug: five-rings
+  display_name: Five Rings
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/fiveringsllc
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: fiveringsllc}          # verified: 17 postings, 9 intern/new-grad
+
+- slug: akuna-capital
+  display_name: Akuna Capital
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/akunacapital
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: akunacapital}          # verified: 34 postings, 8 intern/new-grad
+
+- slug: tower-research
+  display_name: Tower Research
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/towerresearchcapital
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: towerresearchcapital}          # verified: 79 postings, 7 intern/new-grad
+
+- slug: squarepoint-capital
+  display_name: Squarepoint Capital
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/squarepointcapital
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: squarepointcapital}          # verified: 90 postings, 4 intern/new-grad
+
+- slug: belvedere-trading
+  display_name: Belvedere Trading
+  tier: hot
+  careers_url: https://jobs.lever.co/belvederetrading
+  sources:
+    - adapter: lever
+      priority: 1
+      config: {company: belvederetrading}          # verified: 14 postings, 3 intern/new-grad
+
+- slug: flow-traders
+  display_name: Flow Traders
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/flowtraders
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: flowtraders}          # verified: 45 postings, 3 intern/new-grad
+
+- slug: old-mission-capital
+  display_name: Old Mission Capital
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/oldmissioncapital
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: oldmissioncapital}          # verified: 35 postings, 3 intern/new-grad
+
+- slug: pdt-partners
+  display_name: PDT Partners
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/pdtpartners
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: pdtpartners}          # verified: 10 postings, 2 intern/new-grad
+
+- slug: vatic-labs
+  display_name: Vatic Labs
+  tier: hot
+  careers_url: https://job-boards.greenhouse.io/vaticlabs
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: vaticlabs}          # verified: 10 postings, 1 intern/new-grad
+
+- slug: aqr-capital
+  display_name: AQR Capital
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/aqr
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: aqr}          # verified: 48 postings, 0 intern/new-grad
+
+- slug: man-group
+  display_name: Man Group
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/mangroup
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: mangroup}          # verified: 54 postings, 0 intern/new-grad
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# AEROSPACE & DEFENSE
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: rocket-lab
+  display_name: Rocket Lab
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/rocketlab
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: rocketlab}          # verified: 405 postings, 33 intern/new-grad
+
+- slug: astranis
+  display_name: Astranis
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/astranis
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: astranis}          # verified: 90 postings, 21 intern/new-grad
+
+- slug: spacex
+  display_name: SpaceX
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/spacex
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: spacex}          # verified: 2122 postings, 15 intern/new-grad
+
+- slug: anduril
+  display_name: Anduril
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/andurilindustries
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: andurilindustries}          # verified: 2204 postings, 5 intern/new-grad
+
+- slug: shield-ai
+  display_name: Shield AI
+  tier: warm
+  careers_url: https://jobs.lever.co/shieldai
+  sources:
+    - adapter: lever
+      priority: 1
+      config: {company: shieldai}          # verified: 434 postings, 1 intern/new-grad
+
+- slug: relativity-space
+  display_name: Relativity Space
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/relativity
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: relativity}          # verified: 363 postings, 0 intern/new-grad
+
+- slug: saronic
+  display_name: Saronic
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/saronic
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: saronic}          # verified: 224 postings, 0 intern/new-grad
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# SOFTWARE & PLATFORMS
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: analog-devices
+  display_name: Analog Devices
+  tier: warm
+  careers_url: https://analogdevices.wd1.myworkdayjobs.com/External
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 581 hits for a fuzzy 'intern' search; 20/20 of the top page are real intern reqs
+        host: https://analogdevices.wd1.myworkdayjobs.com
+        tenant: analogdevices
+        site: External
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: intel
+  display_name: Intel
+  tier: warm
+  careers_url: https://intel.wd1.myworkdayjobs.com/External
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 402 hits for a fuzzy 'intern' search; 20/20 of the top page are real intern reqs
+        host: https://intel.wd1.myworkdayjobs.com
+        tenant: intel
+        site: External
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: applied-materials
+  display_name: Applied Materials
+  tier: warm
+  careers_url: https://amat.wd1.myworkdayjobs.com/External
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 1304 hits for a fuzzy 'intern' search; 10/20 of the top page are real intern reqs
+        host: https://amat.wd1.myworkdayjobs.com
+        tenant: amat
+        site: External
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: snowflake
+  display_name: Snowflake
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/snowflake
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: snowflake}          # verified: 389 postings, 9 intern/new-grad
+
+- slug: canva
+  display_name: Canva
+  tier: warm
+  careers_url: https://jobs.smartrecruiters.com/canva
+  sources:
+    - adapter: smartrecruiters
+      priority: 1
+      config: {company: canva}          # verified: 248 postings, 6 intern/new-grad
+
+- slug: autodesk
+  display_name: Autodesk
+  tier: warm
+  careers_url: https://autodesk.wd1.myworkdayjobs.com/uni
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 15 hits for a fuzzy 'intern' search; 5/15 of the top page are real intern reqs
+        host: https://autodesk.wd1.myworkdayjobs.com
+        tenant: autodesk
+        site: uni
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: ebay
+  display_name: eBay
+  tier: warm
+  careers_url: https://ebay.wd5.myworkdayjobs.com/apply
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 168 hits for a fuzzy 'intern' search; 5/20 of the top page are real intern reqs
+        host: https://ebay.wd5.myworkdayjobs.com
+        tenant: ebay
+        site: apply
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: notion
+  display_name: Notion
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/notion
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: notion}          # verified: 133 postings, 4 intern/new-grad
+
+- slug: samsara
+  display_name: Samsara
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/samsara
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: samsara}          # verified: 222 postings, 4 intern/new-grad
+
+- slug: hp
+  display_name: HP
+  tier: warm
+  careers_url: https://hp.wd5.myworkdayjobs.com/ExternalCareerSite
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 380 hits for a fuzzy 'intern' search; 2/20 of the top page are real intern reqs
+        host: https://hp.wd5.myworkdayjobs.com
+        tenant: hp
+        site: ExternalCareerSite
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: netapp
+  display_name: NetApp
+  tier: warm
+  careers_url: https://netapp.eightfold.ai
+  sources:
+    - adapter: eightfold
+      priority: 1
+      config:                       # verified: 2 hits for a fuzzy 'intern' search; 1/2 of the top page are real intern reqs
+        base: https://netapp.eightfold.ai
+        domain: netapp.com
+        query: intern
+
+- slug: postman
+  display_name: Postman
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/postman
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: postman}          # verified: 110 postings, 1 intern/new-grad
+
+- slug: airtable
+  display_name: Airtable
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/airtable
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: airtable}          # verified: 17 postings, 0 intern/new-grad
+
+- slug: asana
+  display_name: Asana
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/asana
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: asana}          # verified: 132 postings, 0 intern/new-grad
+
+- slug: box
+  display_name: Box
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/boxinc
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: boxinc}          # verified: 135 postings, 0 intern/new-grad
+
+- slug: broadcom
+  display_name: Broadcom
+  tier: warm
+  careers_url: https://broadcom.wd1.myworkdayjobs.com/External_Career
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 95 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://broadcom.wd1.myworkdayjobs.com
+        tenant: broadcom
+        site: External_Career
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: confluent
+  display_name: Confluent
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/confluent
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: confluent}          # verified: 30 postings, 0 intern/new-grad
+
+- slug: discord
+  display_name: Discord
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/discord
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: discord}          # verified: 50 postings, 0 intern/new-grad
+
+- slug: dropbox
+  display_name: Dropbox
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/dropbox
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: dropbox}          # verified: 35 postings, 0 intern/new-grad
+
+- slug: duolingo
+  display_name: Duolingo
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/duolingo
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: duolingo}          # verified: 70 postings, 0 intern/new-grad
+
+- slug: elastic
+  display_name: Elastic
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/elastic
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: elastic}          # verified: 257 postings, 0 intern/new-grad
+
+- slug: gitlab
+  display_name: GitLab
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/gitlab
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: gitlab}          # verified: 196 postings, 0 intern/new-grad
+
+- slug: grafana-labs
+  display_name: Grafana Labs
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/grafanalabs
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: grafanalabs}          # verified: 148 postings, 0 intern/new-grad
+
+- slug: instacart
+  display_name: Instacart
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/instacart
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: instacart}          # verified: 112 postings, 0 intern/new-grad
+
+- slug: klaviyo
+  display_name: Klaviyo
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/klaviyo
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: klaviyo}          # verified: 156 postings, 0 intern/new-grad
+
+- slug: linear
+  display_name: Linear
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/linear
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: linear}          # verified: 33 postings, 0 intern/new-grad
+
+- slug: lyft
+  display_name: Lyft
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/lyft
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: lyft}          # verified: 171 postings, 0 intern/new-grad
+
+- slug: marvell
+  display_name: Marvell
+  tier: warm
+  careers_url: https://marvell.wd1.myworkdayjobs.com/MarvellCareers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 322 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://marvell.wd1.myworkdayjobs.com
+        tenant: marvell
+        site: MarvellCareers
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: micron
+  display_name: Micron
+  tier: warm
+  careers_url: https://micron.wd1.myworkdayjobs.com/External
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 2733 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://micron.wd1.myworkdayjobs.com
+        tenant: micron
+        site: External
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: mongodb
+  display_name: MongoDB
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/mongodb
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: mongodb}          # verified: 409 postings, 0 intern/new-grad
+
+- slug: okta
+  display_name: Okta
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/okta
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: okta}          # verified: 333 postings, 0 intern/new-grad
+
+- slug: pagerduty
+  display_name: PagerDuty
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/pagerduty
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: pagerduty}          # verified: 26 postings, 0 intern/new-grad
+
+- slug: pinterest
+  display_name: Pinterest
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/pinterest
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: pinterest}          # verified: 222 postings, 0 intern/new-grad
+
+- slug: reddit
+  display_name: Reddit
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/reddit
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: reddit}          # verified: 151 postings, 0 intern/new-grad
+
+- slug: roku
+  display_name: Roku
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/roku
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: roku}          # verified: 240 postings, 0 intern/new-grad
+
+- slug: spotify
+  display_name: Spotify
+  tier: warm
+  careers_url: https://jobs.lever.co/spotify
+  sources:
+    - adapter: lever
+      priority: 1
+      config: {company: spotify}          # verified: 103 postings, 0 intern/new-grad
+
+- slug: squarespace
+  display_name: Squarespace
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/squarespace
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: squarespace}          # verified: 20 postings, 0 intern/new-grad
+
+- slug: supabase
+  display_name: Supabase
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/supabase
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: supabase}          # verified: 54 postings, 0 intern/new-grad
+
+- slug: toast
+  display_name: Toast
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/toast
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: toast}          # verified: 313 postings, 0 intern/new-grad
+
+- slug: twilio
+  display_name: Twilio
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/twilio
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: twilio}          # verified: 157 postings, 0 intern/new-grad
+
+- slug: twitch
+  display_name: Twitch
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/twitch
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: twitch}          # verified: 63 postings, 0 intern/new-grad
+
+- slug: vercel
+  display_name: Vercel
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/vercel
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: vercel}          # verified: 83 postings, 0 intern/new-grad
+
+- slug: verkada
+  display_name: Verkada
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/verkada
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: verkada}          # verified: 285 postings, 0 intern/new-grad
+
+- slug: wayfair
+  display_name: Wayfair
+  tier: warm
+  careers_url: https://jobs.smartrecruiters.com/wayfair
+  sources:
+    - adapter: smartrecruiters
+      priority: 1
+      config: {company: wayfair}          # verified: 1 postings, 0 intern/new-grad
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# AI LABS
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: cerebras
+  display_name: Cerebras
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/cerebras
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: cerebras}          # verified: 126 postings, 3 intern/new-grad
+
+- slug: cohere
+  display_name: Cohere
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/cohere
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: cohere}          # verified: 144 postings, 3 intern/new-grad
+
+- slug: together-ai
+  display_name: Together AI
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/togetherai
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: togetherai}          # verified: 60 postings, 2 intern/new-grad
+
+- slug: characterai
+  display_name: Character.AI
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/character
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: character}          # verified: 13 postings, 0 intern/new-grad
+
+- slug: cursor-anysphere
+  display_name: Cursor / Anysphere
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/cursor
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: cursor}          # verified: 114 postings, 0 intern/new-grad
+
+- slug: glean
+  display_name: Glean
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/gleanwork
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: gleanwork}          # verified: 112 postings, 0 intern/new-grad
+
+- slug: harvey
+  display_name: Harvey
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/harvey
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: harvey}          # verified: 393 postings, 0 intern/new-grad
+
+- slug: langchain
+  display_name: LangChain
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/langchain
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: langchain}          # verified: 107 postings, 0 intern/new-grad
+
+- slug: pinecone
+  display_name: Pinecone
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/pinecone
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: pinecone}          # verified: 8 postings, 0 intern/new-grad
+
+- slug: runway
+  display_name: Runway
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/runway
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: runway}          # verified: 4 postings, 0 intern/new-grad
+
+- slug: sambanova
+  display_name: SambaNova
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/sambanovasystems
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: sambanovasystems}          # verified: 34 postings, 0 intern/new-grad
+
+- slug: sierra-ai
+  display_name: Sierra AI
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/sierra
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: sierra}          # verified: 191 postings, 0 intern/new-grad
+
+- slug: xai
+  display_name: xAI
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/xai
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: xai}          # verified: 226 postings, 0 intern/new-grad
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# FINTECH
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: block-square
+  display_name: Block / Square
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/block
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: block}          # verified: 193 postings, 2 intern/new-grad
+
+- slug: robinhood
+  display_name: Robinhood
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/robinhood
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: robinhood}          # verified: 124 postings, 2 intern/new-grad
+
+- slug: ramp
+  display_name: Ramp
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/ramp
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: ramp}          # verified: 136 postings, 1 intern/new-grad
+
+- slug: affirm
+  display_name: Affirm
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/affirm
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: affirm}          # verified: 194 postings, 0 intern/new-grad
+
+- slug: betterment
+  display_name: Betterment
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/betterment
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: betterment}          # verified: 31 postings, 0 intern/new-grad
+
+- slug: brex
+  display_name: Brex
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/brex
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: brex}          # verified: 293 postings, 0 intern/new-grad
+
+- slug: chime
+  display_name: Chime
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/chime
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: chime}          # verified: 57 postings, 0 intern/new-grad
+
+- slug: gusto
+  display_name: Gusto
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/gusto
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: gusto}          # verified: 88 postings, 0 intern/new-grad
+
+- slug: marqeta
+  display_name: Marqeta
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/marqeta
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: marqeta}          # verified: 44 postings, 0 intern/new-grad
+
+- slug: plaid
+  display_name: Plaid
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/plaid
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: plaid}          # verified: 103 postings, 0 intern/new-grad
+
+- slug: sofi
+  display_name: SoFi
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/sofi
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: sofi}          # verified: 60 postings, 0 intern/new-grad
+
+- slug: wealthfront
+  display_name: Wealthfront
+  tier: warm
+  careers_url: https://jobs.lever.co/wealthfront
+  sources:
+    - adapter: lever
+      priority: 1
+      config: {company: wealthfront}          # verified: 21 postings, 0 intern/new-grad
+
+- slug: wise
+  display_name: Wise
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/wise
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: wise}          # verified: 4 postings, 0 intern/new-grad
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# AUTOMOTIVE & AUTONOMY
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: general-motors
+  display_name: General Motors
+  tier: warm
+  careers_url: https://generalmotors.wd5.myworkdayjobs.com/Careers_GM
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 371 hits for a fuzzy 'intern' search; 5/20 of the top page are real intern reqs
+        host: https://generalmotors.wd5.myworkdayjobs.com
+        tenant: generalmotors
+        site: Careers_GM
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: lucid-motors
+  display_name: Lucid Motors
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/lucidmotors
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: lucidmotors}          # verified: 327 postings, 3 intern/new-grad
+
+- slug: motional
+  display_name: Motional
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/motional
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: motional}          # verified: 82 postings, 2 intern/new-grad
+
+- slug: nuro
+  display_name: Nuro
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/nuro
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: nuro}          # verified: 108 postings, 2 intern/new-grad
+
+- slug: aptiv
+  display_name: Aptiv
+  tier: warm
+  careers_url: https://aptiv.wd5.myworkdayjobs.com/Aptiv_Careers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 259 hits for a fuzzy 'intern' search; 1/20 of the top page are real intern reqs
+        host: https://aptiv.wd5.myworkdayjobs.com
+        tenant: aptiv
+        site: Aptiv_Careers
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: waymo
+  display_name: Waymo
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/waymo
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: waymo}          # verified: 377 postings, 1 intern/new-grad
+
+- slug: scout-motors
+  display_name: Scout Motors
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/scoutmotors
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: scoutmotors}          # verified: 259 postings, 0 intern/new-grad
+
+- slug: toyota-north-america
+  display_name: Toyota North America
+  tier: warm
+  careers_url: https://toyota.wd503.myworkdayjobs.com/TMNA
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 38 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://toyota.wd503.myworkdayjobs.com
+        tenant: toyota
+        site: TMNA
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: wayve
+  display_name: Wayve
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/wayve
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: wayve}          # verified: 107 postings, 0 intern/new-grad
+
+- slug: zoox
+  display_name: Zoox
+  tier: warm
+  careers_url: https://jobs.lever.co/zoox
+  sources:
+    - adapter: lever
+      priority: 1
+      config: {company: zoox}          # verified: 244 postings, 0 intern/new-grad
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# SEMICONDUCTORS & HARDWARE
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: kla
+  display_name: KLA
+  tier: warm
+  careers_url: https://kla.wd1.myworkdayjobs.com/Search
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 688 hits for a fuzzy 'intern' search; 3/20 of the top page are real intern reqs
+        host: https://kla.wd1.myworkdayjobs.com
+        tenant: kla
+        site: Search
+        search_text: intern
+        min_interval_seconds: 600
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# SOFTWARE & PLATFORMS (enterprise)
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: hpe-juniper
+  display_name: HPE / Juniper
+  tier: warm
+  careers_url: https://hpe.wd5.myworkdayjobs.com/Jobsathpe
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 591 hits for a fuzzy 'intern' search; 12/20 of the top page are real intern reqs
+        host: https://hpe.wd5.myworkdayjobs.com
+        tenant: hpe
+        site: Jobsathpe
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: expedia-group
+  display_name: Expedia Group
+  tier: warm
+  careers_url: https://expedia.wd108.myworkdayjobs.com/search
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 120 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://expedia.wd108.myworkdayjobs.com
+        tenant: expedia
+        site: search
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: juniper-networks
+  display_name: Juniper Networks
+  tier: warm
+  careers_url: https://hpe.wd5.myworkdayjobs.com/Jobsathpe
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 591 hits for a fuzzy 'intern' search; ? of the top page are real intern reqs
+        host: https://hpe.wd5.myworkdayjobs.com
+        tenant: hpe
+        site: Jobsathpe
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: palo-alto-networks
+  display_name: Palo Alto Networks
+  tier: warm
+  careers_url: https://paloaltonetworks.wd5.myworkdayjobs.com/panwexternalcareers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 732 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://paloaltonetworks.wd5.myworkdayjobs.com
+        tenant: paloaltonetworks
+        site: panwexternalcareers
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: qualtrics
+  display_name: Qualtrics
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/qualtrics
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: qualtrics}          # verified: 54 postings
+
+- slug: smartsheet
+  display_name: Smartsheet
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/smartsheet
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: smartsheet}          # verified: 92 postings
+
+- slug: workday
+  display_name: Workday
+  tier: warm
+  careers_url: https://workday.wd5.myworkdayjobs.com/Workday
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 168 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://workday.wd5.myworkdayjobs.com
+        tenant: workday
+        site: Workday
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: zscaler
+  display_name: Zscaler
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/zscaler
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: zscaler}          # verified: 339 postings
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# SECURITY & INFRASTRUCTURE
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: pure-storage
+  display_name: Pure Storage
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/purestorage
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: purestorage}          # verified: 293 postings, 1 intern/new-grad
+
+- slug: 1password
+  display_name: 1Password
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/1password
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: 1password}          # verified: 63 postings, 0 intern/new-grad
+
+- slug: abnormal-security
+  display_name: Abnormal Security
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/abnormalsecurity
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: abnormalsecurity}          # verified: 68 postings, 0 intern/new-grad
+
+- slug: arista-networks
+  display_name: Arista Networks
+  tier: warm
+  careers_url: https://jobs.smartrecruiters.com/aristanetworks
+  sources:
+    - adapter: smartrecruiters
+      priority: 1
+      config: {company: aristanetworks}          # verified: 232 postings, 0 intern/new-grad
+
+- slug: rubrik
+  display_name: Rubrik
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/rubrik
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: rubrik}          # verified: 115 postings, 0 intern/new-grad
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# BANKS & FINANCIAL SERVICES
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: citi
+  display_name: Citi
+  tier: warm
+  careers_url: https://citi.wd5.myworkdayjobs.com/2
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 2000 hits for a fuzzy 'intern' search; 4/20 of the top page are real intern reqs
+        host: https://citi.wd5.myworkdayjobs.com
+        tenant: citi
+        site: 2
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: sandp-global
+  display_name: S&P Global
+  tier: warm
+  careers_url: https://spgi.wd5.myworkdayjobs.com/SPGI_Careers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 279 hits for a fuzzy 'intern' search; 2/20 of the top page are real intern reqs
+        host: https://spgi.wd5.myworkdayjobs.com
+        tenant: spgi
+        site: SPGI_Careers
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: barclays
+  display_name: Barclays
+  tier: warm
+  careers_url: https://barclays.wd3.myworkdayjobs.com/External_Career_Site_Barclays
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 909 hits for a fuzzy 'intern' search; 1/20 of the top page are real intern reqs
+        host: https://barclays.wd3.myworkdayjobs.com
+        tenant: barclays
+        site: External_Career_Site_Barclays
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: rbc
+  display_name: RBC
+  tier: warm
+  careers_url: https://rbc.wd3.myworkdayjobs.com/RBCEARLYTALENT1
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 13 hits for a fuzzy 'intern' search; 1/13 of the top page are real intern reqs
+        host: https://rbc.wd3.myworkdayjobs.com
+        tenant: rbc
+        site: RBCEARLYTALENT1
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: state-street
+  display_name: State Street
+  tier: warm
+  careers_url: https://statestreet.wd1.myworkdayjobs.com/Global
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 721 hits for a fuzzy 'intern' search; 1/20 of the top page are real intern reqs
+        host: https://statestreet.wd1.myworkdayjobs.com
+        tenant: statestreet
+        site: Global
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: bank-of-america
+  display_name: Bank of America
+  tier: warm
+  careers_url: https://ghr.wd1.myworkdayjobs.com/lateral-us
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 969 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://ghr.wd1.myworkdayjobs.com
+        tenant: ghr
+        site: lateral-us
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: mastercard
+  display_name: Mastercard
+  tier: warm
+  careers_url: https://mastercard.wd1.myworkdayjobs.com/CorporateCareers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 764 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://mastercard.wd1.myworkdayjobs.com
+        tenant: mastercard
+        site: CorporateCareers
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: nasdaq
+  display_name: Nasdaq
+  tier: warm
+  careers_url: https://nasdaq.wd1.myworkdayjobs.com/Global_External_Site
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 91 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://nasdaq.wd1.myworkdayjobs.com
+        tenant: nasdaq
+        site: Global_External_Site
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: paypal
+  display_name: PayPal
+  tier: warm
+  careers_url: https://paypal.wd1.myworkdayjobs.com/jobs
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 42 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://paypal.wd1.myworkdayjobs.com
+        tenant: paypal
+        site: jobs
+        search_text: intern
+        min_interval_seconds: 300
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# INSURANCE
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: travelers
+  display_name: Travelers
+  tier: warm
+  careers_url: https://travelers.wd5.myworkdayjobs.com/External
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 201 hits for a fuzzy 'intern' search; 1/20 of the top page are real intern reqs
+        host: https://travelers.wd5.myworkdayjobs.com
+        tenant: travelers
+        site: External
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: allstate
+  display_name: Allstate
+  tier: warm
+  careers_url: https://allstate.wd5.myworkdayjobs.com/allstate_careers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 334 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://allstate.wd5.myworkdayjobs.com
+        tenant: allstate
+        site: allstate_careers
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: geico
+  display_name: GEICO
+  tier: warm
+  careers_url: https://geico.wd1.myworkdayjobs.com/External
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 73 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://geico.wd1.myworkdayjobs.com
+        tenant: geico
+        site: External
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: prudential
+  display_name: Prudential
+  tier: warm
+  careers_url: https://pru.wd5.myworkdayjobs.com/Careers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 91 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://pru.wd5.myworkdayjobs.com
+        tenant: pru
+        site: Careers
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: usaa
+  display_name: USAA
+  tier: warm
+  careers_url: https://usaa.wd1.myworkdayjobs.com/USAAJOBSWD
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 103 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://usaa.wd1.myworkdayjobs.com
+        tenant: usaa
+        site: USAAJOBSWD
+        search_text: intern
+        min_interval_seconds: 300
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# INDUSTRIAL & MANUFACTURING
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: boeing
+  display_name: Boeing
+  tier: warm
+  careers_url: https://boeing.wd1.myworkdayjobs.com/EXTERNAL_CAREERS
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 452 hits for a fuzzy 'intern' search; 16/20 of the top page are real intern reqs
+        host: https://boeing.wd1.myworkdayjobs.com
+        tenant: boeing
+        site: EXTERNAL_CAREERS
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: 3m
+  display_name: 3M
+  tier: warm
+  careers_url: https://3m.wd1.myworkdayjobs.com/Search
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 648 hits for a fuzzy 'intern' search; 2/20 of the top page are real intern reqs
+        host: https://3m.wd1.myworkdayjobs.com
+        tenant: 3m
+        site: Search
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: rockwell-automation
+  display_name: Rockwell Automation
+  tier: warm
+  careers_url: https://rockwellautomation.wd1.myworkdayjobs.com/External_Rockwell_Automation
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 155 hits for a fuzzy 'intern' search; 1/20 of the top page are real intern reqs
+        host: https://rockwellautomation.wd1.myworkdayjobs.com
+        tenant: rockwellautomation
+        site: External_Rockwell_Automation
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: northrop-grumman
+  display_name: Northrop Grumman
+  tier: warm
+  careers_url: https://ngc.wd1.myworkdayjobs.com/Northrop_Grumman_External_Site
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 1518 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://ngc.wd1.myworkdayjobs.com
+        tenant: ngc
+        site: Northrop_Grumman_External_Site
+        search_text: intern
+        min_interval_seconds: 600
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# HEALTHCARE, PHARMA & MEDTECH
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: medtronic
+  display_name: Medtronic
+  tier: warm
+  careers_url: https://medtronic.wd1.myworkdayjobs.com/MedtronicCareers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 830 hits for a fuzzy 'intern' search; 19/20 of the top page are real intern reqs
+        host: https://medtronic.wd1.myworkdayjobs.com
+        tenant: medtronic
+        site: MedtronicCareers
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: stryker
+  display_name: Stryker
+  tier: warm
+  careers_url: https://stryker.wd1.myworkdayjobs.com/StrykerCareers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 484 hits for a fuzzy 'intern' search; 18/20 of the top page are real intern reqs
+        host: https://stryker.wd1.myworkdayjobs.com
+        tenant: stryker
+        site: StrykerCareers
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: abbott
+  display_name: Abbott
+  tier: warm
+  careers_url: https://abbott.wd5.myworkdayjobs.com/abbottcareers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 1963 hits for a fuzzy 'intern' search; 17/20 of the top page are real intern reqs
+        host: https://abbott.wd5.myworkdayjobs.com
+        tenant: abbott
+        site: abbottcareers
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: amgen
+  display_name: Amgen
+  tier: warm
+  careers_url: https://amgen.wd1.myworkdayjobs.com/Careers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 769 hits for a fuzzy 'intern' search; 4/20 of the top page are real intern reqs
+        host: https://amgen.wd1.myworkdayjobs.com
+        tenant: amgen
+        site: Careers
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: ginkgo-bioworks
+  display_name: Ginkgo Bioworks
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/ginkgobioworks
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: ginkgobioworks}          # verified: 17 postings, 3 intern/new-grad
+
+- slug: pfizer
+  display_name: Pfizer
+  tier: warm
+  careers_url: https://pfizer.wd1.myworkdayjobs.com/PfizerCareers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 262 hits for a fuzzy 'intern' search; 3/20 of the top page are real intern reqs
+        host: https://pfizer.wd1.myworkdayjobs.com
+        tenant: pfizer
+        site: PfizerCareers
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: johnson-and-johnson
+  display_name: Johnson & Johnson
+  tier: warm
+  careers_url: https://jj.wd5.myworkdayjobs.com/JJ
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 1302 hits for a fuzzy 'intern' search; 2/20 of the top page are real intern reqs
+        host: https://jj.wd5.myworkdayjobs.com
+        tenant: jj
+        site: JJ
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: merck
+  display_name: Merck
+  tier: warm
+  careers_url: https://msd.wd5.myworkdayjobs.com/SearchJobs
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 532 hits for a fuzzy 'intern' search; 2/20 of the top page are real intern reqs
+        host: https://msd.wd5.myworkdayjobs.com
+        tenant: msd
+        site: SearchJobs
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: cigna
+  display_name: Cigna
+  tier: warm
+  careers_url: https://cigna.wd5.myworkdayjobs.com/cignacareers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 502 hits for a fuzzy 'intern' search; 1/20 of the top page are real intern reqs
+        host: https://cigna.wd5.myworkdayjobs.com
+        tenant: cigna
+        site: cignacareers
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: benchling
+  display_name: Benchling
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/benchling
+  sources:
+    - adapter: ashby
+      priority: 1
+      config: {board_name: benchling}          # verified: 51 postings, 0 intern/new-grad
+
+- slug: bristol-myers-squibb
+  display_name: Bristol Myers Squibb
+  tier: warm
+  careers_url: https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 452 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://bristolmyerssquibb.wd5.myworkdayjobs.com
+        tenant: bristolmyerssquibb
+        site: BMS
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: devoted-health
+  display_name: Devoted Health
+  tier: warm
+  careers_url: https://jobs.smartrecruiters.com/devotedhealth
+  sources:
+    - adapter: smartrecruiters
+      priority: 1
+      config: {company: devotedhealth}          # verified: 2 postings, 0 intern/new-grad
+
+- slug: elevance-health
+  display_name: Elevance Health
+  tier: warm
+  careers_url: https://elevancehealth.wd1.myworkdayjobs.com/ANT
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 115 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://elevancehealth.wd1.myworkdayjobs.com
+        tenant: elevancehealth
+        site: ANT
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: komodo-health
+  display_name: Komodo Health
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/komodohealth
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: komodohealth}          # verified: 35 postings, 0 intern/new-grad
+
+- slug: oscar-health
+  display_name: Oscar Health
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/oscar
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: oscar}          # verified: 265 postings, 0 intern/new-grad
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# MEDIA, GAMING & TELECOM
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: warner-bros-discovery
+  display_name: Warner Bros Discovery
+  tier: warm
+  careers_url: https://warnerbros.wd5.myworkdayjobs.com/global
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 327 hits for a fuzzy 'intern' search; 9/20 of the top page are real intern reqs
+        host: https://warnerbros.wd5.myworkdayjobs.com
+        tenant: warnerbros
+        site: global
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: epic-games
+  display_name: Epic Games
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/epicgames
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: epicgames}          # verified: 162 postings, 4 intern/new-grad
+
+- slug: fanduel
+  display_name: FanDuel
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/fanduel
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: fanduel}          # verified: 96 postings, 2 intern/new-grad
+
+- slug: scopely
+  display_name: Scopely
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/scopely
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: scopely}          # verified: 156 postings, 2 intern/new-grad
+
+- slug: riot-games
+  display_name: Riot Games
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/riotgames
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: riotgames}          # verified: 158 postings, 1 intern/new-grad
+
+- slug: comcast
+  display_name: Comcast
+  tier: warm
+  careers_url: https://comcast.wd5.myworkdayjobs.com/Comcast_Careers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 332 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://comcast.wd5.myworkdayjobs.com
+        tenant: comcast
+        site: Comcast_Careers
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: disney
+  display_name: Disney
+  tier: warm
+  careers_url: https://disney.wd5.myworkdayjobs.com/disneycareer
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 533 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://disney.wd5.myworkdayjobs.com
+        tenant: disney
+        site: disneycareer
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: nintendo-of-america
+  display_name: Nintendo of America
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/nintendo
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: nintendo}          # verified: 48 postings
+
+- slug: t-mobile
+  display_name: T-Mobile
+  tier: warm
+  careers_url: https://tmobile.wd1.myworkdayjobs.com/External
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 2000 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://tmobile.wd1.myworkdayjobs.com
+        tenant: tmobile
+        site: External
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: the-new-york-times
+  display_name: The New York Times
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/thenewyorktimes
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: thenewyorktimes}          # verified: 164 postings, 0 intern/new-grad
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# RETAIL & CONSUMER
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: target
+  display_name: Target
+  tier: warm
+  careers_url: https://target.wd5.myworkdayjobs.com/targetcareers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 223 hits for a fuzzy 'intern' search; 7/20 of the top page are real intern reqs
+        host: https://target.wd5.myworkdayjobs.com
+        tenant: target
+        site: targetcareers
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: home-depot
+  display_name: Home Depot
+  tier: warm
+  careers_url: https://homedepot.wd5.myworkdayjobs.com/CareerDepot
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 297 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://homedepot.wd5.myworkdayjobs.com
+        tenant: homedepot
+        site: CareerDepot
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: nike
+  display_name: Nike
+  tier: warm
+  careers_url: https://nike.wd1.myworkdayjobs.com/nke
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 178 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://nike.wd1.myworkdayjobs.com
+        tenant: nike
+        site: nke
+        search_text: intern
+        min_interval_seconds: 300
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# CONSULTING & IT SERVICES
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: booz-allen-hamilton
+  display_name: Booz Allen Hamilton
+  tier: warm
+  careers_url: https://bah.wd1.myworkdayjobs.com/BAH_Jobs
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 2000 hits for a fuzzy 'intern' search; 1/20 of the top page are real intern reqs
+        host: https://bah.wd1.myworkdayjobs.com
+        tenant: bah
+        site: BAH_Jobs
+        search_text: intern
+        min_interval_seconds: 600
+
+- slug: pwc
+  display_name: PwC
+  tier: warm
+  careers_url: https://pwc.wd3.myworkdayjobs.com/Global_Experienced_Careers
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 2350 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://pwc.wd3.myworkdayjobs.com
+        tenant: pwc
+        site: Global_Experienced_Careers
+        search_text: intern
+        min_interval_seconds: 600
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# ENERGY, AIRLINES & TRAVEL
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: duke-energy
+  display_name: Duke Energy
+  tier: warm
+  careers_url: https://dukeenergy.wd1.myworkdayjobs.com/search
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 27 hits for a fuzzy 'intern' search; 1/20 of the top page are real intern reqs
+        host: https://dukeenergy.wd1.myworkdayjobs.com
+        tenant: dukeenergy
+        site: search
+        search_text: intern
+        min_interval_seconds: 300
+
+- slug: chevron
+  display_name: Chevron
+  tier: warm
+  careers_url: https://chevron.wd5.myworkdayjobs.com/jobs
+  sources:
+    - adapter: workday
+      priority: 1
+      config:                       # verified: 99 hits for a fuzzy 'intern' search; 0/20 of the top page are real intern reqs
+        host: https://chevron.wd5.myworkdayjobs.com
+        tenant: chevron
+        site: jobs
+        search_text: intern
+        min_interval_seconds: 300
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# LOGISTICS & MARKETPLACES
+# ═════════════════════════════════════════════════════════════════════════
+
+- slug: flexport
+  display_name: Flexport
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/flexport
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: flexport}          # verified: 158 postings, 3 intern/new-grad
+
+- slug: faire
+  display_name: Faire
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/faire
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: faire}          # verified: 67 postings, 1 intern/new-grad
+
+- slug: carvana
+  display_name: Carvana
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/carvana
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: carvana}          # verified: 1752 postings, 0 intern/new-grad
+
+- slug: gopuff
+  display_name: Gopuff
+  tier: warm
+  careers_url: https://jobs.lever.co/gopuff
+  sources:
+    - adapter: lever
+      priority: 1
+      config: {company: gopuff}          # verified: 812 postings, 0 intern/new-grad
+
+- slug: peloton
+  display_name: Peloton
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/peloton
+  sources:
+    - adapter: greenhouse
+      priority: 1
+      config: {board_token: peloton}          # verified: 54 postings, 0 intern/new-grad

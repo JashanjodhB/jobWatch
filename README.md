@@ -167,10 +167,54 @@ sources breaking, notifications not arriving, and what each outbox error means.
 | `jobwatch test <slug> [--adapter X]` | Fetch one source once, show parsed postings and how each would classify |
 | `jobwatch classify "<title>"` | Show how a title classifies, and why |
 | `jobwatch discover <careers_url>` | Identify the ATS behind a careers page and verify it live |
+| `jobwatch discover-bulk` | Find companies you are not watching yet, from community internship feeds |
 | `jobwatch replay <merge_key>` | Re-queue an alert |
 | `jobwatch export-config` | Write the DB's companies and filters back to YAML for git |
 | `jobwatch backup <path>` | Consistent snapshot of the database |
 | `jobwatch migrate` / `seed` | Schema and config bootstrap |
+
+### Finding companies you are missing
+
+`discover-bulk` reads community-maintained CS internship trackers, subtracts
+everything already in your registry, and probes what is left to find the ATS
+behind it. The feeds are used to learn **company names only** — no posting from
+an aggregator ever enters the pipeline, because `merge_key` and `dedup_key` are
+derived from the source's company, and a multi-employer feed would collapse
+distinct employers into one alert.
+
+```bash
+# See what is missing, without making a single probe request
+jobwatch discover-bulk --term "Summer 2027" --dry-run
+
+# Probe the 40 best candidates and write them to a staging file
+jobwatch discover-bulk --term "Summer 2027"
+```
+
+Output goes to `config/companies-discovered.yaml`, which nothing loads. Review
+it, move the blocks you want into `config/companies.yaml`, then `jobwatch seed`.
+
+It is built to be run on a schedule. Every company it probes is written to
+`data/discovery-ledger.json`, so a second run skips them and spends its requests
+on companies the feed has not offered before. Runs append to the staging file
+rather than overwriting it.
+
+Politeness is the constraint that shaped this command (§13.5). Feed listings
+carry the direct ATS URL, so most companies are fingerprinted straight from the
+URL with no page fetch; verification stops after one page, so confirming a large
+Workday tenant costs one request instead of forty-six; and `--limit` (default
+40) caps the work per run. Reported posting counts are therefore a floor —
+`>=20` means "at least 20", not "20".
+
+| Flag | Effect |
+|---|---|
+| `--term "Summer 2027"` | Only companies hiring for that term (repeatable) |
+| `--category Software` | Only that feed category (repeatable) |
+| `--limit N` | Companies to probe this run (default 40) |
+| `--min-listings N` | Skip companies with fewer active listings |
+| `--dry-run` | List what would be probed, probe nothing |
+| `--retry-failed` | Re-probe companies that failed earlier |
+| `--tier hot` | Tier written into the generated blocks |
+| `--feed URL` | Use a different feed (repeatable) |
 
 ## What ships working
 
@@ -183,14 +227,79 @@ cold start.
 | `workday` | NVIDIA, Salesforce, Adobe, Capital One |
 | `ashby` | OpenAI, Perplexity |
 | `lever` | Palantir |
-| `eightfold` | Netflix |
+| `eightfold` | Netflix, NetApp, Microsoft, Qualcomm, Lam Research |
+| `oracle` | American Express, Texas Instruments, onsemi |
+| `jibe` | AMD |
 | `direct.*` | Amazon, Apple, Uber |
-| `smartrecruiters`, `html`, `browser` | available; no company uses them by default |
+| `html` | Google, Two Sigma, Arm |
+| `browser` | Meta, Citadel, IBM |
+| `smartrecruiters` | Visa, SanDisk |
 
-Six companies ship **disabled** because they have no usable unauthenticated JSON
-endpoint — Google, Meta, Microsoft, Tesla, Citadel, Two Sigma. They are
-pre-configured for the Playwright fallback; see `docs/OPERATIONS.md`. Qualcomm is
-disabled because its Workday tenant answers 422 to every site name tried.
+**Tesla is the only company that ships disabled.** Its edge bot check answers
+403 to everything — plain HTTP, and headless Chromium too — so the page never
+renders and there is nothing to intercept.
+
+The other six that used to ship disabled were re-probed on 2026-08-19 and all
+six turned out to be reachable, four of them without a browser at all:
+
+| Company | Was | Is now |
+|---|---|---|
+| Microsoft | browser, dead XHR | `eightfold` — moved onto Eightfold's "pcsx" flavour |
+| Qualcomm | `workday`, 422 on every site name | `eightfold` — it left Workday entirely |
+| Google | browser, "client-side rendered" | `html` — it is server-rendered, 20 a page |
+| Two Sigma | browser, ATS unknown | `html` — Avature, server-rendered, 54 roles |
+| Citadel | browser, no selectors | `browser` — Cloudflare screens the UA, so `user_agent` is set |
+| Meta | browser, no `items_path` | `browser` — one GraphQL response carries all 378 |
+
+Two of those needed adapter work rather than just config. `eightfold` now takes a
+`path` and understands the pcsx dialect — a `data` envelope, camelCase fields,
+and a page size that ignores `num`, so pagination follows `count` instead of
+stopping at the first short page. `html` now takes `page_param`/`page_start`/
+`page_step`, which is what walks Avature's `jobOffset` and Google's `page`.
+
+## Semiconductors
+
+Nine more were added on 2026-08-19 alongside the NVIDIA/Intel/Micron/Broadcom/
+Marvell/Analog Devices/Applied Materials/KLA/Qualcomm group already in the
+registry. All `cold`; hit counts are what each returned when probed:
+
+| Company | Adapter | Hits |
+|---|---|---|
+| NXP | `workday` (`nxp.wd3`, site `careers`) | 338 |
+| onsemi | `oracle` (pod `hctz.fa.us2`, site `CX_1001`) | 310 |
+| Arm | `html` (Radancy) | 325 |
+| SanDisk | `smartrecruiters` (`Sandisk`) | 292 |
+| Texas Instruments | `oracle` (pod `edbz.fa.us2`, site `CX`) | 254 |
+| Astera Labs | `greenhouse` (`asteralabs`) | 170 |
+| Cadence | `workday` (`cadence.wd1`, `External_Careers`) | 155 |
+| Lam Research | `eightfold` (pcsx) | 21 |
+| AMD | `jibe` | 10 |
+
+`jibe` is the one new adapter. Jibe is a careers-site front end rather than an
+ATS — each record names the ATS behind it in `ats_code`, `icims` for AMD — so it
+is written as a platform adapter and is the registry's first reach into iCIMS.
+Two traps are baked into it: `limit` caps at **100** and asking for 200 returns
+an empty list rather than an error, and `totalCount` is the real total despite
+looking like a page size on a search that happens to have ten hits.
+
+Three quirks worth knowing about the rest. TI's site number is a bare `CX`, not
+`CX_<n>`. Astera Labs' Greenhouse token is `asteralabs`, not `astera-labs`.
+And **Arm's keyword search does not filter** — `/search-jobs/intern`, `?k=` and
+`?keyword=` all return the same unfiltered board — so it pulls all 9 pages and
+leaves the filtering to the classifier.
+
+Identified but not added, for want of an adapter: **Qorvo** (SuccessFactors),
+**Synopsys** (Radancy + Avature), **Rambus** and **Arm's own iCIMS portal**
+(raw iCIMS, client-rendered). Microchip answers 403 to plain HTTP and to
+Chromium alike; GlobalFoundries, Skyworks, Seagate, ASML, Infineon, Ambarella
+and Credo showed no ATS fingerprint on their careers pages at all.
+
+`oracle` covers Oracle Recruiting Cloud, identified by `/sites/CX_<n>` in a
+careers URL. Its API is public and unauthenticated with a real `PostedDate`, but
+the pod that serves it is an opaque host that discovery cannot resolve — request
+`/hcmRestApi/resources/latest/recruitingCEJobRequisitions` on the company domain
+and read the `oraclecloud.com` host out of the 302. `jobwatch discover` reports
+the platform and the site number, and leaves `pod` for you to paste in.
 
 Notable registry corrections found by actually calling the endpoints: DoorDash's
 board token is `doordashusa`, Hudson River Trading's is `hrttalentcommunity`,
