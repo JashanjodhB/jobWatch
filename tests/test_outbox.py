@@ -12,8 +12,11 @@ from jobwatch.notify.discord import (
     DiscordChannel,
     DiscordError,
     DiscordSender,
+    _chunk_embeds,
+    _embed_cost,
     build_alarm_embed,
     build_digest_embed,
+    build_digest_embeds,
     build_job_embed,
     humanize_age,
 )
@@ -372,6 +375,49 @@ def test_digest_embed_lists_every_posting():
     assert "3 new postings" in embed["title"]
     for i in range(3):
         assert f"Intern {i}" in embed["description"]
+
+
+def test_a_bulk_digest_spans_embeds_instead_of_dropping_postings():
+    """The outbox pages 200 rows per flush; a single embed showed 25 of them."""
+    payloads = [{**PAYLOAD, "title": f"Software Engineer Intern Team {i}"} for i in range(200)]
+
+    embeds = build_digest_embeds(payloads)
+
+    assert len(embeds) > 1, "a full page cannot fit in one embed"
+    body = "".join(e["description"] for e in embeds)
+    for i in range(200):
+        assert f"Team {i}]" in body, f"posting {i} was dropped"
+    assert "200 new postings" in embeds[0]["title"]
+    assert "more — see the feed" not in body, "nothing needed truncating"
+
+
+@pytest.mark.parametrize("count", [1, 2, 26, 60, 200, 500, 4000])
+def test_every_digest_message_stays_within_discord_limits(count):
+    """Discord enforces 10 embeds AND 6000 characters per message, and the
+    second one 400s the whole message rather than trimming it. Budgeting per
+    embed and sending ten of them is exactly how this broke in production."""
+    embeds = build_digest_embeds([{**PAYLOAD, "title": f"Intern {i}"} for i in range(count)])
+
+    for message in _chunk_embeds(embeds):
+        assert len(message) <= 10
+        assert sum(_embed_cost(e) for e in message) <= 6000
+        for embed in message:
+            assert len(embed["description"]) <= 4096
+
+
+def test_a_digest_too_large_even_to_page_names_the_remainder():
+    embeds = build_digest_embeds([{**PAYLOAD, "title": f"Intern {i}"} for i in range(4000)])
+
+    assert len(embeds) == 30
+    assert "more — see the feed" in embeds[-1]["description"]
+    assert "4000 new postings" in embeds[0]["title"]
+
+
+def test_a_small_digest_is_still_one_embed():
+    embeds = build_digest_embeds([{**PAYLOAD, "title": f"Intern {i}"} for i in range(3)])
+
+    assert len(embeds) == 1
+    assert "3 new postings" in embeds[0]["title"]
 
 
 def test_alarm_embed_is_visually_distinct():

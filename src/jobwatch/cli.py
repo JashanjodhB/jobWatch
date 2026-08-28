@@ -76,6 +76,25 @@ def build_parser() -> argparse.ArgumentParser:
     replay = sub.add_parser("replay", help="re-queue the alert for a merge_key")
     replay.add_argument("merge_key")
 
+    back = sub.add_parser(
+        "backfill",
+        help="alert on postings a cold start swallowed (reclassify the seed backlog)",
+    )
+    back.add_argument("--tier", action="append", default=[], choices=["hot", "warm", "cold"],
+                      help="only this tier (repeatable); default is every tier")
+    back.add_argument("--company", action="append", default=[], metavar="SLUG",
+                      help="only this company slug (repeatable)")
+    back.add_argument("--since", metavar="DATE",
+                      help="only postings first seen on or after this date, e.g. 2026-08-25")
+    back.add_argument("--match-only", action="store_true",
+                      help="queue only 'match'; leave 'review' reclassified but silent")
+    back.add_argument("--include-stale", action="store_true",
+                      help="also queue postings that have since left the board")
+    back.add_argument("--limit", type=int, metavar="N",
+                      help="cap how many alerts are queued (rows are still reclassified)")
+    back.add_argument("--dry-run", action="store_true",
+                      help="report what would happen and change nothing")
+
     disc = sub.add_parser("discover", help="identify the ATS behind a careers URL")
     disc.add_argument("careers_url")
 
@@ -128,6 +147,7 @@ def main(argv: list[str] | None = None) -> int:
         "test": cmd_test,
         "classify": cmd_classify,
         "replay": cmd_replay,
+        "backfill": cmd_backfill,
         "discover": cmd_discover,
         "discover-bulk": cmd_discover_bulk,
         "export-config": cmd_export,
@@ -448,6 +468,66 @@ def cmd_replay(args, config: AppConfig) -> int:
             print("  nothing matched — check `jobwatch status` or the outbox screen")
     finally:
         db.close()
+    return 0
+
+
+def cmd_backfill(args, config: AppConfig) -> int:
+    from .backfill import BackfillScope, backfill
+    from .notify.outbox import Outbox
+
+    dim, bold, green, _red, yellow, reset = _color(sys.stdout.isatty())
+    db = Database(config.db_path)
+    try:
+        db.migrate()
+        # No channels: this command queues, the running service delivers. Any
+        # other split would have the CLI racing `run` for the same outbox rows.
+        outbox = Outbox(db)
+        report = backfill(
+            db,
+            config.settings,
+            outbox,
+            BackfillScope(
+                tiers=tuple(args.tier),
+                companies=tuple(args.company),
+                match_only=args.match_only,
+                since=args.since,
+                include_stale=args.include_stale,
+                limit=args.limit,
+            ),
+            dry_run=args.dry_run,
+        )
+    finally:
+        db.close()
+
+    print(report)
+
+    if report.samples:
+        print()
+        for classification, company, title in report.samples:
+            mark = f"{green}match {reset}" if classification == "match" else f"{yellow}review{reset}"
+            print(f"  {mark} {bold}{company}{reset} {dim}·{reset} {title[:70]}")
+        if report.queued > len(report.samples):
+            print(f"  {dim}…and {report.queued - len(report.samples)} more{reset}")
+
+    for label, count in (
+        ("already alerted, left alone", report.skipped_already_alerted),
+        ("same job from a second source", report.skipped_duplicate_merge),
+        ("review queued only (on_review)", report.skipped_on_review),
+        ("held back by --limit", report.truncated_by_limit),
+    ):
+        if count:
+            print(f"  {dim}{count} {label}{reset}")
+
+    if report.queued and not args.dry_run:
+        interval = config.settings.notifications.digest_interval_minutes
+        print()
+        print(
+            f"  queued as digests — the service sends up to 200 per "
+            f"{interval}min flush, spread across embeds so none are hidden"
+        )
+    elif args.dry_run:
+        print()
+        print(f"  {dim}nothing changed; drop --dry-run to apply{reset}")
     return 0
 
 

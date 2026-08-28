@@ -42,6 +42,10 @@ _CORE_MODULES = (
     "eightfold",
     "oracle",
     "jibe",
+    "phenom",
+    "workable",
+    "rippling",
+    "bamboohr",
     "html",
     "browser",
 )

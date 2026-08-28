@@ -170,7 +170,9 @@ async def add_company(
     tier: Annotated[str, Form()] = "warm",
     careers_url: Annotated[str, Form()] = "",
 ) -> HTMLResponse:
-    """Save a discovered source. The new source seeds silently on its first poll."""
+    """Save a discovered source. Its first poll classifies the whole board and
+    sends one digest (`classification.on_seed`), so adding a company here is
+    audible but bounded at a single message."""
     db = get_db(request)
     slug = slug.strip().lower()
 

@@ -1,0 +1,107 @@
+{
+ "meta": {
+  "totalCount": 34
+ },
+ "result": [
+  {
+   "id": "72",
+   "jobOpeningName": "Rolling Engineering Application",
+   "departmentId": "18600",
+   "departmentLabel": "Engineering",
+   "employmentStatusLabel": "Full-Time",
+   "employmentType": null,
+   "location": {
+    "city": "Peabody",
+    "state": "Massachusetts"
+   },
+   "atsLocation": {
+    "country": null,
+    "state": null,
+    "province": null,
+    "city": null
+   },
+   "isRemote": null,
+   "locationType": "0"
+  },
+  {
+   "id": "104",
+   "jobOpeningName": "Machinist (Entry/Mid-Level)",
+   "departmentId": "18597",
+   "departmentLabel": "Manufacturing",
+   "employmentStatusLabel": "Full-Time",
+   "employmentType": null,
+   "location": {
+    "city": "Peabody",
+    "state": "Massachusetts"
+   },
+   "atsLocation": {
+    "country": null,
+    "state": null,
+    "province": null,
+    "city": null
+   },
+   "isRemote": null,
+   "locationType": "0"
+  },
+  {
+   "id": "106",
+   "jobOpeningName": "Mechanical Engineer I ",
+   "departmentId": null,
+   "departmentLabel": null,
+   "employmentStatusLabel": "Full-Time",
+   "employmentType": null,
+   "location": {
+    "city": "Peabody",
+    "state": "Massachusetts"
+   },
+   "atsLocation": {
+    "country": null,
+    "state": null,
+    "province": null,
+    "city": null
+   },
+   "isRemote": null,
+   "locationType": "0"
+  },
+  {
+   "id": "108",
+   "jobOpeningName": "Vehicle Design Engineer II",
+   "departmentId": null,
+   "departmentLabel": null,
+   "employmentStatusLabel": "Full-Time",
+   "employmentType": null,
+   "location": {
+    "city": "Peabody",
+    "state": "Massachusetts"
+   },
+   "atsLocation": {
+    "country": null,
+    "state": null,
+    "province": null,
+    "city": null
+   },
+   "isRemote": null,
+   "locationType": "0"
+  },
+  {
+   "id": "110",
+   "jobOpeningName": "Mechanical Technician",
+   "departmentId": null,
+   "departmentLabel": null,
+   "employmentStatusLabel": "Full-Time",
+   "employmentType": null,
+   "location": {
+    "city": "Peabody",
+    "state": "Massachusetts"
+   },
+   "atsLocation": {
+    "country": null,
+    "state": null,
+    "province": null,
+    "city": null
+   },
+   "isRemote": null,
+   "locationType": "0"
+  }
+ ]
+}

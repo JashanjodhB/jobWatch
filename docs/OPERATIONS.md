@@ -37,12 +37,17 @@ send without sending anything:
 uv run jobwatch run --once --dry-run --no-web
 ```
 
-**The first real run seeds silently.** Every posting currently on every board is
-recorded and marked already-known, and nothing is sent. This takes a minute or
-two and produces `alerted: 0`. That is correct — alerts begin with the first
-genuinely new posting. If a first run ever sends anything, stop and investigate:
-something is wrong with seeding, and a webhook that receives 3,000 messages gets
-rate-limited and the system loses your trust on day one (§13.1).
+**The first real run sends one digest per source.** Every posting on every board
+is recorded and classified, and the matches go out batched — one message per
+source, however large the board. This takes a minute or two. What must never
+happen is a *per-posting* first run: a webhook that receives 3,000 messages gets
+rate-limited and the system loses your trust on day one (§13.1). If you see
+individual `kind='job'` rows from a cold start, check that
+`classification.on_seed` is `digest` and not `alert`.
+
+Prefer the old silence? `on_seed: silent`. It is genuinely quieter and genuinely
+lossier — seeding is per source, so it buries every internship each newly added
+company arrives with, and only `jobwatch backfill` gets those back.
 
 ```bash
 sudo cp deploy/jobwatch.service /etc/systemd/system/
@@ -126,7 +131,7 @@ Never port-forward 8080. Never put it behind a public reverse proxy.
 | **Latest** vs **7d baseline** | today's posting count against the rolling median | a drop to 0 with a healthy baseline is the silent-breakage signature — the endpoint still answers, the parse broke |
 | **Fails** | consecutive failures | 5+ means the source has flipped to its fallback |
 | **State: fallback** | running the fallback adapter | fine short-term; over 7 days means the primary is gone for good — update the registry |
-| **State: awaiting seed** | never polled | its first poll will alert nothing, by design |
+| **State: awaiting seed** | never polled | its first poll sends one digest of whatever its board already matches |
 
 The daily drift check also posts alarms to Discord as red embeds. They report
 once per occurrence, not once per day, and re-arm if the condition clears and
@@ -175,7 +180,10 @@ existing rows alone, because the UI owns them once they exist. `--force` also
 overwrites descriptive fields from YAML — but never scheduling state and never
 the `seeded` flag, since resetting that would re-alert an entire board.
 
-A newly added source seeds silently on its first poll, exactly like a first run.
+A newly added source behaves exactly like a first run: its whole board is
+classified on the first poll and the matches arrive as one digest. Adding a
+second source to a company that already has one does not replay the shared jobs —
+cold start suppresses every merge_key it records, alerted or not.
 
 To push UI changes back to git:
 
@@ -291,10 +299,13 @@ sudo -u jobwatch bash -c 'gunzip -c /var/lib/jobwatch/backups/jobs-<stamp>.db.gz
 sudo systemctl start jobwatch
 ```
 
-**A restore never causes an alert storm.** Any source whose rows are missing
-re-seeds silently on its next poll. What you actually lose by not having a
-backup is `title_verdicts` — every human classification decision you ever made.
-That is the table worth protecting.
+**A restore never causes an alert storm**, but under `on_seed: digest` it is no
+longer silent: a source whose rows are missing re-seeds, and re-seeding now sends
+one digest of whatever its board matches. Bounded, not free — restore the
+database rather than letting a source re-seed if you want neither.
+
+What you actually lose by not having a backup is `title_verdicts` — every human
+classification decision you ever made. That is the table worth protecting.
 
 ---
 

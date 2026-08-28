@@ -32,7 +32,19 @@ http:
   fallback_after_failures: 5
 
 classification:
-  on_review: alert          # alert | queue_only
+  # queue_only since 2026-08-27. 'review' means the title is an internship but
+  # carries no role_any (tech) signal, so alerting on it was delivering Claims
+  # Representative, Staff Accountant and Hair Stylist internships. Review rows
+  # are still written and still visible in the UI's review screen for triage —
+  # they just no longer notify.
+  on_review: queue_only     # alert | queue_only
+  # What the FIRST poll of a source does with the matches it finds.
+  #   digest  one batched message per source — bounded, and nothing is buried
+  #   silent  the original behaviour: record the board, send nothing. Seeding is
+  #           per source, so this hides every internship a newly added company
+  #           already has; `jobwatch backfill` is the only way back.
+  #   alert   one message per posting. Only sane for a single hand-added company.
+  on_seed: digest           # digest | silent | alert
 
 notifications:
   discord_webhook_env: DISCORD_WEBHOOK_URL

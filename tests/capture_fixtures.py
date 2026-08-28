@@ -67,6 +67,12 @@ async def main(only: set[str]) -> int:
             # Jibe fronts iCIMS; `limit` caps at 100 and 200 returns an empty
             # list, so the request asks for a small page rather than trimming.
             ("jibe_amd", "get", ("https://careers.amd.com/api/jobs?keywords=intern&page=1&limit=3&sortBy=relevance&descending=false&internal=false", "jobs")),
+            # `details=true` is what turns the response into a jobs array;
+            # without it the board looks empty rather than erroring.
+            ("workable_ponyai", "get", ("https://apply.workable.com/api/v1/widget/accounts/pony-dot-ai?details=true", "jobs")),
+            # Rippling answers with a bare top-level array.
+            ("rippling_spreeai", "get", ("https://api.rippling.com/platform/api/ats/v1/board/spreeai/jobs", None)),
+            ("bamboohr_specter", "get", ("https://specteraerospace.bamboohr.com/careers/list", "result")),
             ("direct_amazon", "get", ("https://www.amazon.jobs/en/search.json?base_query=intern&result_limit=4&offset=0&sort=recent", "jobs")),
             ("direct_uber", "post", ("https://www.uber.com/api/loadSearchJobsResults?localeCode=en",
                                       {"params": {"query": "intern"}, "page": 0, "limit": 4},

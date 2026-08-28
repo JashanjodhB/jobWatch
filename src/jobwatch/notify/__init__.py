@@ -6,6 +6,7 @@ from .discord import (
     DiscordSender,
     build_alarm_embed,
     build_digest_embed,
+    build_digest_embeds,
     build_job_embed,
 )
 from .email import EmailChannel, EmailConfig, EmailSender, build_job_email
@@ -23,6 +24,7 @@ __all__ = [
     "OutboxItem",
     "build_alarm_embed",
     "build_digest_embed",
+    "build_digest_embeds",
     "build_job_email",
     "build_job_embed",
 ]

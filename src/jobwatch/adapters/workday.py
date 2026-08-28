@@ -28,6 +28,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any, ClassVar
 
+from ..logging_setup import get_logger
 from ..models import FetchResult
 from .base import (
     AdapterError,
@@ -42,6 +43,8 @@ DEFAULT_LIMIT = 20
 SAFE_LIMIT = 20          # the page size every tenant observed so far accepts
 MAX_PAGES = 80
 PAGE_DELAY_SECONDS = 0.25
+
+log = get_logger(__name__)
 
 
 @register("workday")
@@ -97,12 +100,21 @@ class WorkdayAdapter:
         seen_paths: set[str] = set()
         offset = 0
         pages = 0
+        unroutable = 0
 
         while True:
             pages += 1
             new_on_page = 0
+            skipped_on_page = 0
             for posting in postings:
                 mapped = self._map(posting, host, site, locale)
+                # A single row with no externalPath is bad data, not drift --
+                # Accenture serves one such row among 211 good ones. Dropping
+                # the whole scan for it loses the board; see below for why this
+                # still cannot hide a schema change.
+                if mapped is None:
+                    skipped_on_page += 1
+                    continue
                 # Tenants repeat rows across pages when the board shifts
                 # mid-scan; externalPath is stable enough to detect that.
                 if mapped["url"] in seen_paths:
@@ -110,6 +122,19 @@ class WorkdayAdapter:
                 seen_paths.add(mapped["url"])
                 items.append(mapped)
                 new_on_page += 1
+
+            # Every row on a full page being unroutable is drift, not bad data:
+            # that is what a renamed externalPath field looks like, and it must
+            # stay loud (§13.10).
+            if postings and skipped_on_page == len(postings):
+                raise AdapterError(
+                    f"every posting on page {pages} has no externalPath "
+                    f"({skipped_on_page} rows) -- the field was renamed",
+                    adapter=self.name,
+                    payload_snippet=repr(postings[0])[:300],
+                )
+            if skipped_on_page:
+                unroutable += skipped_on_page
 
             offset += len(postings)
             if not postings or new_on_page == 0:
@@ -135,6 +160,12 @@ class WorkdayAdapter:
                 break
             postings = require_list(payload, "jobPostings", self.name)
 
+        if unroutable:
+            log.info(
+                "workday_rows_without_external_path",
+                tenant=tenant, site=site, dropped=unroutable, kept=len(items),
+            )
+
         return FetchResult(
             postings=build_postings(items, self.name),
             etag=etag,
@@ -142,7 +173,7 @@ class WorkdayAdapter:
             adapter=self.name,
         )
 
-    def _map(self, posting: Any, host: str, site: str, locale: str) -> dict[str, Any]:
+    def _map(self, posting: Any, host: str, site: str, locale: str) -> dict[str, Any] | None:
         if not isinstance(posting, dict):
             raise AdapterError(
                 f"expected jobPostings entries to be objects, got {type(posting).__name__}",
@@ -152,11 +183,9 @@ class WorkdayAdapter:
 
         external_path = posting.get("externalPath")
         if not external_path:
-            raise AdapterError(
-                "jobPostings entry has no externalPath -- cannot build an apply URL",
-                adapter=self.name,
-                payload_snippet=repr(posting)[:300],
-            )
+            # Recoverable: the caller drops this row and raises only if the
+            # whole page looks like this.
+            return None
 
         return {
             "req_id": _req_id(posting, str(external_path)),

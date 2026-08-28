@@ -78,6 +78,14 @@ class HttpSettings(BaseModel):
 class ClassificationSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
     on_review: Literal["alert", "queue_only"] = "alert"
+    # What the first poll of a source does with the matches it finds (§13.1).
+    # 'silent' is the original behaviour: record the whole board as already-known
+    # and send nothing, which buries every real internship a bulk registry
+    # expansion discovers. 'digest' classifies normally and sends the alertable
+    # ones as ONE batched message per source, so cold start is visible without
+    # ever being a flood. 'alert' sends them individually and is only sane for a
+    # single hand-added company.
+    on_seed: Literal["silent", "digest", "alert"] = "digest"
 
 
 class EmailSettings(BaseModel):

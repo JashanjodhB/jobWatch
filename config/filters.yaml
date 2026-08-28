@@ -28,18 +28,70 @@ require_any:
   - '\bindustrial placement\b'
   - '\bapprentice\b'
   - '\b20\d\d\s+summer\b'
+  # ByteDance/TikTok and Google label real ML and SWE internships "Student
+  # Researcher", and John Deere, Zoox and Daktronics use a bare "... Student".
+  # Without these the whole naming family is dropped as "not an internship":
+  # it was 96 of the 220 title-rejected roles in the Simplify feed (2026-08-25).
+  # University research assistantships also match, but jobwatch only ever
+  # classifies postings from companies in its own registry, so that noise
+  # cannot reach it.
+  - '\bstudent researcher\b'
+  - '\b(part[- ]?time\s+)?student\b'
 
 role_any:
+  # This is the tech gate. A require_any hit WITHOUT a hit here is 'review', not
+  # 'match' — so this list is what decides whether a posting alerts at all.
+  #
+  # Rewritten 2026-08-27. It used to carry a bare '\bengineer(ing)?\b', which
+  # made every discipline on earth a match: Mining, Mechanical, Civil,
+  # Structural, Welding and Facilities engineering internships all alerted as
+  # "tech". Engineering now only qualifies when the discipline is a computing
+  # one; bare "Engineering Intern" falls to review, where it can be triaged.
+
+  # ── Software & computer science ──────────────────────────────────────
   - '\bsoftware\b'
-  - '\bengineer(ing)?\b'
-  - '\b(swe|sde|mle)\b'
+  - '\b(swe|sde|sdet|mle)\b'
+  - '\bcomputer sci(ence)?\b'
+  - '\b(developer|programmer|programming)\b'
+  - '\b(back[- ]?end|front[- ]?end|full[- ]?stack)\b'
+  - '\bweb\b'
+  - '\b(ios|android)\b'
+  - '\bapplication (developer|development|engineer(ing)?)\b'
+
+  # ── AI, ML & data ────────────────────────────────────────────────────
   - '\bmachine learning\b'
-  - '\b(ai|ml)\b'
+  - '\bdeep learning\b'
+  - '\b(ai|ml|nlp|llm|gen ?ai)\b'
   - '\bdata\b'
-  - '\b(backend|frontend|full[- ]?stack)\b'
-  - '\b(infrastructure|platform|systems)\b'
+  - '\banalytics\b'
+  - '\b(computer vision|perception)\b'
+  - '\bresearch (engineer|scientist)\b'
   - '\bquantitative (developer|technologist)\b'
-  - '\bresearch engineer\b'
+
+  # ── Infrastructure, cloud, security & networks ───────────────────────
+  - '\b(infrastructure|platform|systems?)\b'
+  - '\b(cloud|devops|sre|site reliability)\b'
+  - '\b(cyber ?security|information security|infosec)\b'
+  - '\bsecurity engineer(ing)?\b'
+  - '\bnetwork(ing|s)?\b'
+  - '\b(database|sql)\b'
+
+  # ── Computing hardware ───────────────────────────────────────────────
+  # Chip and firmware work is CS-adjacent and was reaching only 'review'.
+  - '\b(embedded|firmware|fpga|asic|vlsi|rtl|silicon)\b'
+  - '\brobotics\b'
+  - '\b(electrical|computer|hardware) engineer(ing)?\b'
+
+  # ── IT & QA ──────────────────────────────────────────────────────────
+  # 'IT' MUST stay case-sensitive: an unanchored '\bit\b' matches the English
+  # pronoun and would make every title a match.
+  - '(?-i:\bIT\b)'
+  - '\binformation technology\b'
+  - '\b(qa|quality assurance|test automation)\b'
+  - '\btechnolog(y|ies|ical)\b'
+  # The lookbehind is load-bearing: without it "Student Intern - Non Technical"
+  # classifies as a match.
+  - '\b(?<!non[- ])technical\b'
 
 exclude_any:
   - '\bph\.?d\b'
@@ -47,7 +99,36 @@ exclude_any:
   - '\bmba\b'
   - '\b(sales|marketing|recruit(ing|er))\b'
   - '\bnew ?grad\b'
-  - '\bmanager\b'
+  # '\bmanager\b' was removed 2026-08-25. It rejected 25 genuine "Product
+  # Manager Intern" roles (mostly ByteDance/TikTok) while the near-identical
+  # "Product Management Intern" only reached review — the same job, two
+  # verdicts. Dropping it costs nothing in precision: require_any gates first,
+  # so a plain "Engineering Manager" is still rejected for not being an
+  # internship at all. Better to triage a few product roles than lose real ones.
+
+  # ── Non-computing disciplines, added 2026-08-27 ──────────────────────
+  # exclude_any is a HARD reject evaluated BEFORE role_any, so everything here
+  # must be a term that essentially never co-occurs with a real tech role.
+  # Measured against all 142,130 postings in the database: exactly two titles
+  # carrying a strong tech token are lost to these patterns
+  # ("Web Developer/Programmer Intern/Volunteer" and "School internship - HR
+  # Data & Technology"). That was the acceptance test — anything that killed
+  # more was dropped from this list.
+  #
+  # Deliberately NOT here, because each one does co-occur with real data work:
+  # 'tax' (Digital Tax Data Scientist), 'supply chain' (Data Analytics in
+  # Supply Chain), 'clinical', 'communications', 'treasury'. Those fall to
+  # review instead, which is the correct place for a judgement call.
+  - '\b(mechanical|civil|structural|chemical|mining|petroleum|geolog\w+|environmental|industrial|manufacturing|aerospace|automotive|nuclear|welding|hvac|architectural|process|packaging|facilities|geotechnical|safety)\s+(design\s+)?engineer(ing)?\b'
+  - '\b(human resources|hr)\b'
+  - '\b(accountant|accounting|bookkeep\w+|payroll|actuarial|underwrit\w+|claims adjust\w+)\b'
+  - '\b(nurse|nursing|pharmac\w+|dental|medical assistant|phlebotom\w+)\b'
+  - '\b(hair stylist|makeup|photographer|videographer|copy ?editor|journalis\w+|art director|graphic design\w*|copywrit\w+|retouch\w*)\b'
+  - '\b(paralegal|attorney|immigration)\b'
+  - '\b(social media|public relations)\b'
+  - '\b(warehouse|janitor\w*|maintenance technician|barista|cashier)\b'
+  # Unpaid "Intern/Volunteer" listings, which one registry org posts in bulk.
+  - '\bvolunteer\b'
 
 # A deny list: a posting is rejected only when EVERY one of its locations is hit.
 # Largely redundant now that location_require is set, but harmless and still the

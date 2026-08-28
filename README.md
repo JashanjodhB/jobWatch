@@ -123,11 +123,16 @@ you tune filters with.
 .\deploy\jobwatch.ps1 -Hidden
 ```
 
-**The first real run seeds silently.** Every posting currently on every board is
-recorded and marked already-known, and nothing is sent — it reports `alerted: 0`
-and takes a minute or two. That is correct: alerting on a cold start would mean
-thousands of messages, a rate-limited webhook, and a system you stop trusting on
-day one. Alerts begin with the next genuinely new posting.
+**The first real run sends one digest per source.** Every posting on every board
+is recorded and classified, and the matches arrive batched into a single message
+rather than one message each — a cold start costs you one notification per
+source, not thousands. Alerting individually would rate-limit the webhook and
+destroy trust on day one; alerting *nothing*, which is what this used to do,
+quietly buries every real internship a newly added company brings with it.
+
+Set `classification.on_seed: silent` in `settings.yaml` for the old behaviour, or
+`alert` to send them individually (only sane for a single hand-added company).
+If you already have a silent backlog, `jobwatch backfill` recovers it.
 
 ```powershell
 .\deploy\jobwatch.ps1 -Status      # running? since when? which log?
@@ -169,6 +174,7 @@ sources breaking, notifications not arriving, and what each outbox error means.
 | `jobwatch discover <careers_url>` | Identify the ATS behind a careers page and verify it live |
 | `jobwatch discover-bulk` | Find companies you are not watching yet, from community internship feeds |
 | `jobwatch replay <merge_key>` | Re-queue an alert |
+| `jobwatch backfill` | Alert on postings a silent cold start swallowed; `--tier`, `--company`, `--match-only`, `--limit`, `--dry-run` |
 | `jobwatch export-config` | Write the DB's companies and filters back to YAML for git |
 | `jobwatch backup <path>` | Consistent snapshot of the database |
 | `jobwatch migrate` / `seed` | Schema and config bootstrap |
@@ -361,7 +367,7 @@ posting with that normalized title classifies instantly, forever, at zero cost.
 ## Tests
 
 ```bash
-uv run pytest        # 312 tests, no network
+uv run pytest        # 466 tests, no network
 uv run ruff check src tests
 ```
 
@@ -382,10 +388,12 @@ src/jobwatch/
   pipeline.py     fetch → persist → seed-or-classify → gate on merge_key → enqueue
   scheduler.py    tier intervals, backoff, due-source selection
   adapters/       greenhouse, lever, ashby, workday, smartrecruiters, eightfold,
+                  oracle, jibe, phenom, workable, rippling, bamboohr,
                   html, browser, direct/{amazon,apple,uber}
   classify/       regex rules + the human verdict cache
   notify/         durable outbox in front of the channels: discord, email
   web/            FastAPI + Jinja2 + vendored HTMX, no build step
 deploy/           jobwatch.ps1 (Windows start/stop), systemd unit, backup script
-docs/             OPERATIONS.md
+docs/             OPERATIONS.md (running the service), ADAPTERS.md (platform quirks)
+CLAUDE.md         orientation for Claude Code sessions
 ```

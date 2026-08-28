@@ -27,19 +27,58 @@ def classifier(seeded_db) -> Classifier:
         ("Summer Analyst - Quantitative Developer", "match"),
         ("2027 Summer Software Development Engineer Internship", "match"),
         ("Backend Engineer Intern", "match"),
+        # The "Student" naming family: ByteDance, Google, John Deere and Zoox
+        # all label real internships this way, so require_any covers it.
+        ("Contract Student Worker - Data Scientist", "match"),
+        # 'manager' is deliberately NOT excluded (2026-08-25): losing a real
+        # posting costs more than triaging a product one. It reaches review
+        # rather than match because, since the 2026-08-27 rewrite, bare
+        # 'engineering' is no longer a role_any signal -- see below.
+        ("Engineering Manager Intern", "review"),
+        # ── the tech gate (rewritten 2026-08-27) ──────────────────────────
+        # role_any used to carry a bare 'engineer(ing)?', so every
+        # discipline matched. Computing disciplines still do:
+        ("Cybersecurity Intern", "match"),
+        ("DevOps Intern", "match"),
+        ("IT Operations Intern", "match"),
+        ("FPGA Intern", "match"),
+        ("Electrical Engineering Intern", "match"),
+        ("Web Developer Intern", "match"),
+        # ...and non-computing ones are now rejected outright:
+        ("Mining Engineer Intern", "reject"),
+        ("Mechanical Engineering Intern", "reject"),
+        ("Civil Engineering Intern", "reject"),
+        ("Staff Accountant Intern", "reject"),
+        ("Human Resources Intern", "reject"),
+        # 'IT' is matched case-sensitively; an unanchored 'it' would make
+        # every title carrying the pronoun a match.
+        ("Make It Happen Intern", "review"),
+        # The 'non-technical' lookbehind: without it this reads as a tech role.
+        ("Student Intern - Non Technical", "review"),
+        # Ambiguous by design -- no discipline named, so it lands in review
+        # for triage rather than alerting.
+        ("Engineering Intern", "review"),
+        # Not over-rejected: 'supply chain' is deliberately absent from
+        # exclude_any because it co-occurs with genuine data work.
+        ("Data Analytics in Supply Chain Intern", "match"),
         # rejected by exclude_any
         ("PhD Research Intern, Robotics", "reject"),
         ("Returning Intern - Software Engineer", "reject"),
         ("MBA Intern, Strategy", "reject"),
         ("Sales Intern", "reject"),
         ("Software Engineer, New Grad", "reject"),
-        ("Engineering Manager Intern", "reject"),
-        # rejected for not being an internship at all
+        # rejected for not being an internship at all -- this is what keeps a
+        # plain manager role out now that exclude_any no longer names it.
         ("Senior Staff Software Engineer", "reject"),
         ("Director of Engineering", "reject"),
+        ("Engineering Manager", "reject"),
+        # university research assistantships stay out: '\bundergraduate\b' and
+        # '\bresearch assistant\b' were considered and deliberately not added.
+        ("Undergraduate Research Assistant", "reject"),
         # internship, but of an unrecognised kind
         ("Sustainability Intern", "review"),
         ("Legal Intern", "review"),
+        ("Product Manager Intern - Ads Interface", "review"),
     ],
 )
 def test_rule_outcomes(classifier, title, expected):

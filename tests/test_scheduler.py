@@ -19,8 +19,15 @@ def scheduler(make_pipeline, seeded_db, settings):
     return Scheduler(seeded_db, pipe, settings), pipe, sender
 
 
-def touch(db, source_id: int, *, seconds_ago: float) -> None:
-    when = datetime.now(UTC) - timedelta(seconds=seconds_ago)
+def touch(db, source_id: int, *, seconds_ago: float, now: datetime | None = None) -> None:
+    """Backdate a source's last attempt.
+
+    `now` anchors the backdating. It matters whenever the test then calls
+    `due_sources(moment)` with a fixed date: anchoring on the wall clock instead
+    makes the elapsed time depend on how far today happens to be from that
+    date, which is a test that quietly starts failing on a later day.
+    """
+    when = (now or datetime.now(UTC)) - timedelta(seconds=seconds_ago)
     db.execute(
         "UPDATE sources SET last_attempt_at = ? WHERE id = ?",
         (when.strftime("%Y-%m-%dT%H:%M:%SZ"), source_id),
@@ -77,9 +84,15 @@ def test_seasonal_multiplier_stretches_intervals(seeded_db, make_pipeline, setti
 
     add_company(seeded_db, "stripe", tier="hot")
     sid = add_source(seeded_db, "stripe")
-    touch(seeded_db, sid, seconds_ago=90)
+    # Anchored on `august`, not on today: the point of the test is that 90s is
+    # past a 60s interval but inside a stretched 180s one, and that comparison
+    # only holds if the backdating and the evaluated moment share a clock.
+    touch(seeded_db, sid, seconds_ago=90, now=august)
 
     assert len(sched.due_sources(august)) == 1
+    assert sched.due_sources(august + timedelta(days=1)) != [], "still due a day later"
+
+    touch(seeded_db, sid, seconds_ago=90, now=april)
     assert sched.due_sources(april) == [], "April should still be inside the stretched interval"
 
 

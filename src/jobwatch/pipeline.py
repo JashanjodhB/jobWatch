@@ -43,7 +43,7 @@ from .models import FetchResult, Source
 from .normalize import dedup_key, merge_key, normalize_locations, normalize_title
 from .notify.outbox import Outbox
 
-__all__ = ["CompanyReport", "Pipeline", "PollOutcome"]
+__all__ = ["CompanyReport", "Pipeline", "PollOutcome", "build_job_payload"]
 
 log = get_logger(__name__)
 
@@ -221,13 +221,14 @@ class Pipeline:
             outcome.new_count = len(new_keys)
 
             if not source.seeded:
-                self._seed(conn, source, new_keys, now)
-                outcome.alerted = 0
+                outcome.alerted = self._seed(conn, source, new_keys, now)
                 log.info(
                     "source_seeded",
                     source=source.label,
                     postings=len(result.postings),
-                    suppressed=len(new_keys),
+                    recorded=len(new_keys),
+                    alerted=outcome.alerted,
+                    mode=self.settings.classification.on_seed,
                 )
                 return
 
@@ -286,30 +287,65 @@ class Pipeline:
 
         return new_keys
 
-    def _seed(self, conn: Any, source: Source, new_keys: list[str], now: str) -> None:
-        """First poll of this source: record everything, alert nothing (§13.1)."""
+    def _seed(self, conn: Any, source: Source, new_keys: list[str], now: str) -> int:
+        """First poll of this source. Returns how many alerts it queued (§13.1).
+
+        What cold start must never do is *flood*: a bulk registry expansion seeds
+        hundreds of sources at once, and alerting each one's whole board
+        individually rate-limits the webhook on day one. It does not follow that
+        it must be *silent* — silence buries every real posting those sources
+        discover, and nothing in the normal flow ever revisits a seeded row
+        (`replay` only re-queues outbox rows, which a seeded job never got).
+
+        `on_seed: digest` is the middle ground and the default: classify the
+        board normally, then batch the alertable postings into one message, which
+        is bounded at 1 no matter how large the board is. Rejects are suppressed
+        exactly as `silent` suppressed everything.
+        """
+        mode = self.settings.classification.on_seed
+        alerted = 0
+
+        if mode == "silent":
+            for dk in new_keys:
+                conn.execute(
+                    "UPDATE jobs SET classification='reject', class_source='seed' "
+                    "WHERE dedup_key=?",
+                    (dk,),
+                )
+        else:
+            alerted = self._classify_and_alert(
+                conn, source, new_keys, now, kind="job" if mode == "alert" else "digest"
+            )
+
+        # Every merge_key this source just saw is suppressed, alerted or not, so
+        # the same job surfacing later from a *different* source does not alert
+        # again. `OR IGNORE` leaves the rows `_classify_and_alert` already wrote.
         for dk in new_keys:
             row = conn.execute(
                 "SELECT merge_key FROM jobs WHERE dedup_key = ?", (dk,)
             ).fetchone()
-            conn.execute(
-                "UPDATE jobs SET classification='reject', class_source='seed' WHERE dedup_key=?",
-                (dk,),
-            )
             if row:
-                # Suppress this merge_key for good, so the same job surfacing
-                # later from a *different* source does not alert either.
                 conn.execute(
                     "INSERT OR IGNORE INTO alerted_merges(merge_key, company_slug, alerted_at, dedup_key) "
                     "VALUES(?,?,?,?)",
                     (row["merge_key"], source.company_slug, now, dk),
                 )
+
         conn.execute("UPDATE sources SET seeded = 1 WHERE id = ?", (source.id,))
         source.seeded = True
+        return alerted
 
     def _classify_and_alert(
-        self, conn: Any, source: Source, new_keys: list[str], now: str
+        self,
+        conn: Any,
+        source: Source,
+        new_keys: list[str],
+        now: str,
+        *,
+        kind: str | None = None,
     ) -> int:
+        """`kind` overrides the per-tier immediate/digest choice, which is how a
+        cold start forces its whole board into one batched message."""
         alerted = 0
         on_review = self.settings.classification.on_review
 
@@ -363,8 +399,8 @@ class Pipeline:
             conn.execute("UPDATE jobs SET alerted_at = ? WHERE dedup_key = ?", (now, dk))
 
             payload = self._payload(conn, row, decision.classification, decision.category)
-            kind = "digest" if self.settings.batches(row["tier"]) else "job"
-            self.outbox.enqueue(mk, payload, kind=kind)
+            row_kind = kind or ("digest" if self.settings.batches(row["tier"]) else "job")
+            self.outbox.enqueue(mk, payload, kind=row_kind)
             alerted += 1
 
         return alerted
@@ -372,34 +408,9 @@ class Pipeline:
     def _payload(
         self, conn: Any, row: Any, classification: str, category: str | None
     ) -> dict[str, Any]:
-        """Build the Discord payload, attributing the link to the canonical source."""
-        best = conn.execute(
-            "SELECT j.url, j.locations FROM jobs j JOIN sources s ON s.id = j.source_id "
-            "WHERE j.merge_key = ? ORDER BY s.priority ASC, s.id ASC LIMIT 1",
-            (row["merge_key"],),
-        ).fetchone()
-
-        url = best["url"] if best else row["url"]
-        locations = _json_list(best["locations"]) if best else _json_list(row["locations"])
-        if not locations:
-            locations = _json_list(row["locations"])
-
-        base = self.settings.web.base_url.rstrip("/")
-        return {
-            "type": "job",
-            "company": row["display_name"],
-            "company_slug": row["company_slug"],
-            "title": row["title"],
-            "url": url,
-            "locations": locations,
-            "classification": classification,
-            "category": category,
-            "detected_at": row["first_seen_at"],
-            "tier": row["tier"],
-            "merge_key": row["merge_key"],
-            "dedup_key": row["dedup_key"],
-            "ui_url": f"{base}/?q={row['merge_key'][:12]}",
-        }
+        return build_job_payload(
+            conn, row, classification, category, self.settings.web.base_url
+        )
 
     # ── source state ──────────────────────────────────────────────────────
 
@@ -492,6 +503,48 @@ class Pipeline:
                 "max_count = MAX(source_baseline.max_count, excluded.max_count)",
                 (source.id, day, outcome.posting_count),
             )
+
+
+def build_job_payload(
+    conn: Any,
+    row: Any,
+    classification: str,
+    category: str | None,
+    base_url: str,
+) -> dict[str, Any]:
+    """Build the Discord payload, attributing the link to the canonical source.
+
+    Module-level because `backfill.py` builds the same payload for postings a
+    cold start swallowed; the shape has to stay identical or a backfilled alert
+    renders differently from a live one.
+    """
+    best = conn.execute(
+        "SELECT j.url, j.locations FROM jobs j JOIN sources s ON s.id = j.source_id "
+        "WHERE j.merge_key = ? ORDER BY s.priority ASC, s.id ASC LIMIT 1",
+        (row["merge_key"],),
+    ).fetchone()
+
+    url = best["url"] if best else row["url"]
+    locations = _json_list(best["locations"]) if best else _json_list(row["locations"])
+    if not locations:
+        locations = _json_list(row["locations"])
+
+    base = base_url.rstrip("/")
+    return {
+        "type": "job",
+        "company": row["display_name"],
+        "company_slug": row["company_slug"],
+        "title": row["title"],
+        "url": url,
+        "locations": locations,
+        "classification": classification,
+        "category": category,
+        "detected_at": row["first_seen_at"],
+        "tier": row["tier"],
+        "merge_key": row["merge_key"],
+        "dedup_key": row["dedup_key"],
+        "ui_url": f"{base}/?q={row['merge_key'][:12]}",
+    }
 
 
 def _ms(started: float) -> int:

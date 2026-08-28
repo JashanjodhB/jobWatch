@@ -25,6 +25,7 @@ __all__ = [
     "DiscordSender",
     "build_alarm_embed",
     "build_digest_embed",
+    "build_digest_embeds",
     "build_embed",
     "build_job_embed",
     "humanize_age",
@@ -37,6 +38,17 @@ COLOR_ALARM = 0xE5484D       # source failure, drift
 COLOR_MUTED = 0x7A8499       # digest wrapper
 
 MAX_EMBEDS_PER_MESSAGE = 10
+# Discord enforces TWO separate limits and only the first is obvious: 4096
+# characters per embed description, and 6000 across every embed in one message
+# combined. Budgeting per embed and sending ten of them is a 400 with
+# "Embed size exceeds maximum size of 6000" — which retries forever, because
+# the payload is the problem and a retry sends the same payload.
+MESSAGE_CHAR_BUDGET = 5800
+# Per-embed target, chosen so three fit in one message with headroom.
+DIGEST_DESCRIPTION_BUDGET = 1900
+# ~30 embeds is far more than one 200-row outbox page needs; the cap only stops
+# a pathological batch from turning into a dozen messages.
+MAX_DIGEST_EMBEDS = 30
 
 
 class DiscordError(DeliveryError):
@@ -80,19 +92,21 @@ def build_job_embed(payload: dict[str, Any]) -> dict[str, Any]:
     return embed
 
 
+def _digest_entry(item: dict[str, Any]) -> str:
+    company = item.get("company") or item.get("company_slug") or "?"
+    title = (item.get("title") or "(untitled)")[:90]
+    mark = "?" if item.get("classification") == "review" else "·"
+    url = item.get("url")
+    entry = f"**{company}** {mark} [{title}]({url})" if url else f"**{company}** {mark} {title}"
+    locations = item.get("locations") or []
+    if locations:
+        entry += f"\n{' · '.join(str(x) for x in locations[:3])}"
+    return entry
+
+
 def build_digest_embed(payloads: list[dict[str, Any]]) -> dict[str, Any]:
-    """Warm and cold tiers accumulate into one embed, flushed on an interval."""
-    lines: list[str] = []
-    for item in payloads[:25]:
-        company = item.get("company") or item.get("company_slug") or "?"
-        title = (item.get("title") or "(untitled)")[:90]
-        mark = "?" if item.get("classification") == "review" else "·"
-        url = item.get("url")
-        entry = f"**{company}** {mark} [{title}]({url})" if url else f"**{company}** {mark} {title}"
-        locations = item.get("locations") or []
-        if locations:
-            entry += f"\n{' · '.join(str(x) for x in locations[:3])}"
-        lines.append(entry)
+    """One embed's worth of a digest, truncated at 25 with the rest named."""
+    lines = [_digest_entry(item) for item in payloads[:25]]
 
     if len(payloads) > 25:
         lines.append(f"…and {len(payloads) - 25} more — see the feed")
@@ -102,6 +116,97 @@ def build_digest_embed(payloads: list[dict[str, Any]]) -> dict[str, Any]:
         "color": COLOR_MUTED,
         "description": "\n".join(lines)[:4000],
     }
+
+
+def build_digest_embeds(payloads: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """A digest spread across as many embeds as it needs.
+
+    A single embed shows 25 entries, which is fine for a routine flush and
+    useless for a bulk one: the outbox pages 200 rows per flush, so a backfill
+    delivered 25 of them and named the other 175 as a number. Discord takes 10
+    embeds per message at 4096 description characters each, which covers a full
+    page comfortably.
+
+    Whatever still does not fit is named as a count on the last embed — the one
+    thing a digest must never do is drop postings without saying so.
+    """
+    if not payloads:
+        return []
+
+    pages: list[list[str]] = []
+    current: list[str] = []
+    size = 0
+
+    for item in payloads:
+        entry = _digest_entry(item)
+        cost = len(entry) + 1
+        if current and size + cost > DIGEST_DESCRIPTION_BUDGET:
+            pages.append(current)
+            if len(pages) == MAX_DIGEST_EMBEDS:
+                current = []
+                break
+            current, size = [], 0
+        current.append(entry)
+        size += cost
+
+    if current and len(pages) < MAX_DIGEST_EMBEDS:
+        pages.append(current)
+
+    shown = sum(len(page) for page in pages)
+    if shown < len(payloads):
+        pages[-1].append(f"…and {len(payloads) - shown} more — see the feed")
+
+    total = len(payloads)
+    embeds: list[dict[str, Any]] = []
+    for index, page in enumerate(pages):
+        embeds.append(
+            {
+                "title": (
+                    f"📋 {total} new posting{'s' if total != 1 else ''}"
+                    if index == 0
+                    else f"… continued ({index + 1}/{len(pages)})"
+                ),
+                "color": COLOR_MUTED,
+                "description": "\n".join(page)[:4096],
+            }
+        )
+    return embeds
+
+
+def _embed_cost(embed: dict[str, Any]) -> int:
+    """What Discord counts toward the 6000-per-message budget."""
+    footer = embed.get("footer") or {}
+    return (
+        len(str(embed.get("title") or ""))
+        + len(str(embed.get("description") or ""))
+        + len(str(footer.get("text") or ""))
+    )
+
+
+def _chunk_embeds(embeds: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
+    """Split embeds into messages that respect BOTH of Discord's limits.
+
+    Ten embeds per message is the documented one and the easy one to remember;
+    6000 characters across all of them combined is the one that actually bites,
+    and it fails the whole message rather than trimming it.
+    """
+    messages: list[list[dict[str, Any]]] = []
+    current: list[dict[str, Any]] = []
+    size = 0
+
+    for embed in embeds:
+        cost = _embed_cost(embed)
+        too_many = len(current) >= MAX_EMBEDS_PER_MESSAGE
+        too_large = current and size + cost > MESSAGE_CHAR_BUDGET
+        if too_many or too_large:
+            messages.append(current)
+            current, size = [], 0
+        current.append(embed)
+        size += cost
+
+    if current:
+        messages.append(current)
+    return messages
 
 
 def build_alarm_embed(payload: dict[str, Any]) -> dict[str, Any]:
@@ -145,10 +250,9 @@ class DiscordSender:
         if not embeds:
             return
 
-        for start in range(0, len(embeds), MAX_EMBEDS_PER_MESSAGE):
-            chunk = embeds[start : start + MAX_EMBEDS_PER_MESSAGE]
+        for index, chunk in enumerate(_chunk_embeds(embeds)):
             body: dict[str, Any] = {"embeds": chunk, "allowed_mentions": {"parse": []}}
-            if content and start == 0:
+            if content and index == 0:
                 body["content"] = content[:2000]
             await self._post(body)
 
@@ -208,7 +312,7 @@ class DiscordChannel:
         if not payloads:
             return
         if kind == "digest" and len(payloads) > 1:
-            embeds = [build_digest_embed(payloads)]
+            embeds = build_digest_embeds(payloads)
         else:
             embeds = [build_embed(payload) for payload in payloads]
         await self.sender.send_embeds(embeds)

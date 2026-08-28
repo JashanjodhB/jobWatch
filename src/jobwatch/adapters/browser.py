@@ -20,6 +20,14 @@ Config:
     base_url         base for relative apply paths                  (optional)
     wait_ms          extra settle time after networkidle            (default 2500)
     job_selector     DOM fallback if no XHR matched                 (optional)
+    frame_contains   read this sub-frame instead of the top frame   (optional)
+
+`frame_contains` exists for boards that render inside an iframe, where
+`page.content()` returns the wrapper and never the jobs. iCIMS is the common
+case: `careers-<tenant>.icims.com` puts its listings in an `in_iframe=1` child,
+and requesting that child URL directly does not help — iCIMS strips the
+parameter and redirects back to the wrapper, which then re-embeds it. The only
+way in is to render the wrapper and read the child frame.
 """
 
 from __future__ import annotations
@@ -87,7 +95,11 @@ class BrowserAdapter:
                         await page.wait_for_load_state("networkidle", timeout=15_000)
                     await asyncio.sleep(wait_ms / 1000)
 
-                    html = await page.content()
+                    frame_contains = ctx.config.get("frame_contains")
+                    if frame_contains:
+                        html = await _frame_content(page, str(frame_contains), self.name)
+                    else:
+                        html = await page.content()
                 finally:
                     await browser.close()
         except AdapterUnavailable:
@@ -184,6 +196,27 @@ class BrowserAdapter:
                 adapter=self.name,
             )
         return FetchResult(postings=build_postings(items, self.name), adapter=self.name)
+
+
+async def _frame_content(page: Any, needle: str, adapter: str) -> str:
+    """HTML of the first sub-frame whose URL contains `needle`.
+
+    Raises rather than falling back to the top frame: silently returning the
+    wrapper would surface as `job_selector matched nothing`, which points at the
+    selector when the real fault is the frame going missing (§13.10).
+    """
+    for frame in page.frames:
+        if frame == page.main_frame:
+            continue
+        if needle in (frame.url or ""):
+            return await frame.content()
+
+    seen = [f.url[:80] for f in page.frames if f != page.main_frame]
+    raise AdapterError(
+        f"no sub-frame URL contained {needle!r}",
+        adapter=adapter,
+        payload_snippet=f"frames seen: {seen}" if seen else "the page has no sub-frames",
+    )
 
 
 def _capture(sink: list[Any], needle: str):

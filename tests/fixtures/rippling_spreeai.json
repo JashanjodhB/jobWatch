@@ -1,0 +1,67 @@
+[
+ {
+  "uuid": "b7f67b90-37c9-482e-9661-29ad652ec447",
+  "name": "AI Researcher (Computer Vision/Multimodal/Generative AI)",
+  "department": {
+   "id": "Engineering",
+   "label": "Engineering"
+  },
+  "url": "https://ats.rippling.com/spreeai/jobs/b7f67b90-37c9-482e-9661-29ad652ec447",
+  "workLocation": {
+   "label": "Hybrid (San Francisco, California, US)",
+   "id": "Hybrid (San Francisco, California, US)"
+  }
+ },
+ {
+  "uuid": "570ac9c4-b4b6-4c8a-8a61-6043a0437449",
+  "name": "Executive Assistant",
+  "department": {
+   "id": "Admin",
+   "label": "Admin"
+  },
+  "url": "https://ats.rippling.com/spreeai/jobs/570ac9c4-b4b6-4c8a-8a61-6043a0437449",
+  "workLocation": {
+   "label": "Los Angeles, CA",
+   "id": "Los Angeles, CA"
+  }
+ },
+ {
+  "uuid": "38303282-7a30-4d3f-b13b-5325246a7a6b",
+  "name": "Frontend Engineer",
+  "department": {
+   "id": "Engineering",
+   "label": "Engineering"
+  },
+  "url": "https://ats.rippling.com/spreeai/jobs/38303282-7a30-4d3f-b13b-5325246a7a6b",
+  "workLocation": {
+   "label": "Hybrid (San Francisco, California, US)",
+   "id": "Hybrid (San Francisco, California, US)"
+  }
+ },
+ {
+  "uuid": "5d81707c-ffbe-4c3c-b491-a348071ab237",
+  "name": "Machine Learning Engineer (Computer Vision/Multimodal/Generative AI)",
+  "department": {
+   "id": "Engineering",
+   "label": "Engineering"
+  },
+  "url": "https://ats.rippling.com/spreeai/jobs/5d81707c-ffbe-4c3c-b491-a348071ab237",
+  "workLocation": {
+   "label": "Hybrid (San Francisco, California, US)",
+   "id": "Hybrid (San Francisco, California, US)"
+  }
+ },
+ {
+  "uuid": "aa087086-dd4b-42be-a499-051546655e97",
+  "name": "Machine Learning Engineer Intern (Computer Vision/Multimodal/Generative AI)",
+  "department": {
+   "id": "Engineering",
+   "label": "Engineering"
+  },
+  "url": "https://ats.rippling.com/spreeai/jobs/aa087086-dd4b-42be-a499-051546655e97",
+  "workLocation": {
+   "label": "Hybrid (San Francisco, California, US)",
+   "id": "Hybrid (San Francisco, California, US)"
+  }
+ }
+]

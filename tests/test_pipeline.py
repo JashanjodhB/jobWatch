@@ -18,6 +18,7 @@ from conftest import (
     RecordingSender,
     add_company,
     add_source,
+    distinct_title,
     get_source,
     posting,
     set_postings,
@@ -41,25 +42,63 @@ def queued(db) -> list[str]:
     ]
 
 
+def drain(db) -> None:
+    """Forget the cold-start batch, so a test can assert on what follows it."""
+    db.execute("DELETE FROM outbox")
+
+
 # ── cold start ────────────────────────────────────────────────────────────
 
 
-async def test_first_poll_seeds_silently(make_pipeline, seeded_db):
-    """§13.1: the first poll of a source records everything and alerts nothing."""
-    pipe, _sender = make_pipeline()
+async def test_first_poll_batches_its_board_into_one_message(make_pipeline, seeded_db):
+    """§13.1, as the invariant actually needs to read: cold start must never
+    *flood*, which is not the same as being silent.
+
+    Silence was the original reading and it cost more than the storm would have:
+    seeding is per source, so every bulk registry expansion buried the real
+    internships it discovered and nothing ever revisited them. `on_seed: digest`
+    keeps the guarantee that matters — delivery is bounded at one message no
+    matter how large the board — while the postings still reach you.
+    """
+    pipe, sender = make_pipeline()
     add_company(seeded_db, "stripe")
     sid = add_source(seeded_db, "stripe", seeded=False)
-    set_postings(seeded_db, sid, [posting(f"{INTERN} {i}", str(i)) for i in range(500)])
+    set_postings(seeded_db, sid, [posting(distinct_title(i), str(i)) for i in range(500)])
+
+    report = await run(pipe, seeded_db, sid)
+
+    assert report.alerted == 500
+    assert seeded_db.scalar("SELECT COUNT(*) FROM jobs", default=0) == 500
+    assert seeded_db.scalar("SELECT seeded FROM sources WHERE id = ?", (sid,)) == 1
+    # Digest regardless of tier — stripe is hot here, and the per-tier rule would
+    # otherwise have sent 500 separate messages.
+    assert seeded_db.scalar(
+        "SELECT COUNT(*) FROM outbox WHERE kind = 'digest'", default=0
+    ) == 500
+
+    await pipe.outbox.flush()
+    assert len(sender.messages) == 1, "a first poll must cost exactly one message"
+
+
+async def test_on_seed_silent_restores_the_original_silence(
+    make_pipeline, seeded_db, settings
+):
+    """The old behaviour is still one setting away, and still suppresses merges."""
+    settings.classification.on_seed = "silent"
+    pipe, _sender = make_pipeline()
+    pipe.settings = settings
+    add_company(seeded_db, "stripe")
+    sid = add_source(seeded_db, "stripe", seeded=False)
+    set_postings(seeded_db, sid, [posting(distinct_title(i), str(i)) for i in range(20)])
 
     report = await run(pipe, seeded_db, sid)
 
     assert report.alerted == 0
     assert seeded_db.scalar("SELECT COUNT(*) FROM outbox", default=0) == 0
-    assert seeded_db.scalar("SELECT COUNT(*) FROM jobs", default=0) == 500
-    assert seeded_db.scalar("SELECT seeded FROM sources WHERE id = ?", (sid,)) == 1
     assert seeded_db.scalar(
         "SELECT COUNT(*) FROM jobs WHERE class_source = 'seed'", default=0
-    ) == 500
+    ) == 20
+    assert seeded_db.scalar("SELECT COUNT(*) FROM alerted_merges", default=0) == 20
 
 
 async def test_alerts_begin_with_the_first_genuinely_new_posting(make_pipeline, seeded_db):
@@ -69,7 +108,8 @@ async def test_alerts_begin_with_the_first_genuinely_new_posting(make_pipeline, 
 
     set_postings(seeded_db, sid, [posting(INTERN, "1")])
     await run(pipe, seeded_db, sid)
-    assert queued(seeded_db) == []
+    assert queued(seeded_db) == [INTERN], "the seeded board is the first batch"
+    drain(seeded_db)
 
     set_postings(seeded_db, sid, [posting(INTERN, "1"), posting(OTHER, "2")])
     report = await run(pipe, seeded_db, sid)
@@ -80,29 +120,118 @@ async def test_alerts_begin_with_the_first_genuinely_new_posting(make_pipeline, 
     assert len(sender.sent_titles) == 1
 
 
-async def test_a_source_added_later_also_seeds_silently(make_pipeline, seeded_db):
-    """Adding a second source to an existing company must not replay its board."""
+async def test_postings_that_appeared_during_downtime_alert_on_the_next_poll(
+    make_pipeline, seeded_db
+):
+    """A gap in uptime must not cost alerts.
+
+    `new_keys` is computed against what is in `jobs`, never against the clock,
+    so a posting that went up while the service was stopped is simply "not seen
+    before" on the next poll and alerts normally. Proven in the field on
+    2026-08-22: nvidia/workday was dead for seven days, and its recovery poll
+    found 114 unseen postings and delivered the one that classified as a match.
+
+    This is pinned because it is an *emergent* property of dedup, not something
+    any single line of code asserts. An "only alert postings newer than N days"
+    check added later would look reasonable and would silently break it.
+    """
+    pipe, sender = make_pipeline()
+    add_company(seeded_db, "stripe")
+    sid = add_source(seeded_db, "stripe", seeded=False)
+
+    # Before the outage: one posting, delivered as the cold-start batch.
+    set_postings(seeded_db, sid, [posting(INTERN, "1")])
+    await run(pipe, seeded_db, sid)
+    drain(seeded_db)
+
+    # ---- service is down here. Three postings go up in the meantime. ----
+    set_postings(seeded_db, sid, [
+        posting(INTERN, "1"),
+        posting("Backend Intern", "2"),
+        posting("Frontend Intern", "3"),
+        posting("Platform Intern", "4"),
+    ])
+
+    report = await run(pipe, seeded_db, sid)
+
+    assert report.alerted == 3, "the whole downtime backlog should alert"
+    assert queued(seeded_db) == ["Backend Intern", "Frontend Intern", "Platform Intern"]
+    await pipe.outbox.flush()
+    delivered = sender.sent_titles          # rendered as "<emoji> Stripe . <title>"
+    assert len(delivered) == 3
+    for title in ("Backend Intern", "Frontend Intern", "Platform Intern"):
+        assert any(title in line for line in delivered), f"{title} was not delivered"
+
+
+async def test_a_posting_that_came_and_went_during_downtime_is_never_seen(
+    make_pipeline, seeded_db
+):
+    """The real and irreducible limit of the above.
+
+    Recovery reads the *current* board. A req that opened and closed inside the
+    gap is not on it, so nothing can surface it -- worth stating explicitly so
+    the backlog guarantee is not read as stronger than it is.
+    """
+    pipe, _ = make_pipeline()
+    add_company(seeded_db, "stripe")
+    sid = add_source(seeded_db, "stripe", seeded=False)
+    set_postings(seeded_db, sid, [posting(INTERN, "1")])
+    await run(pipe, seeded_db, sid)
+
+    # "Ghost Intern" existed only while the service was stopped; by the time it
+    # polls again the board no longer lists it.
+    set_postings(seeded_db, sid, [posting(INTERN, "1")])
+    report = await run(pipe, seeded_db, sid)
+
+    assert report.alerted == 0
+    assert "Ghost Intern" not in queued(seeded_db)
+    assert seeded_db.scalar(
+        "SELECT COUNT(*) FROM jobs WHERE title = 'Ghost Intern'", default=0
+    ) == 0
+
+
+async def test_a_source_added_later_does_not_replay_the_company_board(
+    make_pipeline, seeded_db
+):
+    """Adding a second source must not re-alert what the first already covered.
+
+    Cold start suppresses every merge_key it records, alerted or not, so the
+    overlap between the two boards stays silent while genuinely new roles on the
+    second source come through.
+    """
     pipe, _ = make_pipeline()
     add_company(seeded_db, "stripe")
     first = add_source(seeded_db, "stripe", "fake", seeded=False)
     set_postings(seeded_db, first, [posting(INTERN, "1")])
     await run(pipe, seeded_db, first)
+    drain(seeded_db)
 
     second = add_source(seeded_db, "stripe", "fake1", priority=2, seeded=False)
-    set_postings(seeded_db, second, [posting(OTHER, "9"), posting("Infra Intern", "10")])
+    set_postings(seeded_db, second, [posting(INTERN, "9"), posting("Infra Intern", "10")])
 
     report = await run(pipe, seeded_db, second)
-    assert report.alerted == 0
-    assert queued(seeded_db) == []
+
+    assert report.alerted == 1
+    assert queued(seeded_db) == ["Infra Intern"], "the shared job must not alert twice"
 
 
-async def test_restore_from_backup_missing_a_source_does_not_alert(make_pipeline, seeded_db):
-    """A source whose rows are gone re-seeds rather than re-alerting (§7)."""
-    pipe, _ = make_pipeline()
+async def test_restore_from_backup_missing_a_source_costs_one_message(
+    make_pipeline, seeded_db
+):
+    """A source whose rows are gone re-seeds, and re-seeding is now audible (§7).
+
+    The honest cost of `on_seed: digest`: a restore that loses both the job rows
+    and `alerted_merges` has nothing left to tell a restored board from a new
+    one, so it re-notifies. What is still guaranteed is the bound — one batched
+    message, not twenty — which is what makes it survivable. Restore the
+    database rather than re-seeding if even that is unwanted.
+    """
+    pipe, sender = make_pipeline()
     add_company(seeded_db, "stripe")
     sid = add_source(seeded_db, "stripe", seeded=False)
-    set_postings(seeded_db, sid, [posting(INTERN, str(i)) for i in range(20)])
+    set_postings(seeded_db, sid, [posting(distinct_title(i), str(i)) for i in range(20)])
     await run(pipe, seeded_db, sid)
+    drain(seeded_db)
 
     # Simulate a restore that lost this source's job rows and its seeded flag.
     seeded_db.execute("DELETE FROM jobs WHERE source_id = ?", (sid,))
@@ -110,7 +239,10 @@ async def test_restore_from_backup_missing_a_source_does_not_alert(make_pipeline
     seeded_db.execute("UPDATE sources SET seeded = 0 WHERE id = ?", (sid,))
 
     report = await run(pipe, seeded_db, sid)
-    assert report.alerted == 0
+
+    assert report.alerted == 20
+    await pipe.outbox.flush()
+    assert len(sender.messages) == 1
 
 
 # ── deduplication ─────────────────────────────────────────────────────────

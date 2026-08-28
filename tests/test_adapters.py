@@ -33,6 +33,10 @@ CASES = [
     ("oracle", "oracle_amex",
      {"pod": "https://pod.example", "site_number": "CX_1"}, "items"),
     ("jibe", "jibe_amd", {"base": "https://careers.amd.com"}, "jobs"),
+    ("phenom", "phenom_chewy", {"base": "https://careers.chewy.com"}, None),
+    ("workable", "workable_ponyai", {"account": "pony-dot-ai"}, "jobs"),
+    ("rippling", "rippling_spreeai", {"board": "spreeai"}, None),
+    ("bamboohr", "bamboohr_specter", {"tenant": "specteraerospace"}, "result"),
 ]
 
 
@@ -451,11 +455,21 @@ async def test_postings_array_becomes_wrong_type_raises(adapter, fixture, config
         await fetch(adapter, mutated, config)
 
 
-async def test_workday_missing_external_path_raises():
+async def test_workday_one_missing_external_path_drops_only_that_row():
+    """Narrowed 2026-08-22 from "any missing externalPath raises".
+
+    One unroutable row among good ones is bad data and costs one posting;
+    *every* row unroutable is a renamed field and still raises. The all-or-
+    nothing version lost Accenture's entire 211-posting board to a single
+    malformed record. See the two tests at the end of this file.
+    """
     mutated = copy.deepcopy(load_fixture("workday_nvidia"))
+    kept = len(mutated["jobPostings"]) - 1
     del mutated["jobPostings"][0]["externalPath"]
-    with pytest.raises(AdapterError, match="externalPath"):
-        await fetch("workday", mutated, {"host": "https://h", "tenant": "t", "site": "s"})
+    result = await fetch(
+        "workday", mutated, {"host": "https://h", "tenant": "t", "site": "s"}
+    )
+    assert len(result.postings) == kept
 
 
 async def test_amazon_missing_job_path_raises():
@@ -946,3 +960,250 @@ def test_browser_adapter_is_registered_even_without_playwright():
 
     assert "browser" in known_adapters()
     assert get_adapter("browser") is not None
+
+
+# ── workable / rippling / bamboohr ────────────────────────────────────────
+
+
+async def test_workable_links_to_the_posting_not_the_bare_form():
+    """`application_url` is the form; `url` is the description page.
+
+    Matched on the suffix, not `"/apply" in url` — every Workable URL is on
+    apply.workable.com, so the substring is always present.
+    """
+    result = await fetch(
+        "workable", load_fixture("workable_ponyai"), {"account": "pony-dot-ai"}
+    )
+    assert result.postings
+    assert all(not p.url.rstrip("/").endswith("/apply") for p in result.postings)
+
+
+async def test_workable_prefers_the_locations_array_over_the_flat_fields():
+    payload = {"jobs": [{
+        "title": "SWE Intern", "shortcode": "AB12", "url": "https://apply.workable.com/j/AB12",
+        "city": "Fremont", "state": "California", "country": "United States",
+        "locations": [
+            {"city": "Austin", "region": "Texas", "country": "United States"},
+            {"city": "Boston", "region": "Massachusetts", "country": "United States"},
+        ],
+    }]}
+    result = await fetch("workable", payload, {"account": "x"})
+    assert result.postings[0].locations == [
+        "Austin, Texas, United States", "Boston, Massachusetts, United States"
+    ]
+
+
+async def test_workable_falls_back_to_the_flat_location_fields():
+    payload = {"jobs": [{
+        "title": "SWE Intern", "shortcode": "AB12", "url": "https://apply.workable.com/j/AB12",
+        "city": "Fremont", "state": "California", "country": "United States",
+    }]}
+    result = await fetch("workable", payload, {"account": "x"})
+    assert result.postings[0].locations == ["Fremont, California, United States"]
+
+
+async def test_rippling_reads_a_bare_top_level_array():
+    """The response is a JSON array, not an object with a `jobs` key."""
+    result = await fetch("rippling", load_fixture("rippling_spreeai"), {"board": "spreeai"})
+    assert result.postings
+    assert all(p.title for p in result.postings)
+
+
+async def test_rippling_unwraps_label_objects():
+    """`department` and `workLocation` are {id,label}, not strings."""
+    payload = [{
+        "uuid": "u1", "name": "ML Intern", "url": "https://ats.rippling.com/x/jobs/u1",
+        "department": {"id": "Engineering", "label": "Engineering"},
+        "workLocation": {"id": "SF", "label": "Hybrid (San Francisco, California, US)"},
+    }]
+    result = await fetch("rippling", payload, {"board": "x"})
+    assert result.postings[0].locations == ["Hybrid (San Francisco, California, US)"]
+
+
+async def test_bamboohr_builds_the_apply_url_from_the_tenant():
+    """The payload carries no URL at all; it has to be assembled."""
+    result = await fetch(
+        "bamboohr", load_fixture("bamboohr_specter"), {"tenant": "specteraerospace"}
+    )
+    assert result.postings
+    for post in result.postings:
+        assert post.url.startswith("https://specteraerospace.bamboohr.com/careers/")
+        assert post.url.rstrip("/").split("/")[-1] == post.req_id
+
+
+async def test_bamboohr_raises_when_a_posting_has_no_id():
+    """Without an id the apply URL would be wrong rather than missing (§13.10)."""
+    payload = {"result": [{"jobOpeningName": "SWE Intern", "location": {"city": "Austin"}}]}
+    with pytest.raises(AdapterError, match="no id"):
+        await fetch("bamboohr", payload, {"tenant": "x"})
+
+
+async def test_bamboohr_reads_the_real_location_not_the_null_ats_one():
+    payload = {"result": [{
+        "id": "9", "jobOpeningName": "SWE Intern",
+        "location": {"city": "Peabody", "state": "Massachusetts"},
+        "atsLocation": {"country": None, "state": None, "province": None, "city": None},
+    }]}
+    result = await fetch("bamboohr", payload, {"tenant": "x"})
+    assert result.postings[0].locations == ["Peabody, Massachusetts"]
+
+
+# ── browser: reading a sub-frame (iCIMS) ──────────────────────────────────
+
+
+class _FakeFrame:
+    def __init__(self, url: str, html: str = "") -> None:
+        self.url = url
+        self._html = html
+
+    async def content(self) -> str:
+        return self._html
+
+
+class _FakePage:
+    """Just enough of a Playwright page for `_frame_content`."""
+
+    def __init__(self, frames: list[_FakeFrame]) -> None:
+        self.main_frame = frames[0]
+        self.frames = frames
+
+
+async def test_browser_reads_the_named_sub_frame():
+    """iCIMS renders the wrapper in the main frame and the jobs in a child."""
+    from jobwatch.adapters.browser import _frame_content
+
+    page = _FakePage([
+        _FakeFrame("https://careers-x.icims.com/jobs/search?ss=1", "<html>wrapper</html>"),
+        _FakeFrame("https://careers-x.icims.com/jobs/search?ss=1&in_iframe=1", "<li>job</li>"),
+    ])
+    assert await _frame_content(page, "in_iframe=1", "browser") == "<li>job</li>"
+
+
+async def test_browser_never_falls_back_to_the_wrapper_frame():
+    """Returning the main frame would surface as 'job_selector matched nothing',
+    which blames the selector for a missing frame (§13.10)."""
+    from jobwatch.adapters.browser import _frame_content
+
+    page = _FakePage([
+        _FakeFrame("https://careers-x.icims.com/jobs/search", "<html>wrapper</html>"),
+        _FakeFrame("https://www.googletagmanager.com/ns.html", "<html>gtm</html>"),
+    ])
+    with pytest.raises(AdapterError) as excinfo:
+        await _frame_content(page, "in_iframe=1", "browser")
+    assert "in_iframe=1" in str(excinfo.value)
+    assert "googletagmanager" in str(excinfo.value)
+
+
+async def test_browser_frame_error_says_so_when_there_are_no_sub_frames():
+    from jobwatch.adapters.browser import _frame_content
+
+    page = _FakePage([_FakeFrame("https://example.com/careers", "<html></html>")])
+    with pytest.raises(AdapterError, match="no sub-frames"):
+        await _frame_content(page, "in_iframe=1", "browser")
+
+
+# ── phenom (POST /widgets) ────────────────────────────────────────────────
+
+PHENOM_CONFIG = {"base": "https://careers.chewy.com"}
+
+
+def _phenom(jobs):
+    return {"refineSearch": {"data": {"jobs": jobs}}}
+
+
+async def test_phenom_parses_the_chewy_fixture():
+    result = await fetch("phenom", load_fixture("phenom_chewy"), PHENOM_CONFIG)
+    assert len(result.postings) == 5
+    assert result.postings[0].title == "Category Analyst"
+
+
+async def test_phenom_links_at_the_ats_not_the_careers_site():
+    """applyUrl points at the real ATS behind Phenom -- keep it, do not rewrite."""
+    result = await fetch("phenom", load_fixture("phenom_chewy"), PHENOM_CONFIG)
+    assert all(p.url.startswith("http") for p in result.postings)
+    assert any("myworkdaysite.com" in p.url for p in result.postings)
+
+
+async def test_phenom_missing_refine_search_envelope_raises():
+    """The envelope moving must be loud, not an empty board (§13.10)."""
+    with pytest.raises(AdapterError, match="envelope changed"):
+        await fetch("phenom", {"somethingElse": {}}, PHENOM_CONFIG)
+
+
+async def test_phenom_session_probe_response_raises():
+    """`eagerLoadRefineSearchSession` answers this shape and carries no jobs.
+
+    Treating it as an empty board is exactly the silent failure that made this
+    platform look unreachable in the first place.
+    """
+    with pytest.raises(AdapterError, match="session probe"):
+        await fetch("phenom", {"refineSearch": {"tokenAvailable": True}}, PHENOM_CONFIG)
+
+
+async def test_phenom_absent_jobs_key_is_an_empty_board_not_an_error():
+    result = await fetch("phenom", {"refineSearch": {"data": {}}}, PHENOM_CONFIG)
+    assert result.postings == []
+
+
+async def test_phenom_job_without_apply_url_raises():
+    with pytest.raises(AdapterError, match="no applyUrl"):
+        await fetch("phenom", _phenom([{"title": "Intern", "jobId": "1"}]), PHENOM_CONFIG)
+
+
+async def test_phenom_prefers_multi_location_over_the_scalars():
+    payload = _phenom([{
+        "title": "Intern", "jobId": "1", "applyUrl": "https://x.test/1",
+        "multi_location": ["Boston, MA", "Austin, TX"],
+        "cityState": "Boston, Massachusetts",
+    }])
+    result = await fetch("phenom", payload, PHENOM_CONFIG)
+    assert result.postings[0].locations == ["Boston, MA", "Austin, TX"]
+
+
+async def test_phenom_falls_back_to_city_state_country_parts():
+    payload = _phenom([{
+        "title": "Intern", "jobId": "1", "applyUrl": "https://x.test/1",
+        "city": "Boston", "state": "Massachusetts", "country": "United States",
+    }])
+    result = await fetch("phenom", payload, PHENOM_CONFIG)
+    assert result.postings[0].locations == ["Boston, Massachusetts, United States"]
+
+
+# ── workday: one bad row must not lose the board ──────────────────────────
+
+WD_CONFIG = {"host": "https://x.wd5.myworkdayjobs.com", "tenant": "x", "site": "S"}
+
+
+def _wd(postings, total=None):
+    body = {"jobPostings": postings}
+    if total is not None:
+        body["total"] = total
+    return body
+
+
+async def test_workday_skips_a_single_row_without_external_path():
+    """Accenture serves one such row among hundreds of good ones.
+
+    Aborting the scan for it loses the whole board, which is a worse failure
+    than dropping the row.
+    """
+    payload = _wd([
+        {"title": "Intern A", "externalPath": "/job/A_JR1", "bulletFields": ["JR1"]},
+        {"bulletFields": ["R00342699", "Location Negotiable"]},
+        {"title": "Intern B", "externalPath": "/job/B_JR2", "bulletFields": ["JR2"]},
+    ], total=3)
+    result = await fetch("workday", payload, WD_CONFIG)
+    assert [p.title for p in result.postings] == ["Intern A", "Intern B"]
+
+
+async def test_workday_raises_when_every_row_lacks_external_path():
+    """A renamed field looks like this, and must stay loud (§13.10)."""
+    payload = _wd([{"bulletFields": ["JR1"]}, {"bulletFields": ["JR2"]}], total=2)
+    with pytest.raises(AdapterError, match="the field was renamed"):
+        await fetch("workday", payload, WD_CONFIG)
+
+
+async def test_workday_non_object_posting_still_raises():
+    """Only the missing-externalPath case is recoverable; shape drift is not."""
+    with pytest.raises(AdapterError, match="expected jobPostings entries"):
+        await fetch("workday", _wd(["not-an-object"], total=1), WD_CONFIG)

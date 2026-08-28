@@ -222,7 +222,8 @@ class Scheduler:
             log.info(
                 "sources_awaiting_seed",
                 count=unseeded,
-                note="their first poll records the backlog silently and alerts nothing",
+                note="their first poll classifies the whole board and sends one digest each "
+                     "(classification.on_seed)",
             )
 
 

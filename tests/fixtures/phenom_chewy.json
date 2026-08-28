@@ -1,0 +1,468 @@
+{
+  "refineSearch": {
+    "status": 200,
+    "hits": 10,
+    "totalHits": 12,
+    "data": {
+      "jobs": [
+        {
+          "ml_skills": [
+            "data analysis",
+            "excel",
+            "sales performance analysis",
+            "promotion strategy",
+            "pricing strategy",
+            "profit margin analysis",
+            "vendor negotiation",
+            "assortment management",
+            "product onboarding",
+            "business strategy",
+            "cross-functional collaboration",
+            "stakeholder management",
+            "influencing skills",
+            "sql",
+            "tableau",
+            "foreign language proficiency"
+          ],
+          "type": "Full time",
+          "descriptionTeaser": "Join us as a Category Analyst and play a pivotal role in shaping Chewy\u2019s business growth by analysing trends, making data-driven decisions, and negotiating with vendors. Ideal for candidates with strong analytical skills, a curious mindset, and a passion for business strategy.",
+          "state": "Florida",
+          "siteType": "external",
+          "multi_category": [
+            "Merchandising & Chewy Brands"
+          ],
+          "reqId": "R30674",
+          "city": "Plantation",
+          "latitude": "26.13421",
+          "multi_location": [
+            "Plantation, FL"
+          ],
+          "address": "7700 West Sunrise Boulevard, Plantation, FL 33322, United States of America",
+          "applyUrl": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Plantation-FL/Category-Analyst_R30674/apply",
+          "ml_job_parser": {
+            "descriptionTeaser": "Join us as a Category Analyst and play a pivotal role in shaping Chewy\u2019s business growth by analysing trends, making data-driven decisions, and negotiating with vendors. Ideal for candidates with strong analytical skills, a curious mindset, and a passion for business strategy.",
+            "descriptionTeaser_ats": "Job Description:Our Opportunity:\u00a0Ready to launch your career at the intersection of business, strategy, and data? Chewy is hiring a Category Analyst out of our Plantation, FL headquarters! In this rol",
+            "descriptionTeaser_first200": "Job Description. Our Opportunity. Ready to launch your career at the intersection of business, strategy, and data? Chewy is hiring a Category Analyst out of our Plantation, FL headquarters! In this...",
+            "descriptionTeaser_keyword": "Job Description. Our Opportunity. Ready to launch your career at the intersection of business, strategy, and data? Chewy is hiring a Category Analyst out of our Plantation, FL headquarters! In this ro..."
+          },
+          "cityState": "Plantation, Florida",
+          "country": "United States of America",
+          "visibilityType": "External",
+          "longitude": "-80.23184",
+          "jobId": "R30674",
+          "locale": "en_US",
+          "title": "Category Analyst",
+          "jobSeqNo": "CHINUSR30674EXTERNALENUS",
+          "postedDate": "2026-08-21T00:00:00.000+0000",
+          "dateCreated": "2026-08-19T22:08:06.718+0000",
+          "cityStateCountry": "Plantation, Florida, United States of America",
+          "visibilitySiteType": [
+            "external"
+          ],
+          "employmentType": "Full time",
+          "jobVisibility": [
+            "external"
+          ],
+          "location": "Plantation, FL",
+          "category": "Merchandising & Chewy Brands",
+          "externalApply": false,
+          "isMultiLocation": true,
+          "multi_location_array": [
+            {
+              "latlong": {
+                "lon": -80.23184,
+                "lat": 26.13421
+              },
+              "location": "Plantation, FL"
+            }
+          ],
+          "isMultiCategory": true,
+          "multi_category_array": [
+            {
+              "category": "Merchandising & Chewy Brands"
+            }
+          ],
+          "badge": ""
+        },
+        {
+          "ml_skills": [
+            "pharmacy operations",
+            "pharmacy technician registration",
+            "order fulfillment",
+            "inventory management",
+            "medication dispensing",
+            "computer skills",
+            "attention to detail",
+            "order packaging",
+            "pharmacy technician training",
+            "pharmacy compliance",
+            "shipment loading",
+            "inventory cycle counting",
+            "pharmacy inventory replenishment"
+          ],
+          "type": "Full time",
+          "descriptionTeaser": "Embrace the opportunity to become a Pharmacy Technician in our mail order pharmacy, where you'll play a vital role in filling and shipping prescriptions for pets. If you're detail-oriented, comfortable with computers, and eager to grow your pharmacy career, this is your chance to make a difference in a supportive, team-driven environment.",
+          "state": "Pennsylvania",
+          "siteType": "external",
+          "multi_category": [
+            "Fulfillment Center Operations"
+          ],
+          "reqId": "R25875",
+          "city": "Pittston",
+          "latitude": "41.32591",
+          "multi_location": [
+            "Pittston, PA"
+          ],
+          "address": "360 Research Drive, Suite 100, Pittston, PA 18640, United States of America",
+          "applyUrl": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Pittston-PA/Night-Shift-Fulfillment-Technician_R25875/apply",
+          "ml_job_parser": {
+            "descriptionTeaser": "Embrace the opportunity to become a Pharmacy Technician in our mail order pharmacy, where you'll play a vital role in filling and shipping prescriptions for pets. If you're detail-oriented, comfortable with computers, and eager to grow your pharmacy career, this is your chance to make a difference in a supportive, team-driven environment.",
+            "descriptionTeaser_ats": "Job Description:Our Opportunity:\u00a0\u00a0Chewy, America\u2019s #1 pet pharmacy, is hiring Pharmacy Technicians for our mail order pharmacy in Pittston, PA! This is a full-time, non-retail pharmacy role where you\u2019",
+            "descriptionTeaser_keyword": "Job Description. Our Opportunity. Chewy, America\u2019s #1 pet pharmacy, is hiring Pharmacy Technicians for our mail order pharmacy in Pittston, PA! This is a full-time, non-retail pharmacy role where you\u2019...",
+            "descriptionTeaser_first200": "Job Description. Our Opportunity. Chewy, America\u2019s #1 pet pharmacy, is hiring Pharmacy Technicians for our mail order pharmacy in Pittston, PA! This is a full-time, non-retail pharmacy role where y..."
+          },
+          "cityState": "Pittston, Pennsylvania",
+          "country": "United States of America",
+          "visibilityType": "External",
+          "longitude": "-75.78936",
+          "jobId": "R25875",
+          "locale": "en_US",
+          "title": "Pharmacy Technician - Mail Order",
+          "jobSeqNo": "CHINUSR25875EXTERNALENUS",
+          "postedDate": "2026-08-19T00:00:00.000+0000",
+          "dateCreated": "2026-01-29T23:11:00.969+0000",
+          "cityStateCountry": "Pittston, Pennsylvania, United States of America",
+          "visibilitySiteType": [
+            "external"
+          ],
+          "employmentType": "Full time",
+          "jobVisibility": [
+            "external"
+          ],
+          "location": "Pittston, PA",
+          "category": "Fulfillment Center Operations",
+          "externalApply": false,
+          "isMultiLocation": true,
+          "multi_location_array": [
+            {
+              "latlong": {
+                "lon": -75.78936,
+                "lat": 41.32591
+              },
+              "location": "Pittston, PA"
+            }
+          ],
+          "isMultiCategory": true,
+          "multi_category_array": [
+            {
+              "category": "Fulfillment Center Operations"
+            }
+          ],
+          "badge": ""
+        },
+        {
+          "ml_skills": [
+            "veterinary medicine",
+            "physical examinations",
+            "medical procedures",
+            "diagnostic procedures",
+            "surgical procedures",
+            "veterinary radiation machines",
+            "veterinary equipment operation",
+            "medical recordkeeping",
+            "client education",
+            "treatment planning",
+            "veterinary radiation safety",
+            "continuing education",
+            "team collaboration",
+            "veterinary compliance",
+            "veterinary assisting",
+            "veterinary technology",
+            "veterinary continuing education",
+            "veterinary professionalism"
+          ],
+          "type": "Full time",
+          "descriptionTeaser": "We are recruiting a dedicated Associate Veterinarian III to deliver high-quality, patient-centred care in a collaborative veterinary practice. You will perform examinations, diagnostics, and basic surgeries, while supporting clients and the team. Ideal candidates have advanced veterinary training and experience in a clinical setting.",
+          "state": "Texas",
+          "siteType": "external",
+          "multi_category": [
+            "Veterinary"
+          ],
+          "reqId": "R30122",
+          "city": "McKinney",
+          "latitude": "33.19762",
+          "multi_location": [
+            "McKinney, TX",
+            "Fort Worth, TX"
+          ],
+          "address": "8701 W. University Drive, Suite 430, McKinney, TX 75071, United States of America",
+          "applyUrl": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/McKinney-TX/Associate-Veterinarian-III_R30122-1/apply",
+          "ml_job_parser": {
+            "descriptionTeaser": "We are recruiting a dedicated Associate Veterinarian III to deliver high-quality, patient-centred care in a collaborative veterinary practice. You will perform examinations, diagnostics, and basic surgeries, while supporting clients and the team. Ideal candidates have advanced veterinary training and experience in a clinical setting.",
+            "descriptionTeaser_ats": "Job Description:Our Opportunity:At Chewy Vet Care, PLLC we\u2019re changing the veterinary care experience! With the launch of our new veterinary practices, we are looking for a full-time\u00a0Associate Veterin",
+            "descriptionTeaser_keyword": "Job Description. Our Opportunity. At Chewy Vet Care, PLLC we\u2019re changing the veterinary care experience! With the launch of our new veterinary practices, we are looking for a full-time Associate Veter...",
+            "descriptionTeaser_first200": "Job Description. Our Opportunity. At Chewy Vet Care, PLLC we\u2019re changing the veterinary care experience! With the launch of our new veterinary practices, we are looking for a full-time Associate Ve..."
+          },
+          "cityState": "McKinney, Texas",
+          "country": "United States of America",
+          "visibilityType": "External",
+          "longitude": "-96.61527",
+          "jobId": "R30122",
+          "locale": "en_US",
+          "title": "Associate Veterinarian III",
+          "jobSeqNo": "CHINUSR30122EXTERNALENUS",
+          "postedDate": "2026-08-05T00:00:00.000+0000",
+          "dateCreated": "2026-07-08T12:21:26.695+0000",
+          "cityStateCountry": "McKinney, Texas, United States of America",
+          "visibilitySiteType": [
+            "external"
+          ],
+          "employmentType": "Full time",
+          "jobVisibility": [
+            "external"
+          ],
+          "location": "McKinney, TX",
+          "category": "Veterinary",
+          "externalApply": false,
+          "isMultiLocation": true,
+          "multi_location_array": [
+            {
+              "latlong": {
+                "lon": -96.61527,
+                "lat": 33.19762
+              },
+              "location": "McKinney, TX"
+            },
+            {
+              "latlong": {
+                "lon": -97.2944,
+                "lat": 32.94519
+              },
+              "location": "Fort Worth, TX"
+            }
+          ],
+          "isMultiCategory": true,
+          "multi_category_array": [
+            {
+              "category": "Veterinary"
+            }
+          ],
+          "badge": ""
+        },
+        {
+          "ml_skills": [
+            "physical examination",
+            "diagnostic procedures",
+            "surgical surgery",
+            "medical-surgical procedures",
+            "dental procedures",
+            "medical recordkeeping",
+            "treatment planning",
+            "veterinary radiation machines",
+            "client education",
+            "compliance procedures",
+            "customer service",
+            "supervision"
+          ],
+          "type": "Full time",
+          "descriptionTeaser": "Exciting opportunity for an Associate Veterinarian to join Chewy Vet Care, delivering high-quality patient and pet parent care in a collaborative, technology-driven environment. Key responsibilities include performing examinations and procedures, and supporting a team-focused approach. Ideal for candidates with a DVM degree and experience in general medicine and surgery.",
+          "state": "Colorado",
+          "siteType": "external",
+          "multi_category": [
+            "Veterinary"
+          ],
+          "reqId": "R29277",
+          "city": "Denver",
+          "latitude": "39.73915",
+          "multi_location": [
+            "Denver, CO"
+          ],
+          "address": "4193 E. 8th Avenue, Denver, CO 80220, United States of America",
+          "applyUrl": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Denver-CO/Associate-Veterinarian_R29277/apply",
+          "ml_job_parser": {
+            "descriptionTeaser": "Exciting opportunity for an Associate Veterinarian to join Chewy Vet Care, delivering high-quality patient and pet parent care in a collaborative, technology-driven environment. Key responsibilities include performing examinations and procedures, and supporting a team-focused approach. Ideal for candidates with a DVM degree and experience in general medicine and surgery.",
+            "descriptionTeaser_ats": "Job Description:Our Opportunity:\u00a0At Chewy Vet Care,\u00a0we\u2019re\u00a0changing the veterinary care experience! With the launch of our new veterinary practices, we are looking for a full-time\u202fAssociate Veterinaria",
+            "descriptionTeaser_keyword": "Job Description. Our Opportunity. At Chewy Vet Care, we\u2019re changing the veterinary care experience! With the launch of our new veterinary practices, we are looking for a full-time Associate Veterinari...",
+            "descriptionTeaser_first200": "Job Description. Our Opportunity. At Chewy Vet Care, we\u2019re changing the veterinary care experience! With the launch of our new veterinary practices, we are looking for a full-time Associate Veterin..."
+          },
+          "cityState": "Denver, Colorado",
+          "country": "United States of America",
+          "visibilityType": "External",
+          "longitude": "-104.9847",
+          "jobId": "R29277",
+          "locale": "en_US",
+          "title": "Associate Veterinarian",
+          "jobSeqNo": "CHINUSR29277EXTERNALENUS",
+          "postedDate": "2026-06-22T00:00:00.000+0000",
+          "dateCreated": "2026-04-03T20:20:26.497+0000",
+          "cityStateCountry": "Denver, Colorado, United States of America",
+          "visibilitySiteType": [
+            "external"
+          ],
+          "employmentType": "Full time",
+          "jobVisibility": [
+            "external"
+          ],
+          "location": "Denver, CO",
+          "category": "Veterinary",
+          "externalApply": false,
+          "isMultiLocation": true,
+          "multi_location_array": [
+            {
+              "latlong": {
+                "lon": -104.9847,
+                "lat": 39.73915
+              },
+              "location": "Denver, CO"
+            }
+          ],
+          "isMultiCategory": true,
+          "multi_category_array": [
+            {
+              "category": "Veterinary"
+            }
+          ],
+          "badge": ""
+        },
+        {
+          "ml_skills": [
+            "physical examination",
+            "diagnostic procedures",
+            "medical-surgical surgery",
+            "dental procedures",
+            "medical recordkeeping",
+            "treatment planning",
+            "veterinary compliance",
+            "customer service",
+            "veterinary radiation machine operation",
+            "client education",
+            "supervision"
+          ],
+          "type": "Full time",
+          "descriptionTeaser": "We are expanding our team: As a Lead Veterinarian, you will empower your team to deliver exceptional client experiences and provide high-quality veterinary care. You will perform physical exams, diagnostic procedures, and develop treatment plans. Ideal candidates have advanced veterinary training and experience in both general medicine and surgery.",
+          "state": "Colorado",
+          "siteType": "external",
+          "multi_category": [
+            "Veterinary"
+          ],
+          "reqId": "R27803",
+          "city": "Denver",
+          "latitude": "39.73915",
+          "multi_location": [
+            "USA - CO - Denver - Practice - DENB"
+          ],
+          "address": "4193 E. 8th Avenue, Denver, CO 80220, United States of America",
+          "applyUrl": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/USA---CO---Denver---Practice---DENB/Associate-Veterinarian_R27803/apply",
+          "ml_job_parser": {
+            "descriptionTeaser": "We are expanding our team: As a Lead Veterinarian, you will empower your team to deliver exceptional client experiences and provide high-quality veterinary care. You will perform physical exams, diagnostic procedures, and develop treatment plans. Ideal candidates have advanced veterinary training and experience in both general medicine and surgery.",
+            "descriptionTeaser_ats": "Job Description:Our Opportunity:At Chewy Vet Care we\u2019re changing the veterinary care experience! With the launch of our new veterinary practices, we are looking for a full-time\u00a0Associate Veterinarian ",
+            "descriptionTeaser_keyword": "Job Description. Our Opportunity. At Chewy Vet Care we\u2019re changing the veterinary care experience! With the launch of our new veterinary practices, we are looking for a full-time Associate Veterinaria...",
+            "descriptionTeaser_first200": "Job Description. Our Opportunity. At Chewy Vet Care we\u2019re changing the veterinary care experience! With the launch of our new veterinary practices, we are looking for a full-time Associate Veterina..."
+          },
+          "cityState": "Denver, Colorado",
+          "country": "United States of America",
+          "visibilityType": "External",
+          "longitude": "-104.9847",
+          "jobId": "R27803",
+          "locale": "en_US",
+          "title": "Lead Veterinarian",
+          "jobSeqNo": "CHINUSR27803EXTERNALENUS",
+          "postedDate": "2026-08-05T00:00:00.000+0000",
+          "dateCreated": "2026-01-22T05:11:01.225+0000",
+          "cityStateCountry": "Denver, Colorado, United States of America",
+          "visibilitySiteType": [
+            "external"
+          ],
+          "employmentType": "Full time",
+          "jobVisibility": [
+            "external"
+          ],
+          "location": "USA - CO - Denver - Practice - DENB",
+          "category": "Veterinary",
+          "externalApply": false,
+          "isMultiLocation": true,
+          "multi_location_array": [
+            {
+              "latlong": {
+                "lon": -104.9847,
+                "lat": 39.73915
+              },
+              "location": "USA - CO - Denver - Practice - DENB"
+            }
+          ],
+          "isMultiCategory": true,
+          "multi_category_array": [
+            {
+              "category": "Veterinary"
+            }
+          ],
+          "badge": ""
+        }
+      ],
+      "aggregations": [
+        {
+          "field": "city",
+          "value": {
+            "Denver": 2,
+            "Plantation": 2,
+            "Arvada": 1,
+            "Delray Beach": 1,
+            "Fort Myers": 1,
+            "Forth Worth": 1,
+            "Katy": 1,
+            "McKinney": 1,
+            "Pittston": 1,
+            "Richardson": 1,
+            "Winter Garden": 1
+          }
+        },
+        {
+          "field": "state",
+          "value": {
+            "Florida": 5,
+            "Colorado": 3,
+            "Texas": 2,
+            "Arizona": 1,
+            "Pennsylvania": 1
+          }
+        },
+        {
+          "field": "type",
+          "value": {
+            "Full time": 12
+          }
+        },
+        {
+          "field": "category",
+          "value": {
+            "Veterinary": 9,
+            "Accounting & Finance": 1,
+            "Fulfillment Center Operations": 1,
+            "Merchandising & Chewy Brands": 1
+          }
+        }
+      ],
+      "SEARCH_CONFIG": {
+        "contextualSearch": false,
+        "isSuggestionsEnabled": true
+      },
+      "suggestions": {},
+      "ui_skills_selection": null,
+      "locationData": {
+        "sliderRadius": 25,
+        "aboveMaxRadius": false,
+        "LocationUnit": "miles"
+      }
+    },
+    "eid": {
+      "trialIndex": -1,
+      "eid": "6a8a35a8593eb1bdcbb0e30e",
+      "searchType": "keyword",
+      "isMultiLingualVectorApplied": false,
+      "query": "intern",
+      "variant": 6,
+      "banditId": "TEST_53444756-a3cd-11ee-9564-4a86a0d0c4a3",
+      "keywordLanguage": "en"
+    }
+  }
+}

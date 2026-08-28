@@ -72,17 +72,36 @@ class DiscoveryResult:
 # ── URL fingerprints ──────────────────────────────────────────────────────
 
 _URL_RULES: list[tuple[re.Pattern[str], str, str]] = [
-    (re.compile(r"boards\.greenhouse\.io/(?:embed/job_board\?for=)?([\w-]+)", re.I),
+    # `eu.` is optional: EU-hosted boards serve their careers page from
+    # job-boards.eu.greenhouse.io but are still read from the ordinary
+    # boards-api.greenhouse.io, so only the URL shape differs.
+    (re.compile(r"boards\.(?:eu\.)?greenhouse\.io/(?:embed/job_board\?for=)?([\w-]+)", re.I),
      "greenhouse", "board_token"),
-    (re.compile(r"job-boards\.greenhouse\.io/([\w-]+)", re.I), "greenhouse", "board_token"),
+    (re.compile(r"job-boards\.(?:eu\.)?greenhouse\.io/([\w-]+)", re.I),
+     "greenhouse", "board_token"),
     (re.compile(r"jobs\.lever\.co/([\w-]+)", re.I), "lever", "company"),
     (re.compile(r"jobs\.ashbyhq\.com/([\w.-]+)", re.I), "ashby", "board_name"),
     (re.compile(r"jobs\.smartrecruiters\.com/([\w-]+)", re.I), "smartrecruiters", "company"),
     (re.compile(r"careers\.smartrecruiters\.com/([\w-]+)", re.I), "smartrecruiters", "company"),
+    # The account is the first path segment; everything after it is the job
+    # (`/j/<shortcode>/apply`), so the match must stop at the next slash.
+    (re.compile(r"apply\.workable\.com/([\w-]+)", re.I), "workable", "account"),
+    (re.compile(r"ats\.rippling\.com/([\w-]+)", re.I), "rippling", "board"),
+    (re.compile(r"https?://([\w-]+)\.bamboohr\.com", re.I), "bamboohr", "tenant"),
 ]
 
 _WORKDAY_URL = re.compile(
     r"https?://([\w-]+)\.(wd\d+)\.myworkdayjobs\.com/(?:([\w-]{2,5}-[\w-]{2,5})/)?([\w-]+)", re.I
+)
+
+# Workday's *other* domain. Same CXS API, but the tenant moves out of the
+# hostname and into the path, so `_WORKDAY_URL` cannot see it:
+#     https://wd5.myworkdaysite.com/[en-US/]recruiting/{tenant}/{site}
+# Missing this is why Wells Fargo, Microchip, Sysco and Devon Energy all fell
+# through to the low-confidence greenhouse guess and 404'd.
+_WORKDAY_SITE_URL = re.compile(
+    r"https?://(wd\d+)\.myworkdaysite\.com/(?:([\w-]{2,5}-[\w-]{2,5})/)?recruiting/([\w-]+)/([\w-]+)",
+    re.I,
 )
 
 # Oracle Recruiting Cloud puts the site number in the careers path. The pod that
@@ -90,6 +109,24 @@ _WORKDAY_URL = re.compile(
 # here -- the redirect off the company domain lands on an error page, not the
 # API -- so this reports the platform and leaves the pod to be filled in.
 _ORACLE_SITE = re.compile(r"/sites/(CX_\d+)", re.I)
+
+# Raw iCIMS portals (`careers-<tenant>.icims.com`). Distinct from the Jibe
+# front end the `jibe` adapter handles: these have no `/api/jobs`, and every
+# path — real or invented — answers 405 behind an AWS WAF human-verification
+# challenge, so no plain-HTTP adapter can reach them. Playwright clears the
+# challenge, but the listings render in an `in_iframe=1` child frame, which is
+# what `browser`'s `frame_contains` exists for.
+_ICIMS_HOST = re.compile(r"https?://([\w-]+)\.icims\.com", re.I)
+
+#: Second-level domains that name the ATS rather than the employer. The
+#: last-resort board-token guess must refuse these — see `_from_page`.
+_ATS_VENDORS = frozenset({
+    "greenhouse", "lever", "ashbyhq", "smartrecruiters", "workday",
+    "myworkdayjobs", "myworkdaysite", "icims", "workable", "rippling",
+    "bamboohr", "jazzhr", "applytojob", "jobvite", "taleo", "avature",
+    "successfactors", "eightfold", "phenompeople", "breezy", "recruitee",
+    "teamtailor", "paylocity", "oraclecloud", "gr8people", "dayforcehcm",
+})
 
 # Eightfold is identified by its API path rather than its hostname: tenants run
 # it on their own domains (explore.jobs.netflix.net) as often as on eightfold.ai.
@@ -194,6 +231,27 @@ def _from_url(url: str) -> list[Candidate]:
             )
         )
 
+    wdsite = _WORKDAY_SITE_URL.search(url)
+    if wdsite:
+        wd, _locale, tenant, site = wdsite.groups()
+        out.append(
+            Candidate(
+                adapter="workday",
+                config={
+                    "host": f"https://{wd}.myworkdaysite.com",
+                    "tenant": tenant,
+                    "site": site,
+                    "search_text": "intern",
+                },
+                confidence="high",
+                evidence="tenant and site read off a myworkdaysite.com careers URL",
+            )
+        )
+
+    icims = _ICIMS_HOST.search(url)
+    if icims:
+        out.append(_icims_candidate(icims.group(1)))
+
     oracle = _ORACLE_SITE.search(url)
     if oracle:
         out.append(_oracle_candidate(url, oracle.group(1)))
@@ -263,6 +321,13 @@ def _from_page(html: str, page_url: str) -> list[Candidate]:
     if not out:
         host = urlparse(page_url).netloc.split(".")[-2:]
         guess = host[0] if host else ""
+        if guess in _ATS_VENDORS:
+            # The domain names the ATS, not the employer. Guessing here produces
+            # a board token that *verifies* — `board_token: greenhouse` returns
+            # Greenhouse's own 18 openings — and then alerts on the wrong
+            # company's jobs forever. A wrong answer that passes verification is
+            # worse than no answer.
+            return out
         if guess:
             out.append(
                 Candidate(
@@ -275,14 +340,66 @@ def _from_page(html: str, page_url: str) -> list[Candidate]:
     return out
 
 
-def _oracle_candidate(url: str, site_number: str) -> Candidate:
-    """An Oracle tenant, minus the one value that cannot be discovered.
+def _icims_candidate(tenant: str) -> Candidate:
+    """A raw iCIMS portal, reachable only through the browser adapter.
 
-    Reported even though it will never verify: naming the platform and the
-    manual step is far more use than the low-confidence guess this would
-    otherwise fall through to.
+    No `location_selector` on purpose. The right-hand header cell holds the
+    location on some tenants and the posting date on others (Daktronics vs
+    Peraton), and a date string parsed as a location is worse than no location
+    at all: `location_require` rejects a posting that *has* locations and
+    matches none of them, so it would silently drop genuine US roles. With the
+    field absent the posting carries no location and is never rejected on it.
     """
-    origin = f"{urlparse(url).scheme}://{urlparse(url).netloc}"
+    host = f"https://{tenant}.icims.com"
+    return Candidate(
+        adapter="browser",
+        config={
+            "url": f"{host}/jobs/search?ss=1&searchKeyword=intern",
+            "frame_contains": "in_iframe=1",
+            "base_url": host,
+            "job_selector": "li.iCIMS_JobCardItem",
+            "title_selector": "div.title h3",
+            "link_selector": "div.title a",
+            "wait_ms": 4000,
+        },
+        confidence="high",
+        evidence=f"raw iCIMS portal ({tenant}.icims.com) — WAF-gated, read via the job iframe",
+    )
+
+
+def _oracle_candidate(url: str, site_number: str) -> Candidate:
+    """An Oracle tenant.
+
+    The pod host normally cannot be discovered: `careers.<company>.com` does 302
+    to an Oracle host, but the redirect lands on
+    `/hcmUI/CandidateExperience/errors/404` rather than the API, so following it
+    programmatically yields nothing.
+
+    But when the careers URL *is already* on an Oracle host, there is nothing to
+    discover — that host is the pod. Community feeds hand these over constantly
+    (`egup.fa.us2.oraclecloud.com`, `fa-evmr-saasfaprod1.fa.ocs.oraclecloud.com`),
+    and stubbing the pod out for them meant 32 verifiable tenants reported as
+    unresolvable. Verified against Vertiv, BNY, Nokia and Tradeweb.
+    """
+    parsed = urlparse(url)
+    origin = f"{parsed.scheme}://{parsed.netloc}"
+
+    if parsed.netloc.endswith("oraclecloud.com"):
+        return Candidate(
+            adapter="oracle",
+            config={
+                "pod": origin,
+                "site_number": site_number,
+                "keyword": "intern",
+                "limit": 200,
+            },
+            confidence="high",
+            evidence=(
+                f"Oracle Recruiting Cloud site {site_number} on an Oracle host — "
+                "the careers URL is already the pod"
+            ),
+        )
+
     return Candidate(
         adapter="oracle",
         config={
