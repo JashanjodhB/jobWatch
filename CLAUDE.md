@@ -103,7 +103,8 @@ Platform quirks, config keys, and what breaks silently: `docs/ADAPTERS.md`.
 ## Tests
 
 ```powershell
-.venv\Scripts\python.exe -m pytest        # 466 tests, ~16s, no network anywhere
+.venv\Scripts\python.exe -m pytest        # 512 tests, ~15s, no network anywhere
+.venv\Scripts\python.exe -m pytest -m e2e # 9 more, ~12s, needs a real Chrome
 .venv\Scripts\python.exe -m ruff check src tests
 ```
 
@@ -115,6 +116,15 @@ Network is never touched: adapters are tested against captured fixtures through
 The highest-value tests are in `tests/test_pipeline.py`: cold-start silence,
 cross-source merge gating, and a property test that any ordering of polls across
 any number of sources containing a requisition yields exactly one alert.
+
+**`tests/e2e/` is the only tier that runs JavaScript.** Selenium against a real
+headless Chrome, covering what `TestClient` structurally cannot see: the
+keyboard bindings in `static/app.js`, that an HTMX swap lands in the *right*
+node, and `hx-confirm`'s native dialog. It is excluded by default
+(`addopts = -m 'not e2e'`) and skips rather than fails where Chrome is absent,
+so the ordinary run stays hermetic. `tests/e2e/__init__.py` is load-bearing:
+without it pytest imports that directory's `conftest.py` as bare `conftest` and
+it shadows `tests/conftest.py` for the whole suite.
 
 ## Config
 

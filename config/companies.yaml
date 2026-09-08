@@ -473,9 +473,14 @@
     /cua-api/careers/search all answer 403 text/html -- the page never renders,
     so there is nothing to intercept. Re-check with a headed, non-automated
     profile before spending time here; nothing short of that changed the answer.
+    The source row is disabled too as of 2026-09-01: `enabled: false` on the
+    company alone never reached the database, because seed does not update
+    rows that already exist, so this kept polling and failing for weeks after
+    it was supposedly off.
   sources:
     - adapter: browser
       priority: 1
+      enabled: false
       config:
         url: https://www.tesla.com/careers/search/?query=intern
         xhr_contains: "cua-api/apps/careers"
@@ -3877,6 +3882,15 @@
         tenant: globalhr
         site: Private_Posting_No_TMP
         search_text: intern
+    # The Workday site above is RTX's private posting board; careers.rtx.com is
+    # the public Phenom one the business units (Collins, Pratt & Whitney) post
+    # to, and it carries campus reqs the private board does not. Both are
+    # unioned, and merge_key collapses anything that appears on both.
+    - adapter: phenom             # verified 2026-08-28: 146 hits for 'intern'
+      priority: 2
+      config:
+        base: https://careers.rtx.com
+        query: intern
   # feed: 18 active listing(s) - Summer 2027
   # e.g. "Software Engineer Intern - Summer 2027"
 
@@ -4619,14 +4633,32 @@
   display_name: Hitachi
   tier: warm
   careers_url: https://hitachi.wd1.myworkdayjobs.com/hitachi
+  notes: >-
+    Fixed and re-enabled 2026-09-01 after 98 failures and not one successful
+    poll. `search_text` cannot work on this tenant: Workday full-text also
+    matches "internal"/"international", and its `total` saturates at 2000 while
+    offset 2100 still returns rows -- so the result set has no knowable end and
+    the 80-page guard was right to fire. `limit` is capped at 20 here (25 gives
+    HTTP 400), so a bigger page size is not available either.
+    The facet is the fix: jobFamilyGroup=Intern_Group is Hitachi's own
+    category, returns 156 of 156 -- bounded and complete -- in 8 pages, and
+    classifies to the same 14 match/review postings that search_text
+    "internship" (80) finds, minus only a stale 2023 req.
+    If that opaque facet id ever stops matching, this returns an empty board
+    rather than an error, so a collapse in posting count is the thing to watch.
   sources:
-    - adapter: workday
+    - adapter: workday          # verified 2026-09-01: 156 hits, 14 match/review
       priority: 1
       config:
         host: https://hitachi.wd1.myworkdayjobs.com
         tenant: hitachi
         site: hitachi
-        search_text: intern
+        # jobFamilyGroup = "Intern_Group". Facet ids are opaque and per-tenant;
+        # re-read them from the `facets` array of a searchText:"" response.
+        applied_facets:
+          jobFamilyGroup:
+            - 44d3f33caa03108ff296a30d59c657e4
+        min_interval_seconds: 900
   # feed: 3 active listing(s) - Fall 2026, Spring 2027, Summer 2027, Winter 2027
   # e.g. "Software Analyst Intern"
 
@@ -5641,8 +5673,15 @@
   display_name: Phonely
   tier: cold
   careers_url: https://jobs.ashbyhq.com/phonely/c83696cb-ca3a-4a9d-9e87-bfcf4f79fef5/application?embed=true
+  notes: >-
+    Fixed and re-enabled 2026-09-01 after 87 failures. Row 19 of this board is
+    a posting with an empty title -- still there, so it was never transient --
+    and it aborted the whole fetch, costing the other 19 postings including the
+    Software Engineer Intern. adapters/ashby.py now drops an untitled row and
+    keeps the rest, and still raises when *every* row is untitled, which is
+    what a renamed field looks like. Same rule workday uses for externalPath.
   sources:
-    - adapter: ashby
+    - adapter: ashby            # verified 2026-09-01: 20 jobs, 1 untitled
       priority: 1
       config:
         board_name: phonely
@@ -7024,11 +7063,20 @@
   display_name: Eurofins
   tier: cold
   careers_url: https://jobs.smartrecruiters.com/Eurofins/744000130829489
+  notes: >-
+    Fixed and re-enabled 2026-09-01 after 91 failures and not one successful
+    poll. The adapter had no filter at all, so this pulled the whole global
+    board -- 2533 postings, past the 20-page guard. `q` was added to
+    adapters/smartrecruiters.py for this; it is full-text over the whole
+    posting, and q=intern gives 633 of 633 in 7 pages.
+    Do not "tighten" this to q=internship: that returns 22 and drops every
+    posting whose title only ever says "Intern".
   sources:
-    - adapter: smartrecruiters
+    - adapter: smartrecruiters  # verified 2026-09-01: 633 hits for q=intern
       priority: 1
       config:
         company: Eurofins
+        q: intern
   # feed: 1 active listing(s) - Summer 2026
   # e.g. "Business Intelligence Intern"
 
@@ -7668,10 +7716,19 @@
 - slug: jobs-for-humanity
   display_name: Jobs for Humanity
   tier: cold
+  enabled: false
   careers_url: https://jobs.smartrecruiters.com/JobsForHumanity/744000016293725
+  notes: >-
+    Disabled 2026-09-01. The 91 consecutive failures on the 20-page pagination
+    guard are the lesser problem: Jobs for Humanity is a multi-employer
+    aggregator and should never have been seeded as a posting source. Both
+    identity keys derive from the source's company_slug, so every employer on
+    this feed would collapse into one merge_key and one alert. Do not revive --
+    if a company here is worth watching, add it under its own slug and ATS.
   sources:
     - adapter: smartrecruiters
       priority: 1
+      enabled: false
       config:
         company: JobsForHumanity
   # feed: 1 active listing(s) - N/A
@@ -7792,14 +7849,25 @@
   display_name: Leidos
   tier: cold
   careers_url: https://leidos.wd5.myworkdayjobs.com/en-US/External
+  notes: >-
+    Fixed and re-enabled 2026-09-01; same cause and same fix as hitachi, see
+    that block for why search_text is unusable on Workday tenants this size.
+    jobFamilyGroup=Internship returns 20 of 20 in a single page and every one
+    of them classifies match or review -- strictly better than search_text
+    "internship", which also returns 20 but misses six, including the Computer
+    Engineering, Software Developer and Cybersecurity Engineer co-ops and
+    "Intern Software Developer".
   sources:
-    - adapter: workday
+    - adapter: workday          # verified 2026-09-01: 20 hits, all match/review
       priority: 1
       config:
         host: https://leidos.wd5.myworkdayjobs.com
         tenant: leidos
         site: External
-        search_text: intern
+        # jobFamilyGroup = "Internship"; see hitachi for how to re-read this id.
+        applied_facets:
+          jobFamilyGroup:
+            - 628672aa96cf106cf05cd4c3de06246b
   # feed: 1 active listing(s) - Fall
   # e.g. "Engineering Intern"
 
@@ -8623,11 +8691,20 @@
   display_name: Robert Bosch LLC
   tier: cold
   careers_url: https://jobs.smartrecruiters.com/BoschGroup/744000139649345
+  notes: >-
+    Fixed and re-enabled 2026-09-01; same cause and fix as eurofins. The
+    unfiltered BoschGroup board is 4791 postings (48 pages); q=intern gives
+    1259 of 1259 in 13 pages, of which 225 have an intern word in the title.
+    13 of the 20 allowed pages is the least headroom of any source here -- if
+    this board grows past 2000 matches it trips the guard again, and the answer
+    then is a narrower `q`, not a bigger cap.
   sources:
-    - adapter: smartrecruiters
+    - adapter: smartrecruiters  # verified 2026-09-01: 1259 hits for q=intern
       priority: 1
       config:
         company: BoschGroup
+        q: intern
+        min_interval_seconds: 900
   # feed: 1 active listing(s) - Fall
   # e.g. "Software Engineer Intern, Autonomous Driving"
 
@@ -11289,3 +11366,1006 @@
         site: gdc
         search_text: intern
         min_interval_seconds: 900
+
+# ═════════════════════════════════════════════════════════════════════════
+# LARGE-EMPLOYER EXPANSION 2026-08-28
+#
+# The 08-25 bulk expansion came from the Simplify trackers, which index
+# startups and big tech. It therefore missed the Fortune-500 tier almost
+# entirely — Dell, Cisco, the airlines, grocery, CPG, pharma, utilities and
+# rail all have real campus programmes and none of them were being polled.
+#
+# Every entry below was resolved by sweeping the platform's own tenant
+# directory, then called through its adapter; the count in each comment is
+# what that call returned on 2026-08-28.
+#
+# Workday tenants were found via `{tenant}.{dc}.myworkdayjobs.com/robots.txt`,
+# which lists every site name on the tenant in its `Sitemap:` lines. A wrong
+# tenant *or* wrong datacenter answers 422, so that one request both confirms
+# the tenant and enumerates its sites — DNS cannot do this, because
+# *.myworkdayjobs.com is a wildcard and resolves for any name.
+# ═════════════════════════════════════════════════════════════════════════
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# WORKDAY — verified 2026-08-28
+# ─────────────────────────────────────────────────────────────────────────
+
+- slug: aerospace-corporation
+  display_name: The Aerospace Corporation
+  tier: warm
+  careers_url: https://careers.aerospace.org/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 167 hits for 'intern'
+      priority: 1
+      config:
+        host: https://aero.wd5.myworkdayjobs.com
+        tenant: aero
+        site: External
+        search_text: intern
+
+- slug: agilent
+  display_name: Agilent Technologies
+  tier: warm
+  careers_url: https://careers.agilent.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 25 hits for 'intern'
+      priority: 1
+      config:
+        host: https://agilent.wd5.myworkdayjobs.com
+        tenant: agilent
+        site: Agilent_Student_Careers
+        search_text: intern
+
+- slug: american-airlines
+  display_name: American Airlines
+  tier: cold
+  careers_url: https://jobs.aa.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 4 hits for 'intern'
+      priority: 1
+      config:
+        host: https://aa.wd105.myworkdayjobs.com
+        tenant: aa
+        site: AA
+        search_text: intern
+
+- slug: american-electric-power
+  display_name: American Electric Power
+  tier: warm
+  careers_url: https://careers.aep.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 127 hits for 'intern'
+      priority: 1
+      config:
+        host: https://aep.wd1.myworkdayjobs.com
+        tenant: aep
+        site: AEPCareerSite
+        search_text: intern
+
+- slug: astrazeneca
+  display_name: AstraZeneca
+  tier: cold
+  careers_url: https://careers.astrazeneca.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://astrazeneca.wd3.myworkdayjobs.com
+        tenant: astrazeneca
+        site: Careers
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: baker-hughes
+  display_name: Baker Hughes
+  tier: cold
+  careers_url: https://careers.bakerhughes.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://bakerhughes.wd5.myworkdayjobs.com
+        tenant: bakerhughes
+        site: BakerHughes
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: baxter
+  display_name: Baxter International
+  tier: cold
+  careers_url: https://jobs.baxter.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 219 hits for 'intern'
+      priority: 1
+      config:
+        host: https://baxter.wd1.myworkdayjobs.com
+        tenant: baxter
+        site: baxter
+        search_text: intern
+        min_interval_seconds: 300   # ~11 requests per scan
+
+- slug: becton-dickinson
+  display_name: Becton Dickinson
+  tier: warm
+  careers_url: https://jobs.bd.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 339 hits for 'intern'
+      priority: 1
+      config:
+        host: https://bdx.wd1.myworkdayjobs.com
+        tenant: bdx
+        site: EXTERNAL_CAREER_SITE_USA
+        search_text: intern
+        min_interval_seconds: 300   # ~17 requests per scan
+
+- slug: biogen
+  display_name: Biogen
+  tier: warm
+  careers_url: https://www.biogen.com/careers.html
+  sources:
+    - adapter: workday           # verified 2026-08-28: 208 hits for 'intern'
+      priority: 1
+      config:
+        host: https://biibhr.wd3.myworkdayjobs.com
+        tenant: biibhr
+        site: external
+        search_text: intern
+        min_interval_seconds: 300   # ~11 requests per scan
+
+- slug: cardinal-health
+  display_name: Cardinal Health
+  tier: warm
+  careers_url: https://jobs.cardinalhealth.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://cardinalhealth.wd1.myworkdayjobs.com
+        tenant: cardinalhealth
+        site: EXT
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: centene
+  display_name: Centene
+  tier: cold
+  careers_url: https://jobs.centene.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 81 hits for 'intern'
+      priority: 1
+      config:
+        host: https://centene.wd5.myworkdayjobs.com
+        tenant: centene
+        site: Centene_External
+        search_text: intern
+
+- slug: ch-robinson
+  display_name: C.H. Robinson
+  tier: warm
+  careers_url: https://jobs.chrobinson.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 74 hits for 'intern'
+      priority: 1
+      config:
+        host: https://chrobinson.wd5.myworkdayjobs.com
+        tenant: chrobinson
+        site: CHRobinson
+        search_text: intern
+
+- slug: church-dwight
+  display_name: Church & Dwight
+  tier: cold
+  careers_url: https://careers.churchdwight.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 49 hits for 'intern'
+      priority: 1
+      config:
+        host: https://churchdwight.wd1.myworkdayjobs.com
+        tenant: churchdwight
+        site: chdcareers
+        search_text: intern
+
+- slug: cisco
+  display_name: Cisco
+  tier: warm
+  careers_url: https://jobs.cisco.com/jobs/SearchJobs
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://cisco.wd5.myworkdayjobs.com
+        tenant: cisco
+        site: Cisco_Careers
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: conagra-brands
+  display_name: Conagra Brands
+  tier: warm
+  careers_url: https://careers.conagrabrands.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 148 hits for 'intern'
+      priority: 1
+      config:
+        host: https://conagrabrands.wd1.myworkdayjobs.com
+        tenant: conagrabrands
+        site: Careers_US
+        search_text: intern
+
+- slug: cox-enterprises
+  display_name: Cox Enterprises
+  tier: cold
+  careers_url: https://jobs.coxenterprises.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 118 hits for 'intern'
+      priority: 1
+      config:
+        host: https://cox.wd1.myworkdayjobs.com
+        tenant: cox
+        site: Cox_External_Career_Site_1
+        search_text: intern
+
+- slug: danaher
+  display_name: Danaher
+  tier: cold
+  careers_url: https://jobs.danaher.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://danaher.wd1.myworkdayjobs.com
+        tenant: danaher
+        site: DanaherJobs
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: dicks-sporting-goods
+  display_name: Dick's Sporting Goods
+  tier: cold
+  careers_url: https://www.dickssportinggoods.jobs/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 284 hits for 'intern'
+      priority: 1
+      config:
+        host: https://dickssportinggoods.wd1.myworkdayjobs.com
+        tenant: dickssportinggoods
+        site: DSG
+        search_text: intern
+        min_interval_seconds: 300   # ~15 requests per scan
+
+- slug: dow
+  display_name: Dow
+  tier: warm
+  careers_url: https://careers.dow.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 108 hits for 'intern'
+      priority: 1
+      config:
+        host: https://dow.wd1.myworkdayjobs.com
+        tenant: dow
+        site: ExternalCareers
+        search_text: intern
+
+- slug: dupont
+  display_name: DuPont
+  tier: cold
+  careers_url: https://careers.dupont.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 73 hits for 'intern'
+      priority: 1
+      config:
+        host: https://dupont.wd5.myworkdayjobs.com
+        tenant: dupont
+        site: Jobs
+        search_text: intern
+
+- slug: eli-lilly
+  display_name: Eli Lilly and Company
+  tier: warm
+  careers_url: https://careers.lilly.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://lilly.wd115.myworkdayjobs.com
+        tenant: lilly
+        site: LLY
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: fox-corporation
+  display_name: Fox Corporation
+  tier: warm
+  careers_url: https://careers.foxcorporation.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 196 hits for 'intern'
+      priority: 1
+      config:
+        host: https://fox.wd1.myworkdayjobs.com
+        tenant: fox
+        site: Domestic
+        search_text: intern
+
+- slug: general-mills
+  display_name: General Mills
+  tier: warm
+  careers_url: https://careers.generalmills.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 135 hits for 'intern'
+      priority: 1
+      config:
+        host: https://genmills.wd1.myworkdayjobs.com
+        tenant: genmills
+        site: GMI_External_Careers
+        search_text: intern
+
+- slug: gilead-sciences
+  display_name: Gilead Sciences
+  tier: warm
+  careers_url: https://gilead.wd1.myworkdayjobs.com/gileadcareers
+  sources:
+    - adapter: workday           # verified 2026-08-28: 354 hits for 'intern'
+      priority: 1
+      config:
+        host: https://gilead.wd1.myworkdayjobs.com
+        tenant: gilead
+        site: gileadcareers
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: gsk
+  display_name: GSK
+  tier: cold
+  careers_url: https://jobs.gsk.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://gsk.wd5.myworkdayjobs.com
+        tenant: gsk
+        site: GSKCareers
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: jm-smucker
+  display_name: The J.M. Smucker Company
+  tier: warm
+  careers_url: https://careers.jmsmucker.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 36 hits for 'intern'
+      priority: 1
+      config:
+        host: https://smucker.wd5.myworkdayjobs.com
+        tenant: smucker
+        site: US_External_Careers
+        search_text: intern
+
+- slug: kimberly-clark
+  display_name: Kimberly-Clark
+  tier: cold
+  careers_url: https://kimberlyclark.wd1.myworkdayjobs.com/GLOBAL
+  sources:
+    - adapter: workday           # verified 2026-08-28: 89 hits for 'intern'
+      priority: 1
+      config:
+        host: https://kimberlyclark.wd1.myworkdayjobs.com
+        tenant: kimberlyclark
+        site: GLOBAL
+        search_text: intern
+
+- slug: labcorp
+  display_name: Labcorp
+  tier: cold
+  careers_url: https://careers.labcorp.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://labcorp.wd1.myworkdayjobs.com
+        tenant: labcorp
+        site: External
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: maersk
+  display_name: Maersk
+  tier: cold
+  careers_url: https://www.maersk.com/careers
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://maersk.wd3.myworkdayjobs.com
+        tenant: maersk
+        site: Maersk_Careers
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: marathon-petroleum
+  display_name: Marathon Petroleum
+  tier: warm
+  careers_url: https://careers.marathonpetroleum.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 71 hits for 'intern'
+      priority: 1
+      config:
+        host: https://mpc.wd1.myworkdayjobs.com
+        tenant: mpc
+        site: MPCCareers
+        search_text: intern
+
+- slug: nordstrom
+  display_name: Nordstrom
+  tier: cold
+  careers_url: https://careers.nordstrom.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 72 hits for 'intern'
+      priority: 1
+      config:
+        host: https://nordstrom.wd501.myworkdayjobs.com
+        tenant: nordstrom
+        site: nordstrom_careers
+        search_text: intern
+
+- slug: novartis
+  display_name: Novartis
+  tier: warm
+  careers_url: https://www.novartis.com/careers
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://novartis.wd3.myworkdayjobs.com
+        tenant: novartis
+        site: Novartis_Careers
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: sanofi
+  display_name: Sanofi
+  tier: cold
+  careers_url: https://jobs.sanofi.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: >=360 hits for 'intern'
+      priority: 1
+      config:
+        host: https://sanofi.wd3.myworkdayjobs.com
+        tenant: sanofi
+        site: SanofiCareers
+        search_text: intern
+        min_interval_seconds: 300   # ~18 requests per scan
+
+- slug: stellantis
+  display_name: Stellantis
+  tier: cold
+  careers_url: https://careers.stellantis.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 5 hits for 'intern'
+      priority: 1
+      config:
+        host: https://stellantis.wd3.myworkdayjobs.com
+        tenant: stellantis
+        site: External_Career_Site_ID01
+        search_text: intern
+
+- slug: tyson-foods
+  display_name: Tyson Foods
+  tier: warm
+  careers_url: https://careers.tyson.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 7 hits for 'intern'
+      priority: 1
+      config:
+        host: https://tysonfoods.wd5.myworkdayjobs.com
+        tenant: tysonfoods
+        site: TSN1
+        search_text: intern
+
+- slug: xcel-energy
+  display_name: Xcel Energy
+  tier: cold
+  careers_url: https://jobs.xcelenergy.com/
+  sources:
+    - adapter: workday           # verified 2026-08-28: 67 hits for 'intern'
+      priority: 1
+      config:
+        host: https://xcelenergy.wd1.myworkdayjobs.com
+        tenant: xcelenergy
+        site: External
+        search_text: intern
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# ORACLE RECRUITING CLOUD — verified 2026-08-28
+# ─────────────────────────────────────────────────────────────────────────
+
+- slug: albertsons
+  display_name: Albertsons Companies
+  tier: cold
+  careers_url: https://careers.albertsonscompanies.com/
+  sources:
+    - adapter: oracle            # verified 2026-08-28: 380 hits for 'intern'
+      priority: 1
+      config:
+        pod: https://eofd.fa.us6.oraclecloud.com
+        site_number: CX_1001
+        keyword: intern
+        limit: 200
+
+- slug: con-edison
+  display_name: Con Edison
+  tier: cold
+  careers_url: https://www.coned.com/en/about-us/careers
+  sources:
+    - adapter: oracle            # verified 2026-08-28: 37 hits for 'intern'
+      priority: 1
+      config:
+        pod: https://ejcu.fa.us6.oraclecloud.com
+        site_number: CX_1033
+        keyword: intern
+        limit: 200
+
+- slug: dell
+  display_name: Dell Technologies
+  tier: warm
+  careers_url: https://jobs.dell.com/
+  sources:
+    - adapter: oracle            # verified 2026-08-28: 142 hits for 'intern'
+      priority: 1
+      config:
+        pod: https://enterpriseplatform.dell.com
+        site_number: careers
+        keyword: intern
+        limit: 200
+
+- slug: hilton
+  display_name: Hilton
+  tier: cold
+  careers_url: https://jobs.hilton.com/us/en
+  sources:
+    - adapter: oracle            # verified 2026-08-28: 713 hits for 'intern'
+      priority: 1
+      config:
+        pod: https://efet.fa.us2.oraclecloud.com
+        site_number: CX_1
+        keyword: intern
+        limit: 200
+
+- slug: hormel-foods
+  display_name: Hormel Foods
+  tier: cold
+  careers_url: https://www.hormelfoods.com/careers/
+  sources:
+    - adapter: oracle            # verified 2026-08-28: 62 hits for 'intern'
+      priority: 1
+      config:
+        pod: https://ekkh.fa.us2.oraclecloud.com
+        site_number: CX_2002
+        keyword: intern
+        limit: 200
+
+- slug: kroger
+  display_name: Kroger
+  tier: cold
+  careers_url: https://www.krogerfamilycareers.com/en/sites/CX_2001
+  sources:
+    - adapter: oracle            # verified 2026-08-28: 318 hits for 'intern'
+      priority: 1
+      config:
+        pod: https://eluq.fa.us2.oraclecloud.com
+        site_number: CX_2001
+        keyword: intern
+        limit: 200
+
+- slug: macys
+  display_name: Macy's
+  tier: cold
+  careers_url: https://www.macysjobs.com/
+  sources:
+    - adapter: oracle            # verified 2026-08-28: 187 hits for 'intern'
+      priority: 1
+      config:
+        pod: https://ebwh.fa.us2.oraclecloud.com
+        site_number: CX_1001
+        keyword: intern
+        limit: 200
+
+- slug: marriott
+  display_name: Marriott International
+  tier: cold
+  careers_url: https://careers.marriott.com/
+  notes: >-
+    Fixed and re-enabled 2026-09-01 after 47 failures and not one successful
+    poll. keyword=intern was doing essentially nothing on this pod -- 12828 of
+    the board's 12872 reqs came back for it, so the adapter walked 8000
+    requisitions over 113-314s and still tripped the 40-page guard.
+    keyword=internship returns 215, complete in two pages, and still contains
+    the "... Intern" titles that keyword=intern surfaced first. Mostly
+    hospitality reqs the tech filter drops; kept because the corporate IT and
+    University Intern programmes are in here.
+  sources:
+    - adapter: oracle           # verified 2026-09-01: 215 hits for 'internship'
+      priority: 1
+      config:
+        pod: https://ejwl.fa.us2.oraclecloud.com
+        site_number: CX
+        keyword: internship
+        limit: 200
+
+- slug: quest-diagnostics
+  display_name: Quest Diagnostics
+  tier: cold
+  careers_url: https://careers.questdiagnostics.com/
+  sources:
+    - adapter: oracle            # verified 2026-08-28: 521 hits for 'intern'
+      priority: 1
+      config:
+        pod: https://hdox.fa.us6.oraclecloud.com
+        site_number: CX_1
+        keyword: intern
+        limit: 200
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# PHENOM — verified 2026-08-28
+# ─────────────────────────────────────────────────────────────────────────
+
+- slug: bae-systems
+  display_name: BAE Systems
+  tier: warm
+  careers_url: https://jobs.baesystems.com/
+  sources:
+    - adapter: phenom            # verified 2026-08-28: 46 hits for 'intern'
+      priority: 1
+      config:
+        base: https://jobs.baesystems.com
+        query: intern
+
+- slug: united-airlines
+  display_name: United Airlines
+  tier: cold
+  careers_url: https://careers.united.com/
+  sources:
+    - adapter: phenom            # verified 2026-08-28: 3 hits for 'intern'
+      priority: 1
+      config:
+        base: https://careers.united.com
+        query: intern
+
+- slug: zimmer-biomet
+  display_name: Zimmer Biomet
+  tier: cold
+  careers_url: https://careers.zimmerbiomet.com/
+  sources:
+    - adapter: phenom            # verified 2026-08-28: 12 hits for 'intern'
+      priority: 1
+      config:
+        base: https://careers.zimmerbiomet.com
+        query: intern
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# JIBE / iCIMS — verified 2026-08-28
+# ─────────────────────────────────────────────────────────────────────────
+
+- slug: pepsico
+  display_name: PepsiCo
+  tier: warm
+  careers_url: https://www.pepsicojobs.com/
+  sources:
+    - adapter: jibe              # verified 2026-08-28: 33 hits for 'intern'
+      priority: 1
+      config:
+        base: https://www.pepsicojobs.com
+        limit: 100
+        query: intern
+
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# COMMERCIAL SPACE & DEFENCE TECH — verified 2026-09-08
+#
+# Seeded from "companies like Axiom Space": commercial stations, launch and
+# propulsion, satellite operators and imaging, plus the defence-tech tier that
+# already sits next to Anduril/Shield AI/Saronic above.
+#
+# Counts are what the endpoint returned on 2026-09-08. `early` counts titles
+# that read as intern/co-op/new-grad; `match/review` is what filters.yaml
+# actually kept, which is the number that decides whether an alert fires.
+#
+# Wrong-entity handles ruled out here — do NOT re-guess them (§13.10, and the
+# stub/wrong-entity failure mode):
+#   greenhouse `apex`      a dental practice, not Apex Space (which is already
+#                          in this file, as `apex-technology-inc`)
+#   ashby      `axiom`     a ZK-proof crypto company, not Axiom Space
+#   ashby      `impulse`   Impulse Labs (SF, appliances), not Impulse Space
+#   workable   `umbra`     the housewares brand; Umbra Space is `umbra-1`
+#
+# astrobotic.com/careers 301s to voyagertechnologies.com — Astrobotic is
+# covered by the `voyager-technologies` board below, not a separate source.
+# ─────────────────────────────────────────────────────────────────────────
+
+# ── Workday ───────────────────────────────────────────────────────────────
+# All three are small tenants, so these poll the FULL board rather than
+# search_text: intern. Measured 2026-09-08: dropping search_text changes Axiom
+# 85->85 and Sierra 160->166 (searchText is nearly a no-op on both) but Vantor
+# 36->127, i.e. the filtered form was hiding 91 postings. At 20 rows a page that
+# is 5/9/7 requests a poll — nowhere near the ~46 that earns a min_interval —
+# and a full board is provably complete, which a searchText scan never is.
+
+- slug: axiom-space
+  display_name: Axiom Space
+  tier: warm
+  careers_url: https://www.axiomspace.com/careers
+  sources:
+    - adapter: workday           # verified 2026-09-08: 85 postings, 0 early-career today
+      priority: 1
+      config:
+        host: https://axiomspace.wd5.myworkdayjobs.com
+        tenant: axiomspace
+        site: External_Career_Site
+
+- slug: sierra-space
+  display_name: Sierra Space
+  tier: warm
+  careers_url: https://www.sierraspace.com/careers/
+  sources:
+    - adapter: workday           # verified 2026-09-08: 166 postings, 0 early-career today
+      priority: 1
+      config:
+        host: https://sierraspace.wd1.myworkdayjobs.com
+        tenant: sierraspace
+        site: Sierra_Space_External_Career_Site
+
+- slug: vantor
+  display_name: Vantor (formerly Maxar)
+  tier: warm
+  careers_url: https://www.vantor.com/careers/
+  sources:
+    - adapter: workday           # verified 2026-09-08: 127 postings, 0 early-career today
+      priority: 1
+      config:
+        # Maxar rebranded to Vantor; the Workday tenant is still `maxar` and
+        # only the site segment was renamed. vantor.com/careers is the front end.
+        host: https://maxar.wd1.myworkdayjobs.com
+        tenant: maxar
+        site: Vantor
+
+# ── Eightfold ─────────────────────────────────────────────────────────────
+
+- slug: lockheed-martin
+  display_name: Lockheed Martin
+  tier: warm
+  careers_url: https://lockheedmartin.eightfold.ai/careers
+  notes: >-
+    lockheedmartinjobs.com is a meta-refresh stub that lands on a 404, which is
+    why URL fingerprinting finds nothing. The real board is Eightfold's "pcsx"
+    flavour on lockheedmartin.eightfold.ai. /api/apply/v2/jobs answers 403 for
+    every domain value -- only /api/pcsx/search works, and only with
+    domain=lockheedmartin.com (lmco.com 404s).
+  sources:
+    - adapter: eightfold         # verified 2026-09-08: 21 hits for 'intern', 1 match/review
+      priority: 1
+      config:
+        base: https://lockheedmartin.eightfold.ai
+        domain: lockheedmartin.com
+        path: /api/pcsx/search
+        # `intern` is the right query here even though most of the 21 are
+        # "International ..." noise the classifier rejects: it is the only
+        # variant that returns all four real early-career reqs. `internship`
+        # narrows to 8 and loses the three Apprentice ones; `university` and
+        # `student` are so broad they blow past the adapter's 30-page guard.
+        query: intern
+
+# ── Greenhouse ────────────────────────────────────────────────────────────
+
+- slug: k2-space
+  display_name: K2 Space
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/k2spacecorporation
+  sources:
+    # a full Summer 2027 intern cohort: avionics, GNC, RF, dynamics, SWE, EE
+    - adapter: greenhouse        # verified 2026-09-08: 217 postings, 9 early, 7 match/review
+      priority: 1
+      config: {board_token: k2spacecorporation}
+
+- slug: vast-space
+  display_name: Vast
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/vast
+  sources:
+    # token is `vast`; confirmed Long Beach CA, i.e. the space company, not VAST Data
+    - adapter: greenhouse        # verified 2026-09-08: 196 postings, 0 match/review
+      priority: 1
+      config: {board_token: vast}
+
+- slug: voyager-technologies
+  display_name: Voyager Technologies
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/voyagertechnologiesinc
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 155 postings, 1 match/review
+      priority: 1                # also covers Astrobotic, which redirects here
+      config: {board_token: voyagertechnologiesinc}
+
+- slug: hadrian
+  display_name: Hadrian
+  tier: warm
+  careers_url: https://jobs.ashbyhq.com/hadrian-automation
+  sources:
+    - adapter: ashby             # verified 2026-09-08: 148 postings, 4 early, 3 match/review
+      priority: 1
+      config: {board_name: hadrian-automation}
+
+- slug: chaos-industries
+  display_name: CHAOS Industries
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/chaosindustries
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 142 postings, 0 match/review
+      priority: 1
+      config: {board_token: chaosindustries}
+
+- slug: planet-labs
+  display_name: Planet Labs
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/planetlabs
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 119 postings, 0 match/review
+      priority: 1
+      config: {board_token: planetlabs}
+
+- slug: muon-space
+  display_name: Muon Space
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/muonspace
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 107 postings, 0 match/review
+      priority: 1
+      config: {board_token: muonspace}
+
+- slug: ursa-major
+  display_name: Ursa Major
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/ursamajor
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 101 postings, 0 match/review
+      priority: 1
+      config: {board_token: ursamajor}
+
+- slug: castelion
+  display_name: Castelion
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/castelioncorporation
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 100 postings, 2 early, 1 match/review
+      priority: 1                # castelion.com/careers/job/<gh_id>/ is a proxied embed
+      config: {board_token: castelioncorporation}
+
+- slug: neros
+  display_name: Neros
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/nerostechnologies
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 89 postings, 0 match/review
+      priority: 1
+      config: {board_token: nerostechnologies}
+
+- slug: epirus
+  display_name: Epirus
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/epirus
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 41 postings, 0 match/review
+      priority: 1
+      config: {board_token: epirus}
+
+- slug: gravitics
+  display_name: Gravitics
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/graviticsinc
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 18 postings, 1 early (Mech Eng Intern 2027)
+      priority: 1
+      config: {board_token: graviticsinc}
+
+- slug: albedo
+  display_name: Albedo
+  tier: warm
+  careers_url: https://job-boards.greenhouse.io/albedo
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 10 postings, 1 match (EE Internship Fall 2026)
+      priority: 1
+      config: {board_token: albedo}
+
+- slug: momentus
+  display_name: Momentus
+  tier: cold
+  careers_url: https://job-boards.greenhouse.io/momentus
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 7 postings, 0 match/review
+      priority: 1
+      config: {board_token: momentus}
+
+- slug: slingshot-aerospace
+  display_name: Slingshot Aerospace
+  tier: cold
+  careers_url: https://job-boards.greenhouse.io/slingshotaerospace
+  sources:
+    - adapter: greenhouse        # verified 2026-09-08: 3 postings, 0 match/review
+      priority: 1
+      config: {board_token: slingshotaerospace}
+
+# ── Lever / Ashby / Workable ──────────────────────────────────────────────
+
+- slug: loft-orbital
+  display_name: Loft Orbital
+  tier: warm
+  careers_url: https://jobs.lever.co/loftorbital
+  sources:
+    - adapter: lever             # verified 2026-09-08: 60 postings, 0 match/review
+      priority: 1
+      config: {company: loftorbital}
+
+- slug: umbra
+  display_name: Umbra
+  tier: warm
+  careers_url: https://umbra.space/careers/
+  sources:
+    # account is `umbra-1`; plain `umbra` is the housewares brand. The widget
+    # API rate-limits hard — a 429 here is throttling, not a dead board.
+    - adapter: workable          # verified 2026-09-08: 42 postings, 0 match/review
+      priority: 1
+      config: {account: umbra-1}
+
+- slug: second-front
+  display_name: Second Front Systems
+  tier: cold
+  careers_url: https://jobs.ashbyhq.com/Second-Front-Systems
+  sources:
+    - adapter: ashby             # verified 2026-09-08: 17 postings, 0 match/review
+      priority: 1                # board name is capitalised; Ashby's is case-sensitive
+      config: {board_name: Second-Front-Systems}
+
+- slug: starfish-space
+  display_name: Starfish Space
+  tier: cold
+  careers_url: https://jobs.ashbyhq.com/starfish-space-inc
+  sources:
+    - adapter: ashby             # verified 2026-09-08: 13 postings, 1 review (SkillBridge)
+      priority: 1
+      config: {board_name: starfish-space-inc}
+
+# ── Own careers page ──────────────────────────────────────────────────────
+
+- slug: interlune
+  display_name: Interlune
+  tier: cold
+  careers_url: https://www.interlune.space/careers
+  sources:
+    - adapter: html              # verified 2026-09-08: 2 postings, 0 match/review
+      priority: 1                # Webflow; roles are server-rendered as /open-positions/<slug>
+      config:
+        url: https://www.interlune.space/careers
+        base_url: https://www.interlune.space
+        # The anchor wraps the meta line as well as the title, so without a
+        # title_selector every title arrives as "Full Time - <city> <role>".
+        job_selector: "a[href*='/open-positions/']"
+        title_selector: "p.heading-style-h5"
+        location_selector: ".news_card-details p:last-child"
+
+# ── Probed 2026-09-08, no unauthenticated endpoint — NOT added ────────────
+# Recorded so the next sweep does not re-probe them. Each needs the browser
+# extra, a new adapter, or both; none has a JSON endpoint a plain GET reaches.
+#
+#   firefly-aerospace   fireflyspace.com/careers — ClearCompany
+#                       (careers-content.clearcompany.com/js/v1/career-site.js).
+#                       No adapter for it; jobs are injected client-side.
+#   stoke-space         Next.js + Sanity, no ATS at all. /open-roles and
+#                       /internships both render zero job anchors server-side.
+#   impulse-space       1.2MB careers page of embedded Sanity JSON, no ATS.
+#   turion-space        Framer site, jobs client-rendered.
+#   intuitive-machines  2.5KB SPA shell, no fingerprint of any kind.
+#   redwire-space       redwirespace.com -> rdw.com; careers.rdw.com answers 202
+#                       to a WAF challenge and has no /api/jobs (not Jibe).

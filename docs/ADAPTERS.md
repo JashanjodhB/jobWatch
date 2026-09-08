@@ -15,7 +15,7 @@ believing a board.
 | `greenhouse` | `board_token` | `embed` |
 | `lever` | `company` | |
 | `ashby` | `board_name` | `include_unlisted` |
-| `smartrecruiters` | `company` | `limit` |
+| `smartrecruiters` | `company` | `q`, `limit` |
 | `workday` | `host`, `tenant`, `site` | `limit`, `locale`, `search_text`, `applied_facets` |
 | `eightfold` | `base`, `domain` | `path`, `num`, `query`, `sort_by` |
 | `oracle` | `pod`, `site_number` | `site_url`, `keyword`, `limit`, `sort_by` |
@@ -29,6 +29,24 @@ believing a board.
 | `direct.amazon` | `base` | `query`, `limit` |
 | `direct.apple` | `base` | `query`, `locale`, `filters` |
 | `direct.uber` | `base` | `query`, `limit`, `params` |
+
+## SmartRecruiters — `q` is the only way to bound a big board
+
+`company` is the whole required config, and unfiltered it pulls the entire
+board: Eurofins is 2533 postings and Bosch 4791, both far past the 20-page
+(2000 posting) guard, and both failed ~90 consecutive polls until 2026-09-01.
+
+`q` is full-text over the whole posting rather than the title, which is what
+makes it safe to use: `q=intern` cuts Eurofins to 633 (7 pages) and Bosch to
+1259 (13) while still returning postings whose title only ever says "Intern".
+Do not tighten it to `q=internship` — that takes Eurofins to 22 and drops them.
+
+## Ashby — one untitled posting used to cost the whole board
+
+Boards serve rows with an empty `title` (phonely has carried one since
+2026-08-25). The adapter drops such a row and keeps the rest, and raises only
+when *every* row is untitled, which is what a renamed field looks like. Same
+rule Workday uses for a missing `externalPath`.
 
 ## Workday
 
@@ -53,6 +71,32 @@ shape they fell through to a low-confidence Greenhouse guess and 404'd.
 A full scan of a large tenant is ~46 requests. Put `min_interval_seconds` in the
 source config so the tier interval cannot run that every 60s from a residential
 IP (§13.5). `externalPath` comes back relative — `absolute_url()` handles it.
+
+**`total` saturates at 2000, and `search_text` is not a filter you can trust on
+a big tenant.** Both facts bit Hitachi and Leidos, which failed ~90 consecutive
+polls each before 2026-09-01:
+
+- Workday full-text matches `internal` and `international`, so `search_text:
+  intern` returns essentially the whole board.
+- `total` then reports exactly `2000` while `offset: 2100` still returns rows —
+  the result set has **no knowable end**, so the `MAX_PAGES` guard is right to
+  fire and no page budget makes the scan complete.
+- `limit` is capped at 20 on both those tenants (25 → HTTP 400), so a larger
+  page size is not a way out either. `SAFE_LIMIT` exists for this.
+
+**Reach for `applied_facets` instead.** A `searchText: ""` response carries a
+`facets` array listing every facet parameter, its values and their counts; the
+employer's own intern category is in there, usually under `jobFamilyGroup` or
+`workerSubType`. That gives a set that is bounded *and* complete — Hitachi's
+`jobFamilyGroup=Intern_Group` is 156 of 156 in 8 pages, Leidos'
+`jobFamilyGroup=Internship` is 20 of 20 in one — where no text query is either.
+
+Two cautions. Facet ids are opaque per-tenant GUIDs, so re-read them from the
+`facets` array rather than copying between tenants; and a facet id that stops
+matching returns an **empty board, not an error**, so watch the posting count
+for a collapse. Values within one facet parameter are OR'd, different parameters
+are AND'd, and `UNIQUE(company_slug, adapter)` means you get one Workday source
+per company — you cannot union two facet queries by adding a second row.
 
 ## Eightfold — two dialects
 
@@ -86,9 +130,16 @@ reports platform and site number and leaves `pod` blank for these.
 which is indistinguishable from an empty board. `limit` is honoured to 200+, so
 a whole board is one or two requests.
 
+**`keyword` is much weaker than it looks — check what it actually removes.**
+On Marriott's pod `keyword=intern` returned 12828 of the board's 12872 reqs, so
+the adapter walked 8000 requisitions over 113–314s and still tripped the 40-page
+guard; `keyword=internship` returns 215 and completes in two. Compare the
+filtered count against the unfiltered one *before* seeding a source. A count
+that comes back as ">= some large number" is the warning, not the confirmation.
+
 Known pods: amex `egug.fa.us2`, oracle `eeho.fa.us2`, honeywell
-`ibqbjb.fa.ocs`. jpmorgan-chase, ford and fortinet expose the CX_ number but not
-the pod.
+`ibqbjb.fa.ocs`, marriott `ejwl.fa.us2`. jpmorgan-chase, ford and fortinet
+expose the CX_ number but not the pod.
 
 ## Raw iCIMS — WAF-gated, and the jobs are in an iframe
 

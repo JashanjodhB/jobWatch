@@ -659,6 +659,105 @@ async def test_smartrecruiters_stops_at_max_pages():
     assert len(result.postings) == len(page["content"])
 
 
+def _url_recording_client(payload):
+    """Answers with one canned body and records every URL it was asked for."""
+    seen: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(str(request.url))
+        return httpx.Response(200, json=payload)
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    client.seen_urls = seen  # type: ignore[attr-defined]
+    return client
+
+
+async def test_smartrecruiters_sends_q_url_encoded():
+    """`q` is the only lever that keeps a 4791-posting board under MAX_PAGES."""
+    page = load_fixture("smartrecruiters")
+    page["totalFound"] = len(page["content"])
+    client = _url_recording_client(page)
+    try:
+        ctx = FetchContext(
+            client=client,
+            config={"company": "Visa", "q": "data intern"},
+            adapter_name="smartrecruiters",
+        )
+        await get_adapter("smartrecruiters").fetch(ctx)
+    finally:
+        await client.aclose()
+
+    assert "q=data%20intern" in client.seen_urls[0]
+
+
+async def test_smartrecruiters_omits_q_when_unset():
+    page = load_fixture("smartrecruiters")
+    page["totalFound"] = len(page["content"])
+    client = _url_recording_client(page)
+    try:
+        ctx = FetchContext(
+            client=client, config={"company": "Visa"}, adapter_name="smartrecruiters"
+        )
+        await get_adapter("smartrecruiters").fetch(ctx)
+    finally:
+        await client.aclose()
+
+    assert "q=" not in client.seen_urls[0]
+
+
+async def test_smartrecruiters_pagination_error_names_the_fix_when_unfiltered():
+    """The 20-page guard is not actionable unless it says how to narrow."""
+    page = load_fixture("smartrecruiters")
+    page["totalFound"] = 10_000
+    client = sequence_client([page])
+    try:
+        ctx = FetchContext(
+            client=client, config={"company": "BoschGroup"}, adapter_name="smartrecruiters"
+        )
+        with pytest.raises(AdapterError, match="set `q` to narrow"):
+            await get_adapter("smartrecruiters").fetch(ctx)
+    finally:
+        await client.aclose()
+
+
+async def test_ashby_one_untitled_posting_drops_only_that_row():
+    """phonely has served one titleless posting since 2026-08-25.
+
+    It cost the other nineteen for 87 consecutive polls. Same rule as workday's
+    missing externalPath: one bad row is bad data, every row is drift.
+    """
+    mutated = copy.deepcopy(load_fixture("ashby"))
+    kept = len(mutated["jobs"]) - 1
+    mutated["jobs"][0]["title"] = ""
+
+    client = json_client(mutated)
+    try:
+        ctx = FetchContext(
+            client=client, config={"board_name": "phonely"}, adapter_name="ashby"
+        )
+        result = await get_adapter("ashby").fetch(ctx)
+    finally:
+        await client.aclose()
+
+    assert len(result.postings) == kept
+
+
+async def test_ashby_every_untitled_posting_raises():
+    mutated = copy.deepcopy(load_fixture("ashby"))
+    for job in mutated["jobs"]:
+        job["title"] = ""
+
+    client = json_client(mutated)
+    try:
+        ctx = FetchContext(
+            client=client, config={"board_name": "phonely"}, adapter_name="ashby"
+        )
+        with pytest.raises(AdapterError, match="the field was renamed"):
+            await get_adapter("ashby").fetch(ctx)
+    finally:
+        await client.aclose()
+
+
 async def test_eightfold_stops_at_max_pages():
     fixture = load_fixture("eightfold_netflix")
     positions = fixture["positions"]

@@ -22,6 +22,9 @@ dependencies = [
 [project.optional-dependencies]
 html = ["selectolax>=0.3.21"]
 browser = ["playwright>=1.44"]
+# Drives a real Chrome against the running web UI. Test-only: nothing under
+# src/ imports selenium, and the polling path never touches it.
+e2e = ["selenium>=4.20"]
 
 [dependency-groups]
 dev = [
@@ -30,6 +33,7 @@ dev = [
     "respx>=0.21",
     "ruff>=0.5",
     "selectolax>=0.3.21",
+    "selenium>=4.20",
 ]
 
 [project.scripts]
@@ -46,6 +50,12 @@ packages = ["src/jobwatch"]
 testpaths = ["tests"]
 asyncio_mode = "auto"
 filterwarnings = ["error::DeprecationWarning:jobwatch.*"]
+# The default run stays hermetic and fast (§15): e2e boots a real browser and
+# is opted into with `-m e2e`.
+addopts = "-m 'not e2e'"
+markers = [
+    "e2e: drives a real browser against a live server; needs Chrome, excluded by default",
+]
 
 [tool.ruff]
 line-length = 100

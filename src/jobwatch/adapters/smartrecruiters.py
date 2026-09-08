@@ -4,12 +4,20 @@
 
 Paginated with offset/limit and a `totalFound`. The public apply URL is built
 from the company identifier and posting id, not returned whole.
-Config: {company: <identifier>}.
+
+`q` is a full-text filter over the whole posting, not just the title, and it is
+the only way to keep a large employer under MAX_PAGES: Bosch's board is 4791
+postings (48 pages) unfiltered but 1259 (13 pages) at `q=intern`, and Eurofins'
+2533 becomes 633. Prefer `q: intern` over `q: internship` -- the latter cuts
+Eurofins to 22 and drops titles that only ever say "Intern".
+
+Config: {company: <identifier>}. Optional: {q, limit}.
 """
 
 from __future__ import annotations
 
 from typing import Any, ClassVar
+from urllib.parse import quote
 
 from ..models import FetchResult
 from .base import (
@@ -36,13 +44,15 @@ class SmartRecruitersAdapter:
         company = str(ctx.require("company")).strip()
         url = API.format(company=company)
         limit = int(ctx.config.get("limit", PAGE_SIZE))
+        query = str(ctx.config.get("q", "")).strip()
+        suffix = f"&q={quote(query)}" if query else ""
 
         items: list[dict[str, Any]] = []
         offset = 0
         etag = last_modified = None
 
         for page in range(MAX_PAGES):
-            page_url = f"{url}?limit={limit}&offset={offset}"
+            page_url = f"{url}?limit={limit}&offset={offset}{suffix}"
             # Conditional headers only make sense on the first page; a 304 on a
             # later page would silently truncate the board.
             payload, response = await conditional_json(
@@ -66,7 +76,8 @@ class SmartRecruitersAdapter:
                 break
         else:
             raise AdapterError(
-                f"pagination exceeded {MAX_PAGES} pages -- refusing to keep hammering",
+                f"pagination exceeded {MAX_PAGES} pages -- refusing to keep hammering"
+                + ("" if query else "; set `q` to narrow this board"),
                 adapter=self.name,
             )
 

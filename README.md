@@ -367,7 +367,8 @@ posting with that normalized title classifies instantly, forever, at zero cost.
 ## Tests
 
 ```bash
-uv run pytest        # 466 tests, no network
+uv run pytest          # 512 tests, no network
+uv run pytest -m e2e   # 9 browser tests; needs Chrome and the `e2e` extra
 uv run ruff check src tests
 ```
 
