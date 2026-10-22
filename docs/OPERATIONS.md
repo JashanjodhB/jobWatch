@@ -170,6 +170,23 @@ It identifies the platform, verifies the guess against the live endpoint, and
 prints a registry block ready to paste. The Companies screen has the same thing
 with a Save button.
 
+### Switching off everything that is failing
+
+**Disable failing (N)** on the health screen switches off every source with
+5+ consecutive failures whose company is enabled. That is the same set the
+masthead counts as "failing". It acts only on the sources the page listed that
+are still failing when you confirm, then reloads with the list of what it
+disabled. Polling stops on the next tick with no restart, and rows are
+disabled, never deleted.
+
+Each source comes back with its own toggle on the Companies screen. Re-enabling
+does not reset its failure count, so clear `consecutive_failures` and
+`backoff_until` by hand once it is fixed. The YAML is not updated:
+`companies.yaml` still lists them as enabled. `seed` never changes `enabled`
+on an existing row, even with `--force`, so the database stays authoritative.
+Run `jobwatch export-config` and move the result over the original to bring
+the YAML into line.
+
 ---
 
 ## Adding companies

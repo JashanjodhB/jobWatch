@@ -391,8 +391,8 @@ fixtures: none of the slow plans above show up at fixture size.
 ## Tests
 
 ```bash
-uv run pytest          # 531 tests, no network
-uv run pytest -m e2e   # 10 browser tests; needs Chrome and the `e2e` extra
+uv run pytest          # 535 tests, no network
+uv run pytest -m e2e   # 11 browser tests; needs Chrome and the `e2e` extra
 uv run ruff check src tests
 ```
 

@@ -17,6 +17,8 @@ from ..notify.discord import humanize_age
 from ..service import Service
 
 __all__ = [
+    "FAILING_AFTER",
+    "FAILING_SOURCES_SQL",
     "STATIC_DIR",
     "TEMPLATE_DIR",
     "asset_version",
@@ -110,6 +112,20 @@ def get_db(request: Request) -> Database:
     return request.app.state.service.db
 
 
+#: Consecutive failed polls before a source counts as failing: the masthead's
+#: "failing" count, the Health tab badge, and what "Disable failing" turns off.
+FAILING_AFTER = 5
+
+# Failing sources that are still being polled: a disabled company's sources
+# are not, whatever their counters say.
+FAILING_SOURCES_SQL = """
+SELECT s.id, s.company_slug, s.adapter, s.consecutive_failures
+FROM sources s
+JOIN companies c ON c.slug = s.company_slug
+WHERE s.enabled = 1 AND c.enabled = 1 AND s.consecutive_failures >= ?
+"""
+
+
 def pending_review_count(db: Database) -> int:
     """Distinct titles still waiting in the review queue."""
     return db.scalar(
@@ -128,9 +144,7 @@ def nav_counts(db: Database) -> dict[str, int]:
             "SELECT COUNT(*) FROM outbox WHERE status = 'failed'", default=0
         ),
         "alarms": db.scalar(
-            "SELECT COUNT(*) FROM sources s JOIN companies c ON c.slug = s.company_slug "
-            "WHERE s.enabled = 1 AND c.enabled = 1 AND s.consecutive_failures >= 5",
-            default=0,
+            f"SELECT COUNT(*) FROM ({FAILING_SOURCES_SQL})", (FAILING_AFTER,), default=0
         ),
     }
 

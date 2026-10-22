@@ -5,9 +5,36 @@
 <div class="page-head">
   <h1>Source health</h1>
   <span class="sub">A source returning zero postings without erroring is the silent-breakage signature. That is what the baseline column watches for.</span>
-  <button class="btn" style="margin-left:auto" hx-post="/health/recheck" hx-target="#recheck-toast" hx-swap="innerHTML">Re-run drift check</button>
+  <div style="margin-left:auto;display:flex;flex-wrap:wrap;gap:0.5rem">
+    {% if failing %}
+    <form hx-post="/health/disable-failing"
+          hx-confirm="Disable {{ failing | length }} source{{ 's' if failing | length != 1 }} that {{ 'have' if failing | length != 1 else 'has' }} failed {{ failing_after }} or more polls in a row? {{ 'They stop' if failing | length != 1 else 'It stops' }} polling until re-enabled on Companies.">
+      {% for source in failing %}<input type="hidden" name="source_id" value="{{ source.id }}">{% endfor %}
+      <button class="btn danger" type="submit" title="Sources with {{ failing_after }}+ consecutive failures: the masthead's failing count">Disable failing ({{ failing | length }})</button>
+    </form>
+    {% endif %}
+    <button class="btn" hx-post="/health/recheck" hx-target="#recheck-toast" hx-swap="innerHTML">Re-run drift check</button>
+  </div>
 </div>
 <div id="recheck-toast"></div>
+
+{% if just_disabled is not none %}
+<div class="card" style="border-color:var(--signal);margin-bottom:1.25rem">
+  {% if just_disabled %}
+  <strong style="color:var(--signal)">Disabled {{ just_disabled | length }} failing source{{ 's' if just_disabled | length != 1 }}</strong>
+  <div class="mono" style="font-size:0.78rem;margin-top:0.4rem;overflow-wrap:anywhere">
+    {% for source in just_disabled %}{{ source.company_slug }}/{{ source.adapter }}{{ '' if loop.last else ' · ' }}{% endfor %}
+  </div>
+  <div class="muted" style="font-size:0.82rem;margin-top:0.4rem">
+    They stop polling on the next tick and stay off until re-enabled on Companies.
+    <span class="mono">companies.yaml</span> still lists them as enabled; <span class="mono">jobwatch export-config</span> writes the current state out for review.
+  </div>
+  {% else %}
+  <strong style="color:var(--signal)">Nothing was disabled</strong>
+  <div class="muted" style="font-size:0.82rem;margin-top:0.4rem">Every listed source had recovered or been switched off since the page loaded.</div>
+  {% endif %}
+</div>
+{% endif %}
 
 <div class="stat-row">
   <div class="stat"><span class="n mono">{{ stats.sources }}</span><span class="k">sources</span></div>

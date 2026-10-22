@@ -471,6 +471,65 @@ def test_a_toggle_redraws_only_that_companys_card(client, seeded_db):
     assert '<span class="pill">off</span>' in card
 
 
+# ── health: disable failing sources ───────────────────────────────────────
+
+
+def _failing(db, slug: str, failures: int, *, company_enabled: bool = True) -> int:
+    add_company(db, slug)
+    sid = add_source(db, slug)
+    db.execute("UPDATE sources SET consecutive_failures = ? WHERE id = ?", (failures, sid))
+    db.execute("UPDATE companies SET enabled = ? WHERE slug = ?", (int(company_enabled), slug))
+    return sid
+
+
+def _enabled(db, sid: int) -> int:
+    return db.scalar("SELECT enabled FROM sources WHERE id = ?", (sid,))
+
+
+def test_the_disable_button_counts_what_the_masthead_calls_failing(client, seeded_db):
+    listed = _failing(seeded_db, "stripe", 5)
+    _failing(seeded_db, "figma", 4)  # below the threshold
+    _failing(seeded_db, "ramp", 9, company_enabled=False)  # not polled anyway
+
+    body = client.get("/health").text
+
+    assert "Disable failing (1)" in body
+    assert "<b>1</b> failing" in body, "the masthead and the button must agree"
+    assert re.findall(r'name="source_id" value="(\d+)"', body) == [str(listed)]
+
+
+def test_no_disable_button_when_nothing_is_failing(client, seeded_db):
+    _failing(seeded_db, "stripe", 2)
+    assert "Disable failing" not in client.get("/health").text
+
+
+def test_disabling_failing_sources_switches_off_only_what_the_page_listed(client, seeded_db):
+    listed = _failing(seeded_db, "stripe", 6)
+    recovered = _failing(seeded_db, "figma", 0)  # listed, then succeeded
+    unlisted = _failing(seeded_db, "ramp", 7)  # began failing after the page loaded
+
+    response = client.post(
+        "/health/disable-failing", data={"source_id": [str(listed), str(recovered)]}
+    )
+
+    assert (_enabled(seeded_db, listed), _enabled(seeded_db, recovered)) == (0, 1)
+    assert _enabled(seeded_db, unlisted) == 1
+    assert seeded_db.scalar("SELECT COUNT(*) FROM sources", default=0) == 3, "never deleted"
+    assert response.headers["HX-Redirect"] == f"/health?disabled={listed}"
+
+
+def test_the_page_after_disabling_names_what_was_switched_off(client, seeded_db):
+    sid = _failing(seeded_db, "stripe", 6)
+    client.post("/health/disable-failing", data={"source_id": [str(sid)]})
+
+    body = client.get(f"/health?disabled={sid}").text
+
+    assert "Disabled 1 failing source" in body
+    assert "stripe/fake" in body
+    assert "Disable failing (" not in body, "nothing left failing"
+    assert "Nothing was disabled" in client.get("/health?disabled=").text
+
+
 # ── outbox ────────────────────────────────────────────────────────────────
 
 

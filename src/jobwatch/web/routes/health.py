@@ -8,13 +8,17 @@ within a day.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from typing import Annotated
+
+from fastapi import APIRouter, Form, Request
+from fastapi.responses import HTMLResponse, Response
 
 from ...health import detect_drift
-from ..deps import get_db, get_service, partial, render
+from ...logging_setup import get_logger
+from ..deps import FAILING_AFTER, FAILING_SOURCES_SQL, get_db, get_service, partial, render
 
 router = APIRouter()
+log = get_logger(__name__)
 
 SOURCE_SQL = """
 SELECT s.*, c.display_name, c.tier, c.enabled AS company_enabled,
@@ -50,6 +54,16 @@ async def health(request: Request) -> HTMLResponse:
         ),
     )
 
+    # Set by the redirect after "Disable failing", so the page says what it did.
+    just_disabled = None
+    if "disabled" in request.query_params:
+        ids = _ids(request.query_params["disabled"].split(","))
+        just_disabled = db.query(
+            f"SELECT company_slug, adapter FROM sources WHERE id IN ({_marks(ids)}) "
+            "ORDER BY company_slug, adapter",
+            ids,
+        )
+
     return render(
         request,
         "health.html",
@@ -62,8 +76,52 @@ async def health(request: Request) -> HTMLResponse:
                 "JOIN sources s ON s.id = p.source_id ORDER BY p.id DESC LIMIT 60"
             ),
             "stats": _stats(db),
+            "failing": db.query(FAILING_SOURCES_SQL, (FAILING_AFTER,)),
+            "failing_after": FAILING_AFTER,
+            "just_disabled": just_disabled,
         },
     )
+
+
+@router.post("/health/disable-failing")
+async def disable_failing(
+    request: Request, source_id: Annotated[list[str] | None, Form()] = None
+) -> Response:
+    """Switch off the failing sources the page listed, in one go.
+
+    Only the ids the page showed, and only those still failing now: one that
+    began failing after the page loaded was never in the count you confirmed,
+    and one that recovered meanwhile is no longer broken. Disabled, never
+    deleted (§13.4); each comes back with its toggle on Companies.
+    """
+    db = get_db(request)
+    ids = _ids(source_id or [])
+    with db.tx() as conn:
+        rows = conn.execute(
+            f"{FAILING_SOURCES_SQL} AND s.id IN ({_marks(ids)})", (FAILING_AFTER, *ids)
+        ).fetchall()
+        conn.executemany(
+            "UPDATE sources SET enabled = 0 WHERE id = ?", [(r["id"],) for r in rows]
+        )
+    log.info(
+        "failing_sources_disabled",
+        sources=[f"{r['company_slug']}/{r['adapter']}" for r in rows],
+        failing_after=FAILING_AFTER,
+    )
+    # A full page load rather than a swap: the table, the stats and the
+    # masthead count all change.
+    disabled = ",".join(str(r["id"]) for r in rows)
+    return Response(status_code=204, headers={"HX-Redirect": f"/health?disabled={disabled}"})
+
+
+def _ids(values: list[str]) -> list[int]:
+    return [int(v) for v in values if v.strip().isdigit()]
+
+
+def _marks(ids: list[int]) -> str:
+    """Placeholders for `IN (...)`. `IN (NULL)` matches nothing, so an empty
+    list stays valid SQL."""
+    return ",".join("?" * len(ids)) or "NULL"
 
 
 def _stats(db) -> dict:
