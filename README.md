@@ -364,11 +364,35 @@ The review queue is keyboard-first: `M` match, `R` reject, `1`–`4` tag, `J`
 skip, `K` back, `U` undo. Each verdict is permanent and global — every future
 posting with that normalized title classifies instantly, forever, at zero cost.
 
+### Performance
+
+The UI shares one SQLite connection and one event loop with the poller, so a
+slow screen also pauses polling while it loads. At 324k jobs every screen
+renders in under 200 ms of server time, with two exceptions: a search with
+**Everything** selected (~0.6 s, since it has to read every job row) and the
+first filter preview of a session (~2.7 s to build the title sample, which is
+then reused between keystrokes).
+
+- **Schema v4** adds the indexes this depends on and runs `ANALYZE`. It
+  applies on the first start after upgrading, takes a few seconds on a 300 MB
+  database, and only builds indexes; no rows are rewritten. Each start then
+  runs `PRAGMA optimize` to refresh the planner statistics once a table has
+  outgrown them. Without statistics SQLite picks the wrong index for the feed.
+- Pages are gzipped (the Companies screen goes from 1.7 MB to under 80 KB),
+  and CSS/JS are linked with a version in the URL so the browser caches them
+  for good. Editing a static file changes the version within a second, so a
+  hard refresh is never needed.
+- Toggles on Companies redraw one card, not the whole registry. The badge
+  counts in the header catch up on the next page load.
+
+Measure query changes against a copy of the real database, not the test
+fixtures: none of the slow plans above show up at fixture size.
+
 ## Tests
 
 ```bash
-uv run pytest          # 512 tests, no network
-uv run pytest -m e2e   # 9 browser tests; needs Chrome and the `e2e` extra
+uv run pytest          # 531 tests, no network
+uv run pytest -m e2e   # 10 browser tests; needs Chrome and the `e2e` extra
 uv run ruff check src tests
 ```
 

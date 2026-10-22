@@ -253,6 +253,11 @@ kbd {
   padding: 1.1rem;
 }
 
+/* The registry is ~900 cards. Off-screen ones skip layout and paint until
+   scrolled near; `auto` keeps each card's real height once it has been seen,
+   so the scrollbar settles rather than jumping. */
+.registry > .company-card { content-visibility: auto; contain-intrinsic-size: auto 9rem; }
+
 table.grid { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
 table.grid th {
   text-align: left; font-family: var(--board); font-weight: 600;

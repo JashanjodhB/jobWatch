@@ -19,58 +19,10 @@
   <div id="discover-result"></div>
 </div>
 
+<div class="registry">
 {% for company in companies %}
-<div class="card" style="margin-bottom:0.75rem">
-  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0.5rem 0.75rem">
-    <h2 style="font-size:1.05rem">{{ company.display_name }}</h2>
-    <span class="pill {{ 'signal' if company.tier == 'hot' else '' }}">{{ company.tier }}</span>
-    {% if not company.enabled %}<span class="pill alarm">disabled</span>{% endif %}
-    <span class="muted mono" style="font-size:0.72rem">{{ company.slug }}</span>
-    {% if company.careers_url %}
-    <a class="muted" style="font-size:0.78rem" href="{{ company.careers_url }}" target="_blank" rel="noopener noreferrer">careers page ↗</a>
-    {% endif %}
-    <div style="margin-left:auto;display:flex;gap:0.35rem">
-      <button class="btn small" hx-post="/companies/{{ company.slug }}/test" hx-target="#test-{{ company.slug }}" hx-swap="innerHTML">Test fetch</button>
-      <button class="btn small" hx-post="/companies/{{ company.slug }}/toggle" hx-target="body" hx-swap="outerHTML">
-        {{ 'Disable' if company.enabled else 'Enable' }}
-      </button>
-    </div>
-  </div>
-
-  <div class="scroll-x" style="margin-top:0.6rem">
-    <table class="grid">
-      <thead>
-        <tr><th>Priority</th><th>Source</th><th>Config</th><th>Fallback</th><th>Jobs</th><th>State</th><th></th></tr>
-      </thead>
-      <tbody>
-      {% for source in sources.get(company.slug, []) %}
-        <tr>
-          <td class="mono">{{ source.priority }}</td>
-          <td>{{ source.adapter }}</td>
-          <td class="mono" style="font-size:0.72rem;max-width:20rem;overflow-wrap:anywhere">{{ source.adapter_config }}</td>
-          <td class="muted">{{ source.fallback_adapter or '—' }}</td>
-          <td class="mono">{{ source.job_count }}</td>
-          <td>
-            {% if not source.enabled %}<span class="pill">off</span>
-            {% elif source.using_fallback %}<span class="pill signal">on fallback</span>
-            {% elif source.consecutive_failures %}<span class="pill alarm">{{ source.consecutive_failures }} fails</span>
-            {% elif not source.seeded %}<span class="pill">awaiting seed</span>
-            {% else %}<span class="pill confirmed">ok</span>{% endif %}
-          </td>
-          <td>
-            <button class="btn small" hx-post="/sources/{{ source.id }}/toggle" hx-target="body" hx-swap="outerHTML">
-              {{ 'Disable' if source.enabled else 'Enable' }}
-            </button>
-          </td>
-        </tr>
-      {% else %}
-        <tr><td colspan="7" class="muted">No sources configured — this company is never polled.</td></tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <div id="test-{{ company.slug }}"></div>
-</div>
+{% set company_sources = sources.get(company.slug, []) %}
+{% include "_company_card.html" %}
 {% endfor %}
+</div>
 {% endblock %}

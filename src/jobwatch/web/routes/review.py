@@ -17,36 +17,43 @@ from typing import Annotated
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse
 
-from ..deps import get_service, parse_locations, partial, render
+from ..deps import get_service, parse_locations, partial, pending_review_count, render
 
 router = APIRouter()
 
 # The 1–4 keys. Four is deliberate: more would need a glance at the screen.
 CATEGORIES = ("swe", "ai-ml", "data", "infra")
 
-QUEUE_SQL = """
+# The card at one queue position: undecided titles newest first, then that
+# title's newest posting. Ranking reads idx_jobs_review alone, so a keypress
+# costs one card rather than loading the whole queue (~5,000 rows) to index it.
+# normalized_title breaks ties, so a position names the same card every time.
+CARD_SQL = """
+WITH pick AS (
+    SELECT j.normalized_title, COUNT(*) AS occurrences
+    FROM jobs j
+    WHERE j.classification = 'review'
+      AND j.normalized_title NOT IN (SELECT normalized_title FROM title_verdicts)
+    GROUP BY j.normalized_title
+    ORDER BY MAX(j.first_seen_at) DESC, j.normalized_title
+    LIMIT 1 OFFSET ?
+)
 SELECT j.dedup_key, j.title, j.normalized_title, j.locations, j.url, j.req_id,
-       j.company_slug, j.first_seen_at, c.display_name, c.tier,
-       COUNT(*) AS occurrences
-FROM jobs j
+       j.company_slug, j.first_seen_at, c.display_name, c.tier, p.occurrences
+FROM pick p
+CROSS JOIN jobs j ON j.normalized_title = p.normalized_title
 JOIN companies c ON c.slug = j.company_slug
 WHERE j.classification = 'review'
-  AND j.normalized_title NOT IN (SELECT normalized_title FROM title_verdicts)
-GROUP BY j.normalized_title
-ORDER BY MAX(j.first_seen_at) DESC
+ORDER BY j.first_seen_at DESC
+LIMIT 1
 """
-
-
-def _queue(db) -> list:
-    return db.query(QUEUE_SQL)
 
 
 def _card_context(request: Request, offset: int, undo_title: str | None = None) -> dict:
     service = get_service(request)
-    queue = _queue(service.db)
-    total = len(queue)
+    total = pending_review_count(service.db)
     offset = max(0, min(offset, max(0, total - 1)))
-    row = queue[offset] if queue else None
+    row = service.db.one(CARD_SQL, (offset,)) if total else None
 
     explanation = None
     if row is not None:

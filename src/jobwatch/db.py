@@ -1,9 +1,11 @@
 """SQLite schema, migrations, and connection management (§6).
 
-One process, one connection, WAL. The dataset is small enough (tens of
-thousands of rows at the outside) that every query here is sub-millisecond, so
-the scheduler and the web UI share a single connection guarded by a reentrant
-lock rather than paying for a pool or a thread executor.
+One process, one connection, WAL. The scheduler and the web UI share a single
+connection guarded by a reentrant lock rather than paying for a pool or a
+thread executor. That only works while every query is an index lookup: they
+share an event loop too, so a slow web query stalls polling for as long as it
+runs. `jobs` passed 300k rows within three months; check new queries with
+EXPLAIN QUERY PLAN against a real database, not the test fixtures.
 
 The three tables that must never be pruned -- `jobs`, `alerted_merges`,
 `title_verdicts` -- are why the system does not repeat itself (§13.4).
@@ -22,7 +24,7 @@ from typing import Any
 
 __all__ = ["SCHEMA_VERSION", "Database", "default_db_path", "parse_ts", "utcnow"]
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 
 def utcnow() -> str:
@@ -224,7 +226,36 @@ DROP TABLE filter_rules;
 ALTER TABLE filter_rules_v3 RENAME TO filter_rules;
 """
 
-MIGRATIONS: list[tuple[int, str]] = [(1, _V1), (2, _V2), (3, _V3)]
+# v4: indexes for the web UI at real scale. Without them the Companies and
+# Health screens counted jobs per source with a full scan *per source* (over a
+# minute at 300k jobs), the feed walked every job row in merge_key order, and
+# each review verdict rewrote its title's rows by scanning the whole table.
+#   idx_jobs_merge  widened so the feed can rank merge_keys from the index alone;
+#                   merge_key is still its prefix, so the pipeline's lookups are
+#                   unaffected.
+#   idx_jobs_alerts the same, restricted to the default "Alerted" view's rows.
+#   idx_jobs_title  verdicts and undo update by normalized_title.
+#   idx_jobs_review rekeyed by title, so the queue ranks from the index alone.
+#   the rest        back one count or dropdown each, which were full scans.
+# ANALYZE gives the planner row counts. Without them it cannot tell the 10k
+# alert rows from the 300k rejects, and picks the wrong index for the feed.
+_V4 = """
+CREATE INDEX idx_jobs_source   ON jobs(source_id);
+DROP INDEX idx_jobs_merge;
+CREATE INDEX idx_jobs_merge    ON jobs(merge_key, first_seen_at, classification, class_source);
+CREATE INDEX idx_jobs_alerts   ON jobs(merge_key, first_seen_at, classification)
+    WHERE classification IN ('match','review');
+CREATE INDEX idx_jobs_title    ON jobs(normalized_title, first_seen_at);
+DROP INDEX idx_jobs_review;
+CREATE INDEX idx_jobs_review   ON jobs(normalized_title, first_seen_at)
+    WHERE classification = 'review';
+CREATE INDEX idx_jobs_alerted  ON jobs(alerted_at, merge_key) WHERE alerted_at IS NOT NULL;
+CREATE INDEX idx_jobs_category ON jobs(category) WHERE category IS NOT NULL;
+CREATE INDEX idx_jobs_applied  ON jobs(app_status) WHERE app_status NOT IN ('none','saved');
+ANALYZE;
+"""
+
+MIGRATIONS: list[tuple[int, str]] = [(1, _V1), (2, _V2), (3, _V3), (4, _V4)]
 
 
 # ── connection ────────────────────────────────────────────────────────────
@@ -358,6 +389,14 @@ class Database:
         )
 
     # -- maintenance -------------------------------------------------------
+
+    def optimize(self) -> None:
+        """Refresh planner statistics on any table that has outgrown them.
+
+        Cheap when nothing changed. A database created empty gets its first
+        real statistics here, once it has data worth planning around.
+        """
+        self.execute("PRAGMA optimize=0x10002")
 
     def prune_poll_log(self, days: int = 30) -> int:
         """Prune poll_log only. jobs / alerted_merges / title_verdicts are forever."""

@@ -205,6 +205,7 @@ class Scheduler:
         pruned = self.db.prune_poll_log(self.settings.retention.poll_log_days)
         if pruned:
             log.info("poll_log_pruned", rows=pruned, days=self.settings.retention.poll_log_days)
+        self.db.optimize()
 
         # A source stuck in a long backoff across a restart should get one prompt
         # retry: the restart is usually the fix.

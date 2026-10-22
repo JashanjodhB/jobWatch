@@ -103,8 +103,8 @@ Platform quirks, config keys, and what breaks silently: `docs/ADAPTERS.md`.
 ## Tests
 
 ```powershell
-.venv\Scripts\python.exe -m pytest        # 512 tests, ~15s, no network anywhere
-.venv\Scripts\python.exe -m pytest -m e2e # 9 more, ~12s, needs a real Chrome
+.venv\Scripts\python.exe -m pytest        # 531 tests, ~17s, no network anywhere
+.venv\Scripts\python.exe -m pytest -m e2e # 10 more, ~13s, needs a real Chrome
 .venv\Scripts\python.exe -m ruff check src tests
 ```
 

@@ -12,12 +12,14 @@ change would silently apply to nothing.
 
 from __future__ import annotations
 
+import time
+from dataclasses import dataclass, field
 from typing import Annotated
 
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, PlainTextResponse
 
-from ...classify.rules import KINDS, LOCATION_KINDS, RuleSet
+from ...classify.rules import KINDS, LOCATION_KINDS, CompiledRule, RuleSet
 from ...config import export_config
 from ...db import utcnow
 from ..deps import get_db, get_service, parse_locations, partial, render
@@ -26,6 +28,31 @@ router = APIRouter()
 
 SAMPLE_DAYS = 90
 MAX_FLIPS_SHOWN = 40
+#: A built sample serves previews this long at most, even if no job arrived.
+SAMPLE_TTL_SECONDS = 300.0
+
+# Most recent posting per distinct title. `+normalized_title` is an expression,
+# so SQLite cannot take the grouping order from idx_jobs_title, which would
+# fetch every row at random to get it; reading the rows in order is twice as
+# fast.
+SAMPLE_SQL = """
+SELECT title, locations, company_slug, MAX(first_seen_at) AS seen FROM jobs
+WHERE first_seen_at >= datetime('now', ?)
+GROUP BY +normalized_title
+ORDER BY seen DESC
+"""
+
+
+@dataclass(slots=True)
+class _Sample:
+    version: tuple
+    built_at: float
+    titles: list[tuple[str, list[str], str]]
+    #: Each title's classification under `rules`, filled in as titles become
+    #: candidates. The enabled rules rarely change mid-session; the typed
+    #: pattern changes on every keystroke.
+    rules: tuple = ()
+    before: dict[int, str] = field(default_factory=dict)
 
 
 def _rules_by_kind(db) -> dict[str, list]:
@@ -35,14 +62,30 @@ def _rules_by_kind(db) -> dict[str, list]:
     return grouped
 
 
-def _sample_titles(db, days: int = SAMPLE_DAYS) -> list[tuple[str, list[str], str]]:
-    rows = db.query(
-        "SELECT title, locations, company_slug, MAX(first_seen_at) AS seen FROM jobs "
-        "WHERE first_seen_at >= datetime('now', ?) "
-        "GROUP BY normalized_title ORDER BY seen DESC",
-        (f"-{days} days",),
-    )
-    return [(r["title"], parse_locations(r["locations"]), r["company_slug"]) for r in rows]
+def _sample(request: Request) -> _Sample:
+    """The preview's sample, built once per typing session.
+
+    It reads most of `jobs` — over a second at 300k rows — and the preview
+    fires on every pause in typing. Rebuilt when a job arrives or leaves, or
+    after SAMPLE_TTL_SECONDS, which catches edits to rows already in it.
+    """
+    db = get_db(request)
+    version = tuple(db.one("SELECT MAX(rowid), COUNT(*) FROM jobs"))
+    now = time.monotonic()
+    cached: _Sample | None = getattr(request.app.state, "filter_sample", None)
+    if cached and cached.version == version and now - cached.built_at < SAMPLE_TTL_SECONDS:
+        return cached
+
+    rows = db.query(SAMPLE_SQL, (f"-{SAMPLE_DAYS} days",))
+    titles = [(r["title"], parse_locations(r["locations"]), r["company_slug"]) for r in rows]
+    request.app.state.filter_sample = _Sample(version, now, titles)
+    return request.app.state.filter_sample
+
+
+def _touches(rule: CompiledRule, title: str, locations: list[str]) -> bool:
+    if rule.kind in LOCATION_KINDS:
+        return any(rule.search(loc) for loc in locations)
+    return rule.search(title)
 
 
 @router.get("/filters", response_class=HTMLResponse)
@@ -56,7 +99,12 @@ async def workbench(request: Request) -> HTMLResponse:
             "grouped": _rules_by_kind(db),
             "kinds": KINDS,
             "broken": ruleset.broken,
-            "sample_size": len(_sample_titles(db)),
+            "sample_size": db.scalar(
+                "SELECT COUNT(DISTINCT normalized_title) FROM jobs "
+                "WHERE first_seen_at >= datetime('now', ?)",
+                (f"-{SAMPLE_DAYS} days",),
+                default=0,
+            ),
             "sample_days": SAMPLE_DAYS,
         },
     )
@@ -99,7 +147,6 @@ async def preview(
     current_rules = RuleSet.from_patterns(current_patterns)
     proposed_rules = RuleSet.from_patterns(proposed)
 
-    sample = _sample_titles(db)
     direct_hits = 0
     to_match: list[tuple[str, str, str, str]] = []
     to_reject: list[tuple[str, str, str, str]] = []
@@ -110,18 +157,60 @@ async def preview(
 
         probe = re.compile(pattern, re.IGNORECASE)
 
-    for title, locations, company in sample:
+    # Classifying the whole sample twice took ~12s per keystroke. Only a
+    # posting that a changed rule matches can classify differently, because
+    # every outcome turns on which rules match — except that location_require
+    # gates every located posting just by being non-empty, so starting or
+    # emptying it re-checks everything.
+    changed = [
+        CompiledRule.compile(0, k, p)
+        for k in KINDS
+        for p in set(current_patterns[k]) ^ set(proposed[k])
+    ]
+    recheck_all = any(
+        rule.kind == "location_require"
+        and not (current_patterns["location_require"] and proposed["location_require"])
+        for rule in changed
+    )
+    # A typed title pattern's direct hits are exactly the postings it can
+    # flip, so it is searched once rather than once more as a change.
+    reuse_hits = probe is not None and kind not in LOCATION_KINDS
+    if reuse_hits:
+        changed = [r for r in changed if (r.kind, r.pattern) != (kind, pattern)]
+
+    # A cleared or uncompilable pattern renders without the sample at all.
+    titles: list[tuple[str, list[str], str]] = []
+    before_cache: dict[int, str] = {}
+    if probe is not None or changed:
+        sample = _sample(request)
+        rules_key = tuple(tuple(sorted(current_patterns[k])) for k in KINDS)
+        if sample.rules != rules_key:
+            sample.rules, sample.before = rules_key, {}
+        titles, before_cache = sample.titles, sample.before
+
+    for index, (title, locations, company) in enumerate(titles):
+        hit = False
         if probe is not None:
             haystack = " ".join(locations) if kind in LOCATION_KINDS else title
-            if probe.search(haystack):
+            hit = bool(probe.search(haystack))
+            if hit:
                 direct_hits += 1
 
-        before = current_rules.evaluate(title, locations)
-        after = proposed_rules.evaluate(title, locations)
-        if before.classification == after.classification:
+        if not (
+            recheck_all
+            or (reuse_hits and hit)
+            or (changed and any(_touches(rule, title, locations) for rule in changed))
+        ):
             continue
-        entry = (title, company, before.classification, after.classification)
-        if after.classification == "reject":
+
+        before = before_cache.get(index)
+        if before is None:
+            before = before_cache[index] = current_rules.evaluate(title, locations).classification
+        after = proposed_rules.evaluate(title, locations).classification
+        if before == after:
+            continue
+        entry = (title, company, before, after)
+        if after == "reject":
             to_reject.append(entry)
         else:
             to_match.append(entry)
@@ -133,7 +222,7 @@ async def preview(
         kind=kind,
         action=action,
         error=error,
-        sample_size=len(sample),
+        sample_size=len(titles),
         sample_days=SAMPLE_DAYS,
         direct_hits=direct_hits,
         to_match=to_match[:MAX_FLIPS_SHOWN],

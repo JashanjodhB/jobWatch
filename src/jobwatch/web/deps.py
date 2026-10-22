@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import time
 from pathlib import Path
 from typing import Any
 
@@ -17,11 +19,13 @@ from ..service import Service
 __all__ = [
     "STATIC_DIR",
     "TEMPLATE_DIR",
+    "asset_version",
     "get_db",
     "get_service",
     "nav_counts",
     "parse_locations",
     "partial",
+    "pending_review_count",
     "render",
     "templates",
 ]
@@ -30,6 +34,38 @@ TEMPLATE_DIR = Path(__file__).parent / "templates"
 STATIC_DIR = Path(__file__).parent / "static"
 
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
+
+
+class _AssetVersion:
+    """A fingerprint of static/, for cache-busting asset URLs.
+
+    Pages link `/static/app.css?v=<this>`, which the browser then keeps for a
+    year without asking (`app.py`). Editing any static file changes every URL,
+    so a stale copy is never served and an unchanged one is never re-fetched.
+    Names, sizes and mtimes rather than contents, so an edit made while the
+    service runs is live within a second, as a template edit is; re-walking
+    the directory costs ~2ms on Windows, hence at most once a second.
+    """
+
+    def __init__(self) -> None:
+        self._value = ""
+        self._checked = float("-inf")
+
+    def __call__(self) -> str:
+        now = time.monotonic()
+        if now - self._checked >= 1.0:
+            digest = hashlib.sha256()
+            for path in sorted(STATIC_DIR.rglob("*")):
+                if path.is_file():
+                    stat = path.stat()
+                    name = path.relative_to(STATIC_DIR).as_posix()
+                    digest.update(f"{name}:{stat.st_size}:{stat.st_mtime_ns}\n".encode())
+            self._value = digest.hexdigest()[:12]
+            self._checked = now
+        return self._value
+
+
+asset_version = _AssetVersion()
 
 
 def parse_locations(raw: Any) -> list[str]:
@@ -58,6 +94,7 @@ def _places(raw: Any, limit: int = 3) -> str:
 templates.env.filters["age"] = humanize_age
 templates.env.filters["places"] = _places
 templates.env.filters["locations"] = parse_locations
+templates.env.globals["asset_version"] = asset_version
 templates.env.globals["classification_class"] = lambda c: {
     "match": "confirmed",
     "review": "signal",
@@ -73,15 +110,20 @@ def get_db(request: Request) -> Database:
     return request.app.state.service.db
 
 
+def pending_review_count(db: Database) -> int:
+    """Distinct titles still waiting in the review queue."""
+    return db.scalar(
+        "SELECT COUNT(DISTINCT normalized_title) FROM jobs "
+        "WHERE classification = 'review' "
+        "AND normalized_title NOT IN (SELECT normalized_title FROM title_verdicts)",
+        default=0,
+    )
+
+
 def nav_counts(db: Database) -> dict[str, int]:
     """Badge numbers in the tab bar. One cheap query each."""
     return {
-        "review": db.scalar(
-            "SELECT COUNT(DISTINCT normalized_title) FROM jobs "
-            "WHERE classification = 'review' "
-            "AND normalized_title NOT IN (SELECT normalized_title FROM title_verdicts)",
-            default=0,
-        ),
+        "review": pending_review_count(db),
         "outbox_failed": db.scalar(
             "SELECT COUNT(*) FROM outbox WHERE status = 'failed'", default=0
         ),

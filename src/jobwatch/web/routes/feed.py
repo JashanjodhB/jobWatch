@@ -28,26 +28,51 @@ APP_STATUSES = ("none", "saved", "applied", "interview", "offer", "rejected")
 
 # One row per merge_key: the priority-1 source wins attribution, and the group's
 # earliest sighting is the detection time.
+#
+# Two phases, because ranking needs only narrow columns and a row needs wide
+# ones. `page` ranks merge_keys straight off idx_jobs_merge / idx_jobs_alerts;
+# only the page's own keys are then read in full. Windowing every matching job
+# row instead took 2s for the default view and 5s for "Everything".
+# CROSS JOIN pins the loop order (SQLite never reorders one), so jobs is looked
+# up by merge_key for each ranked key rather than rescanned per key.
+# merge_key breaks detected_at ties. A seeded board shares one timestamp, SQL
+# leaves the order of tied rows unspecified, and OFFSET paging assumes it fixed.
 FEED_SQL = """
+WITH page AS (
+    SELECT j.merge_key,
+           MIN(j.first_seen_at) AS detected_at,
+           COUNT(*)             AS source_count
+    FROM jobs j
+    {rank_join}
+    WHERE {where}
+    GROUP BY {group_key}
+    ORDER BY detected_at DESC, j.merge_key
+    LIMIT ? OFFSET ?
+)
 SELECT * FROM (
     SELECT j.dedup_key, j.merge_key, j.company_slug, j.title, j.url, j.locations,
            j.req_id, j.classification, j.class_source, j.category, j.app_status,
            j.normalized_title, j.alerted_at,
            c.display_name, c.tier,
            s.adapter,
-           MIN(j.first_seen_at) OVER (PARTITION BY j.merge_key) AS detected_at,
-           COUNT(*)             OVER (PARTITION BY j.merge_key) AS source_count,
-           ROW_NUMBER()         OVER (PARTITION BY j.merge_key
-                                      ORDER BY s.priority, s.id)  AS rn
-    FROM jobs j
+           p.detected_at, p.source_count,
+           ROW_NUMBER() OVER (PARTITION BY j.merge_key
+                              ORDER BY s.priority, s.id) AS rn
+    FROM page p
+    CROSS JOIN jobs j ON j.merge_key = p.merge_key
     JOIN companies c ON c.slug = j.company_slug
     JOIN sources   s ON s.id   = j.source_id
     WHERE {where}
 )
 WHERE rn = 1
-ORDER BY detected_at DESC
-LIMIT ? OFFSET ?
+ORDER BY detected_at DESC, merge_key
 """
+
+#: Filters on a `companies` column, which ranking must join to test.
+_COMPANY_FILTERS = ("q", "tier")
+#: Filters on columns idx_jobs_merge does not carry: each row they test is a
+#: table read.
+_ROW_FILTERS = ("q", "tier", "category", "app_status")
 
 
 def _build_where(params: dict) -> tuple[str, list]:
@@ -88,6 +113,27 @@ def _build_where(params: dict) -> tuple[str, list]:
     return (" AND ".join(clauses) or "1=1"), args
 
 
+def _feed_query(params: dict, page: int) -> tuple[str, list]:
+    where, args = _build_where(params)
+    sql = FEED_SQL.format(
+        where=where,
+        rank_join=(
+            "JOIN companies c ON c.slug = j.company_slug"
+            if any(params.get(k) for k in _COMPANY_FILTERS)
+            else ""
+        ),
+        # When every tested row is a table read anyway, read them in table
+        # order. `+merge_key` is an expression, so no index can supply the
+        # grouping order and SQLite stops walking idx_jobs_merge to get it,
+        # which fetches the same rows at random: 0.5s rather than 2s for a
+        # search across "Everything".
+        group_key=(
+            "+j.merge_key" if any(params.get(k) for k in _ROW_FILTERS) else "j.merge_key"
+        ),
+    )
+    return sql, [*args, PAGE_SIZE + 1, page * PAGE_SIZE, *args]
+
+
 @router.get("/", response_class=HTMLResponse)
 async def feed(request: Request) -> HTMLResponse:
     db = get_db(request)
@@ -103,10 +149,7 @@ async def feed(request: Request) -> HTMLResponse:
     }
     page = max(0, int(qp.get("page", 0) or 0))
 
-    where, args = _build_where(params)
-    rows = db.query(
-        FEED_SQL.format(where=where), [*args, PAGE_SIZE + 1, page * PAGE_SIZE]
-    )
+    rows = db.query(*_feed_query(params, page))
     has_more = len(rows) > PAGE_SIZE
     rows = rows[:PAGE_SIZE]
 

@@ -23,6 +23,14 @@ from ..deps import get_db, get_service, partial, render
 router = APIRouter()
 
 
+SOURCES_SQL = """
+SELECT s.*, (SELECT COUNT(*) FROM jobs j WHERE j.source_id = s.id) AS job_count
+FROM sources s
+{where}
+ORDER BY s.company_slug, s.priority, s.id
+"""
+
+
 @router.get("/companies", response_class=HTMLResponse)
 async def companies(request: Request) -> HTMLResponse:
     db = get_db(request)
@@ -37,19 +45,28 @@ async def companies(request: Request) -> HTMLResponse:
                  c.display_name
         """
     )
-    sources = db.query(
-        "SELECT s.*, "
-        "(SELECT COUNT(*) FROM jobs j WHERE j.source_id = s.id) AS job_count "
-        "FROM sources s ORDER BY s.company_slug, s.priority, s.id"
-    )
     by_company: dict[str, list] = {}
-    for row in sources:
+    for row in db.query(SOURCES_SQL.format(where="")):
         by_company.setdefault(row["company_slug"], []).append(row)
 
     return render(
         request,
         "companies.html",
         {"companies": rows, "sources": by_company},
+    )
+
+
+def _company_card(request: Request, slug: str) -> HTMLResponse:
+    """One company's card, so a toggle redraws it rather than all ~900."""
+    db = get_db(request)
+    company = db.one("SELECT * FROM companies WHERE slug = ?", (slug,))
+    if company is None:
+        return HTMLResponse("")
+    return partial(
+        request,
+        "_company_card.html",
+        company=company,
+        company_sources=db.query(SOURCES_SQL.format(where="WHERE s.company_slug = ?"), (slug,)),
     )
 
 
@@ -134,17 +151,17 @@ async def toggle_company(request: Request, slug: str) -> HTMLResponse:
     get_db(request).execute(
         "UPDATE companies SET enabled = 1 - enabled WHERE slug = ?", (slug,)
     )
-    return await companies(request)
+    return _company_card(request, slug)
 
 
 @router.post("/sources/{source_id}/toggle", response_class=HTMLResponse)
 async def toggle_source(request: Request, source_id: int) -> HTMLResponse:
     # Disabled, never deleted: `jobs.source_id` references this row, and job
     # history is not something we throw away (§13.4).
-    get_db(request).execute(
-        "UPDATE sources SET enabled = 1 - enabled WHERE id = ?", (source_id,)
-    )
-    return await companies(request)
+    db = get_db(request)
+    db.execute("UPDATE sources SET enabled = 1 - enabled WHERE id = ?", (source_id,))
+    slug = db.scalar("SELECT company_slug FROM sources WHERE id = ?", (source_id,))
+    return _company_card(request, slug) if slug else HTMLResponse("")
 
 
 @router.post("/discover", response_class=HTMLResponse)

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 
 import httpx
 import pytest
@@ -147,6 +148,53 @@ def test_feed_renders_500_jobs(client, seeded_db):
     assert response.text.count('class="row-title"') == 100  # first page
 
 
+def test_feed_dates_a_job_by_first_sighting_but_credits_the_canonical_source(client, seeded_db):
+    add_company(seeded_db, "stripe", name="Stripe")
+    canonical = add_source(seeded_db, "stripe", "fake", priority=1)
+    mirror = add_source(seeded_db, "stripe", "fake1", priority=2)
+    insert_job(seeded_db, title="Software Engineer Intern", source_id=mirror, req="B",
+               seen="2026-10-01T08:00:00Z")
+    insert_job(seeded_db, title="Software Engineer Intern", source_id=canonical, req="A",
+               seen="2026-10-02T08:00:00Z")
+
+    body = client.get("/").text
+
+    assert 'data-ts="2026-10-01T08:00:00Z"' in body, "detected when the mirror first saw it"
+    assert "fake +1" in body, "attributed to the priority-1 source"
+
+
+def test_feed_pages_neither_repeat_nor_skip_jobs_seen_in_the_same_second(client, seeded_db):
+    """A seeded board shares one timestamp, so a page boundary lands inside a tie."""
+    add_company(seeded_db, "stripe", name="Stripe")
+    sid = add_source(seeded_db, "stripe", seeded=True)
+    for i in range(150):
+        insert_job(seeded_db, title=distinct_title(i), source_id=sid, req=str(i),
+                   seen="2026-10-01T08:00:00Z")
+
+    titles = []
+    for page in (0, 1):
+        titles += re.findall(r'class="row-title"[^>]*>([^<]*)<', client.get(f"/?page={page}").text)
+
+    assert len(titles) == 150
+    assert len(set(titles)) == 150
+
+
+@pytest.mark.parametrize(
+    "query, shown",
+    [
+        ("show=all&q=Software", True),
+        ("show=all&q=Stripe", True),  # matches the company name, not the title
+        ("show=all&tier=hot", True),
+        ("show=all&tier=cold", False),
+        ("show=all&app_status=applied", False),
+        ("show=rejected&q=Software", False),
+    ],
+)
+def test_feed_filters_on_columns_only_the_job_row_has(client, populated, query, shown):
+    """These rank by reading job rows rather than the index; same answers either way."""
+    assert ("Software Engineer Intern" in client.get(f"/?{query}").text) is shown
+
+
 # ── application status ────────────────────────────────────────────────────
 
 
@@ -245,6 +293,36 @@ def test_a_bogus_verdict_key_does_not_500(client, populated):
     assert client.post("/review/nosuchkey/verdict", data={"verdict": "match"}).status_code == 200
 
 
+def test_each_queue_position_is_a_different_card_when_titles_tie(client, seeded_db):
+    """J and K move by position, so a position must name the same card every time."""
+    add_company(seeded_db, "stripe", name="Stripe")
+    sid = add_source(seeded_db, "stripe", seeded=True)
+    for i in range(5):
+        insert_job(seeded_db, title=distinct_title(i, "Sustainability Intern"), source_id=sid,
+                   req=str(i), classification="review", seen="2026-10-01T08:00:00Z")
+
+    titles = {
+        re.search(r'class="review-title">([^<]*)<', client.get(f"/review/card?offset={i}").text)[1]
+        for i in range(5)
+    }
+
+    assert len(titles) == 5
+
+
+def test_a_review_card_shows_the_newest_posting_of_a_shared_title(client, seeded_db):
+    add_company(seeded_db, "stripe", name="Stripe")
+    sid = add_source(seeded_db, "stripe", seeded=True)
+    insert_job(seeded_db, title="Sustainability Intern", source_id=sid, req="old",
+               classification="review", seen="2026-10-01T08:00:00Z")
+    insert_job(seeded_db, title="Sustainability Intern", source_id=sid, req="new",
+               classification="review", seen="2026-10-02T08:00:00Z")
+
+    body = client.get("/review").text
+
+    assert "2 postings share this title" in body
+    assert '<span class="mono">new</span>' in body
+
+
 # ── filter workbench ──────────────────────────────────────────────────────
 
 
@@ -265,6 +343,47 @@ def test_preview_reports_an_invalid_regex_without_saving_it(client, seeded_db):
     assert seeded_db.scalar(
         "SELECT COUNT(*) FROM filter_rules WHERE pattern = '([unclosed'", default=0
     ) == 0
+
+
+def test_preview_rechecks_every_posting_when_an_allow_list_starts(client, seeded_db, populated):
+    """location_require gates postings it never matches, just by being non-empty."""
+    seeded_db.execute("DELETE FROM filter_rules WHERE kind = 'location_require'")
+
+    body = client.post(
+        "/filters/preview", data={"kind": "location_require", "pattern": r"\bCanada\b"}
+    ).text
+
+    assert "Would stop alerting" in body
+    assert "Software Engineer Intern" in body, "Austin, TX never mentions Canada"
+
+
+def test_preview_rechecks_every_posting_when_an_allow_list_empties(client, seeded_db, populated):
+    seeded_db.execute("DELETE FROM filter_rules WHERE kind = 'location_require'")
+    rule_id = seeded_db.execute(
+        "INSERT INTO filter_rules(kind, pattern, enabled, created_at) "
+        "VALUES('location_require', 'Canada', 1, ?)",
+        (utcnow(),),
+    ).lastrowid
+
+    body = client.post(
+        "/filters/preview",
+        data={"kind": "location_require", "pattern": "Canada", "action": "remove",
+              "rule_id": rule_id},
+    ).text
+
+    assert "Would start alerting" in body
+    assert "Software Engineer Intern" in body
+
+
+def test_preview_sees_a_job_that_arrived_since_the_last_preview(client, seeded_db, populated):
+    """The sample is reused between keystrokes, but never past a new posting."""
+    data = {"kind": "role_any", "pattern": r"\bsustainability\b"}
+    assert "Sustainability Programs Intern" not in client.post("/filters/preview", data=data).text
+
+    insert_job(seeded_db, title="Sustainability Programs Intern", source_id=populated, req="3",
+               classification="review")
+
+    assert "Sustainability Programs Intern" in client.post("/filters/preview", data=data).text
 
 
 def test_saving_a_rule_purges_cached_rule_verdicts(client, seeded_db, populated):
@@ -334,6 +453,22 @@ def test_toggling_a_source_disables_rather_than_deletes(client, seeded_db):
 
     assert seeded_db.scalar("SELECT enabled FROM sources WHERE id = ?", (sid,)) == 0
     assert seeded_db.scalar("SELECT COUNT(*) FROM sources", default=0) == 1
+
+
+def test_a_toggle_redraws_only_that_companys_card(client, seeded_db):
+    """The registry is ~900 cards; re-sending all of them per click took seconds."""
+    add_company(seeded_db, "stripe", name="Stripe")
+    add_company(seeded_db, "figma", name="Figma")
+    sid = add_source(seeded_db, "stripe")
+
+    card = client.post("/companies/stripe/toggle").text
+    assert "<html" not in card
+    assert "Stripe" in card and "Figma" not in card
+    assert '<span class="pill alarm">disabled</span>' in card
+
+    card = client.post(f"/sources/{sid}/toggle").text
+    assert "<html" not in card and "Figma" not in card
+    assert '<span class="pill">off</span>' in card
 
 
 # ── outbox ────────────────────────────────────────────────────────────────
@@ -464,3 +599,57 @@ def test_layout_targets_a_380px_viewport(client):
     assert "@media (max-width: 720px)" in css
     assert "prefers-reduced-motion" in css
     assert ":focus-visible" in css
+
+
+def test_pages_link_assets_by_version_and_versioned_urls_cache_for_a_year(client):
+    body = client.get("/").text
+    css = re.search(r'href="(/static/app\.css\?v=[0-9a-f]+)"', body)
+    assert css, "the stylesheet should be linked with a version"
+    assert "immutable" in client.get(css[1]).headers["cache-control"]
+    assert "immutable" not in client.get("/static/app.css").headers.get("cache-control", "")
+
+
+def test_the_asset_version_changes_when_a_static_file_does(tmp_path, monkeypatch):
+    from jobwatch.web import deps
+
+    monkeypatch.setattr(deps, "STATIC_DIR", tmp_path)
+    (tmp_path / "app.js").write_text("one")
+    before = deps._AssetVersion()()
+    (tmp_path / "app.js").write_text("two!")
+    assert deps._AssetVersion()() != before
+
+
+def test_pages_are_sent_compressed(client, populated):
+    response = client.get("/companies", headers={"Accept-Encoding": "gzip"})
+    assert response.headers.get("content-encoding") == "gzip"
+    assert "Stripe" in response.text
+
+
+# ── query plans: what keeps the screens fast at 300k jobs ─────────────────
+
+
+def _plan(db, sql: str, params: tuple = ()) -> str:
+    return " | ".join(row[3] for row in db.query("EXPLAIN QUERY PLAN " + sql, params))
+
+
+def test_per_source_job_counts_are_index_lookups(seeded_db):
+    """Health and Companies count jobs once per source, ~900 times a render.
+
+    As full scans that took over a minute per screen at 300k jobs.
+    """
+    from jobwatch.web.routes.companies import SOURCES_SQL
+    from jobwatch.web.routes.health import SOURCE_SQL
+
+    assert "idx_jobs_source" in _plan(seeded_db, SOURCE_SQL)
+    assert "idx_jobs_source" in _plan(seeded_db, SOURCES_SQL.format(where=""))
+
+
+def test_a_verdict_restamps_its_title_by_index(seeded_db):
+    """Every review keypress runs this; as a full scan it cost 150ms."""
+    plan = _plan(
+        seeded_db,
+        "UPDATE jobs SET classification = 'match', class_source = 'manual', category = NULL "
+        "WHERE normalized_title = ? AND classification != 'match'",
+        ("x",),
+    )
+    assert "USING INDEX" in plan and "normalized_title=?" in plan
